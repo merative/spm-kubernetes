@@ -5,7 +5,7 @@
 [Docker](https://www.docker.com/get-started) is an open source tool that creates, deploys, and runs applications by using containers.
 Install Docker by following the instructions in [docker.com](https://docs.docker.com/install/overview/). You can follow this runbook by using any Docker edition, including the community edition.
 
-_NOTE_ Docker version used to verify this runbook: 19.03.5
+_**NOTE:**_ Docker version used to verify this runbook: 19.03.5
 
 ## Kubernetes and Minikube
 
@@ -16,13 +16,13 @@ Minikube is a variant of Kubernetes that runs a single-node cluster inside a vir
 
 In this guide, the kubectl command is used with [Minikube](minikube.md).
 
-_NOTE_ Kubernetes version used to verify this runbook: 1.14.7
+_**NOTE:**_ Kubernetes version used to verify this runbook: 1.14.7
 
-_NOTE_ MiniKube version used to verify this runbook: 1.6.0
+_**NOTE:**_ MiniKube version used to verify this runbook: 1.6.0
 
 ## Helm V2
 
-_NOTE_ Helm version used to verify this runbook: 2.16.1. All the Helm commands that are used in this runbook are based on Helm version 2.
+_**NOTE:**_ Helm version used to verify this runbook: 2.16.1. All the Helm commands that are used in this runbook are based on Helm version 2.
 
 [Helm](https://helm.sh/) is a package manager that helps you to find, share, and use software that is built for Kubernetes.
 Helm streamlines the installation and management of Kubernetes applications, it can be thought of as the equivalent of the apt, yum, or homebrew utilities for Kubernetes.
@@ -30,6 +30,7 @@ Helm streamlines the installation and management of Kubernetes applications, it 
 Helm uses a packaging format called Chart. A chart is a collection of files that describe a related set of Kubernetes resources.
 A single chart might be used to deploy something simple, like a memcached pod, or a complex deployment, like a full web app stack with HTTP servers, databases, and caches.
 Charts are created as files laid out in a particular directory tree, then they can be packaged into versioned archives for deployment. For more information, see the [Helm documentation](https://helm.sh/docs/).
+
 This guide uses Helm Charts and describes how to package and deploy them. For more information, see [Preparing Helm Charts](../03-DEPLOYMENT/hc_preparation.md).
 
 The server portion of Helm, named Tiller, runs inside of your Kubernetes cluster.

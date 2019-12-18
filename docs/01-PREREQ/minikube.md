@@ -131,7 +131,7 @@ The [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
 
 You must also specify the `--insecure-registry` option to reference the Docker registry that you created. The `--insecure-registry` value is the same as specified in the  `daemon.json` file.
 
-_NOTE:_ Because of a limitation in the current version of Minikube, adding the `--insecure-registry` option works on a new Minikube instance only.
+_**NOTE:**_  Because of a limitation in the current version of Minikube, adding the `--insecure-registry` option works on a new Minikube instance only.
 If you start Minikube, be sure to run `minikube stop` and `minikube delete` before you start it again with the `--insecure-registry` option.
 
 ### Specifying the Kubernetes version
@@ -140,7 +140,7 @@ You can override the version of Kubernetes that gets installed inside the Miniku
 
 If you override the Kubernetes version, make sure to download and install the corresponding version of `kubectl` - this version must be the same version as the Kubernetes cluster.
 
-_Note_ The `kubectl` version running locally and on Minikube should be compatible, so it's possible to use this property to keep them consistent.
+_**NOTE:**_ The `kubectl` version running locally and on Minikube should be compatible, so it's possible to use this property to keep them consistent.
 
 ### Example start command
 

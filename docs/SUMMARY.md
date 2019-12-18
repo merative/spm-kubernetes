@@ -5,6 +5,7 @@
 * [Install prerequisite software](01-PREREQ/prereq.md)
   * [Base third-party software](01-PREREQ/3rdparty-sw.md)
   * [IBM Cúram Social Program Management (SPM) software](01-PREREQ/SPM-sw.md)
+    * [Create SPM Database](01-PREREQ/create_spm_db.md)
   * [Docker, Kubernetes, and Helm](01-PREREQ/Docker-Kubernetes-Helm.md)
   * [Minikube](01-PREREQ/minikube.md)
   * [ChartMuseum](01-PREREQ/chartmuseum.md)
@@ -31,3 +32,7 @@
 * [Batch processing](04-RUNTIME/batch.md)
 * [XML Server](04-RUNTIME/xmlserver.md)
 * [Troubleshooting problems](04-RUNTIME/troubleshoot.md)
+
+## Feedback
+
+* [Contact Us](CONTACT/contact_us.md)

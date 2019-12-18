@@ -1,7 +1,10 @@
 # Building the IBM Cúram Social Program Management application
 
+_**Note:**_ Before proceeding with the following, ensure that the steps defines in [Create SPM Database](create_spm_db.md) are completed. This action should only be a one off set-up.
+
 Building Social Program Management (SPM) for deployment to Kubernetes is similar to on-premises SPM builds with some differences.
 Notably, because the application server for the cloud environment is IBM WebSphere Liberty some target names are changed or are not supported.
+
 Take the following steps to build SPM:  
 
 ## Source the SPM environment variables
@@ -11,76 +14,6 @@ Enter the directory where SPM is installed and source the SetEnvironment script;
 ```shell
 cd /opt/IBM/Curam/Development
 . SetEnvironment.sh
-```
-
-## Create the SPM database
-
-The database configuration below is an example for SPM development environments.
-Please consult your Database Administrator for optimum performance and security settings.
-
-### Db2
-
-If necessary, create a database by using the Db2 user to run the following commands:
-
-```shell
-cd $SERVER_DIR
-./build.sh -f $CURAMSDEJ/util/db2_createdb.xml
-./build.sh -f $CURAMSDEJ/util/db2_postconfig.xml -Ddb2.dir=$DB2_HOME
-./build.sh -f $CURAMSDEJ/util/db2_createdb.xml restart.db2
-```
-
-If you are installing is a new Db2, ensure that your log configuration is correctly configured.
-For example, to specify circular logging for a database named `CURAM`, run the following command:
-
-```shell
-db2 update db cfg for CURAM using logfilsiz 1024 logprimary 50 logsecond 30
-```
-
-If you do not run the update command, the default Db2 configuration causes the database build to fail.
-
-### Oracle Database
-
-If necessary, create a database using the Oracle user to run these commands:
-
-```shell
-cd $ORACLE_HOME
-export ORA_GLOBAL_NAME=orcl
-export ORA_SID=orcl
-export ORA_ADMIN_PASS=Passw0rd1
-./bin/dbca  -silent -createdatabase \
-            -templatename General_Purpose.dbc \
-            -gdbname $ORA_GLOBAL_NAME \
-            -sid $ORA_SID \
-            -syspassword $ORA_ADMIN_PASS \
-            -systempassword $ORA_ADMIN_PASS \
-            -storageType FS \
-            -datafileDestination $ORACLE_BASE/oradata \
-            -emConfiguration NONE \
-            -characterSet AL32UTF8 \
-            -memoryPercentage 40 \
-            -initParams processes=1500
-```
-
-The application needs certain privileges to use the Oracle XA interface.
-Later, when you configure the application, the user name under which the server connects to Oracle is specified. The appropriate privileges must be assigned to this user name for the server to work successfully.
-
-The following commands create a role that is called `CURAM_SERVER` and give it the necessary privileges. A user named `CURAM_USER` is then assigned that role and given the password `PASSWORD`.
-These commands must be run from a SQLPlus terminal, which can be opened with `sqlplus ?/? as SYSDBA`.
-
-```sql
-CREATE ROLE "CURAM_SERVER";
-GRANT RESOURCE TO "CURAM_SERVER";
-@$ORACLE_HOME/rdbms/admin/xaview.sql
-GRANT SELECT ON V$XATRANS$ TO PUBLIC;
-GRANT SELECT ON PENDING_TRANS$ TO PUBLIC;
-GRANT SELECT ON DBA_2PC_PENDING TO PUBLIC;
-GRANT SELECT ON DBA_PENDING_TRANSACTIONS TO PUBLIC;
-GRANT EXECUTE ON DBMS_SYSTEM TO CURAM_SERVER;
-CREATE USER CURAM_USER IDENTIFIED BY PASSWORD DEFAULT TABLESPACE "USERS" TEMPORARY TABLESPACE "TEMP";
-GRANT "CONNECT", "CURAM_SERVER", UNLIMITED TABLESPACE TO CURAM_USER;
-ALTER SYSTEM SET "_optimizer_ansi_join_lateral_enhance"=false;
-ALTER SYSTEM SET DDL_LOCK_TIMEOUT=30;
-ALTER SYSTEM SET NLS_LENGTH_SEMANTICS="CHAR";
 ```
 
 ## Set up AppServer.properties and verify the configuration

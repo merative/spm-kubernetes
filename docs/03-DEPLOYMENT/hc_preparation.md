@@ -39,7 +39,7 @@ global:
     port: 50000
 ```
 
-_Note_ `serviceName:` can be of type "oracle" only, for Oracle databases.
+_**NOTE:**_ `serviceName:` can be of type "oracle" only, for Oracle databases.
 
 The required values are self-explanatory; although, `dbuserpassword` is the plain text database password and the value to replace `spmEncryptedDBPassword` can be obtained by running the command
 `./build.sh encrypt -Dpassword=<password>` from any SPM installation.

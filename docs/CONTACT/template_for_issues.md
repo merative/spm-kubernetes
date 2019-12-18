@@ -25,12 +25,12 @@ If applicable, add screenshots to help explain your problem.
 
 **Please complete the following information:**
     - OS: []
-     - Docker Version: []
-     - MiniKube Version: []
-     - Ant Version: []
-     - Java Version: []
-     - Liberty  Version: []
-     - Cúram SPM Version: []
+    - Docker Version: []
+    - MiniKube Version: []
+    - Ant Version: []
+    - Java Version: []
+    - Liberty  Version: []
+    - Cúram SPM Version: []
 
 **Additional context**
 Add any other context about the problem here.

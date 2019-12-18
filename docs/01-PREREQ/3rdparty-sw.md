@@ -83,6 +83,4 @@ Ant 1.9.9 is required and can be downloaded from [Apache.org](https://archive.ap
 
 * Test Ant by running:
 
-      ```shell
-      ant -version
-      ```
+  `ant -version`

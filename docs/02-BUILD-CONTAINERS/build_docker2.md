@@ -52,6 +52,6 @@ The command returns the following result:
   {"repositories":["batch","curam","mqserver","xmlserver","ihs"]}
 ```
 
-Note: When you shut down Minikube, you might need to repush the Docker images to the registry.
+_**NOTE:**_ When you shut down Minikube, you might need to repush the Docker images to the registry.
 
 For more information about the Docker Registry HTTP API, see [Docker Registry HTTP API V2](https://docs.docker.com/registry/spec/api/).

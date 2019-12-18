@@ -1,5 +1,19 @@
 # Troubleshooting problems
 
+## Log Collection
+
+To copy logs from container to the host
+
+```shell
+docker cp <containerId>:/file/path/within/container /host/path/target
+```
+
+If you wish the navigate the docker to find log files you can do so with.
+
+```shell
+docker exec -it [container-id] bash
+```
+
 ## Errors in the Docker Registry
 
 The Docker registry can be a source of errors, which might occur when you run `docker push` commands. You might see errors like the following:
@@ -23,4 +37,4 @@ The command should return the following result:
 
 `{"repositories":["batch","curam","mqserver","xmlserver"]}`
 
-_Note_ An empty repository returns: `{"repositories":[]}`
+_**NOTE:**_ An empty repository returns: `{"repositories":[]}`
