@@ -1,0 +1,74 @@
+###############################################################################
+# Copyright 2019 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+global:
+  images:
+    registry: &imageRegistry minikube.local:5000
+    pullPolicy: Always
+  imagePullSecret:
+    registry: *imageRegistry
+  xmlserver:
+    port: 1800
+  apps:
+    common:
+      runAs: 1001
+      port: 8443
+      serviceType: NodePort
+      volumes:
+        - name: dbconn-cm
+          mountPath: /config/adc_conf/server_resources_jdbc.xml
+          subPath: server_resources_jdbc.xml
+        - name: log4j-cm
+          mountPath: /opt/log4j
+        - name: endpoints-cm
+          mountPath: /config/adc_conf/server_endpoints.xml
+          subPath: server_endpoints.xml
+        - name: logging-cm
+          mountPath: /config/adc_conf/server_logging.xml
+          subPath: server_logging.xml
+        - name: server-cm
+          mountPath: /config/server.xml
+          subPath: server.xml
+    config:
+      curam:
+        enabled: true
+        readinessPath: /Curam
+        ingressPath: /Curam
+        resources:
+          limits:
+            cpu: 4
+            memory: 4Gi
+          requests:
+            cpu: 4
+            memory: 4Gi
+  database:
+    type: "db2"
+    hostname: "dbhostname"
+    dbName: "DATABASE"
+    serviceName: ""
+    username: "db2admin"
+    password: "db2admin"
+    spm_psw: "spmEncryptedDBPassword"
+    wlp_psw: "xorEncodedDBPassword"
+    ssl:
+      enabled: false
+      secretName: 'secretName'
+
+tls:
+  secretName: mq-secret
+
+nameOverride: ""
+fullnameOverride: ""

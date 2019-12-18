@@ -1,2 +1,5 @@
-# spm_containerization
-This repository contains artifacts to assist IBM Cúram SPM customers in their journey to Kubernetes
+# IBM Cúram SPM containerisation assets
+
+This repository contains the assets and the runbook to follow to containerized SPM.
+
+The runbook is available at this URL: https://pages.github.ibm.com/wh-curamspm-devops/containerisation-assets/

@@ -1,0 +1,19 @@
+{{- with .Values.global.ihs }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ihs.fullname" $ }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+{{ include "ihs.labels" $ | indent 4 }}
+spec:
+  type: {{ .serviceType | default "NodePort" }}
+  ports:
+
+    - port: {{ $.Values.global.ihs.servicePort | default 443 }}
+      targetPort: {{ $.Values.global.ihs.servicePort | default 443 }}
+  selector:
+    app.kubernetes.io/name: {{ include "ihs.fullname" $ }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+{{ end }}

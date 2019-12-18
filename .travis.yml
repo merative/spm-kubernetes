@@ -1,0 +1,35 @@
+language: node_js
+node_js:
+  - "8"
+
+group: bluezone
+dist: xenial
+
+install:
+  - npm install -g gitbook-cli markdownlint-cli
+  - gitbook install
+
+script:
+  - markdownlint docs
+  - gitbook build
+
+deploy:
+  - provider: pages
+    skip_cleanup: true
+    local_dir: _book
+    github_token: $GITHUB_TOKEN
+    github_url: github.ibm.com
+    committer_from_gh: true
+    target_branch: gh-pages
+    on:
+      branch: master
+  - provider: pages
+    skip_cleanup: true
+    local_dir: _book
+    repo: wh-curamspm-devops/vnext-assets
+    github_token: $GITHUB_TOKEN
+    github_url: github.ibm.com
+    committer_from_gh: true
+    target_branch: master
+    on:
+      branch: next-release

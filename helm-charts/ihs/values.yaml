@@ -1,0 +1,39 @@
+# Default values for fat-spm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+#    prodConfig: v75CrossSolutions
+#
+#    prodConfig: v75PlatformExProd
+#
+
+global:
+  images:
+    registry: &imageRegistry minikube.local:5000
+    pullPolicy: Always
+  ihs: 
+    servicePort: 443
+    serviceType: NodePort
+    config: 
+      readinessPath: /CuramStatic
+      ingressPath: /CuramStatic
+  imagePullSecret:
+    registry: *imageRegistry
+  resources:
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 1
+      memory: 1Gi
+  
+  ingress:
+    enabled: true
+    hostname: minikube.local
+
+nameOverride: ""
+fullnameOverride: ""
