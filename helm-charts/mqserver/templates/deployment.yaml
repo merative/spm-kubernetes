@@ -1,0 +1,152 @@
+{{ $apps := .Values.global.apps.config }}
+{{ $pvcs := .Values.global.mq.pvcs }}
+
+{{- range $name, $app := $apps }}
+{{- if $app.enabled }}
+---
+###############################################################################
+# Copyright 2019 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mqserver.fullname" $ }}-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+{{ include "mqserver.labels" $ | indent 4 }}
+spec:
+  # replicas: {{ .replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "mqserver.fullname" $ }}-{{ $name }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "mqserver.fullname" $ }}-{{ $name }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+    spec:
+      restartPolicy: {{ .restartPolicy | default "Always" }}
+      {{- if $.Values.global.imagePullSecret.username }}
+      imagePullSecrets:
+        - name: {{ $.Release.Name }}-pull-secret
+      {{- end }}
+      volumes:
+        - name: mqsc-cmds
+          configMap:
+            name: {{ $.Release.Name }}-mq-config
+        - name: modified-cmds
+          emptyDir: {}
+        {{- if $.Values.tls.secretName }}
+        - name: service-certs
+          secret:
+            secretName: {{ $.Release.Name }}-{{ $.Values.tls.secretName }}
+        {{- end}}
+      initContainers:
+        - name: set-mq-conname
+          image: ibmjava:8-sdk
+          command:
+            - /bin/sh
+            - -c
+            - >
+              \cp /mnt/mqsc/20-config.mqsc /mnt/mod-mqsc/ ;  sed -i "s/CONNAME('')/CONNAME('{{ $.Release.Name }}-mqserver-{{ $name }}')/" /mnt/mod-mqsc/20-config.mqsc
+          volumeMounts:
+          - name: mqsc-cmds
+            mountPath: /mnt/mqsc/20-config.mqsc
+            subPath: config.mqsc
+          - name: modified-cmds
+            mountPath: /mnt/mod-mqsc
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: {{ $.Values.global.images.registry }}/mqserver:latest
+          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+          env:
+            - name: LICENSE
+              value: {{ $.Values.license }}
+            - name: MQ_QMGR_NAME
+              value: {{ $.Values.global.mq.queueManager.name | default "QM1" }}
+            # - name: MQ_MULTI_INSTANCE
+            #   value: "{{ $.Values.global.mq.queueManager.multiInstance | default false }}"
+            - name: LOG_FORMAT
+              value: {{ $.Values.log.format | default "basic" }}
+            - name: MQ_ENABLE_METRICS
+              value: "{{ $.Values.global.mq.metrics.enabled | default false }}"
+            - name: DEBUG
+              value: "{{ $.Values.log.debug | default false }}"
+            - name: MQ_EPHEMERAL_PREFIX
+              value: "/run/mqm"
+            - name: MQ_DEV
+              value: "false"
+            - name: MQ_ADMIN_PASSWORD
+              value: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
+            {{- if $.Values.global.mq.queueManager.secret.appPasswordKey }}
+            - name: MQ_APP_PASSWORD
+              value: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
+            {{- end }}
+          ports:
+            - containerPort: 1414
+            - containerPort: 9443
+            - containerPort: 9157
+          # Set liveness probe to determine if the queue manager is running
+          livenessProbe:
+            exec:
+              command:
+              - chkmqhealthy
+            initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
+          # Set readiness probe to determine if the MQ listener is running
+          readinessProbe:
+            exec:
+              command:
+              - chkmqready
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+          securityContext:
+            seLinuxOptions:
+              type: spc_t
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 888
+            privileged: false
+            capabilities:
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
+                - AUDIT_WRITE
+                - DAC_OVERRIDE
+              drop:
+                - ALL
+          {{- with $.Values.global.mq.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: modified-cmds
+              mountPath: /etc/mqm/20-config.mqsc
+              subPath: 20-config.mqsc
+            {{- if $.Values.tls.secretName }}
+            - name: service-certs
+              mountPath: "/etc/mqm/pki/keys/ibmwebspheremqqm1"
+              readOnly: true
+            {{- end }}
+{{- end }}
+{{- end }}

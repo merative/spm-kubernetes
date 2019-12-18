@@ -1,0 +1,41 @@
+{{- with .Values.global.ihs }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ihs.fullname" $ }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+{{ include "ihs.labels" $ | indent 4 }}
+spec:
+  replicas: {{ .replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ihs.fullname" $ }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ihs.fullname" $ }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+    spec:
+      {{- if .runAs }}
+      securityContext:
+        runAsUser: {{ .runAs }}
+      {{- end }}
+      {{- if $.Values.global.imagePullSecret.username }}
+      imagePullSecrets:
+        - name: {{ $.Release.Name }}-pull-secret
+      {{- end }}
+      restartPolicy: {{ .restartPolicy | default "Always" }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: {{ $.Values.global.images.registry }}/ihs:latest
+          imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+          ports:
+            - containerPort: {{ $.Values.global.ihs.servicePort | default 443 }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{ end }}

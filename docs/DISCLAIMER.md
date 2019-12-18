@@ -1,0 +1,17 @@
+# Disclaimer
+
+This material is intended for INTERNAL USE only.
+
+This runbook is current as of the initial date of publication and may be changed by IBM at any time.
+
+THE INFORMATION IN THIS RUNBOOK IS PROVIDED “AS IS” WITHOUT ANY WARRANTY, EXPRESS OR IMPLIED, INCLUDING WITHOUT ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND ANY WARRANTY OR CONDITION OF NON-INFRINGEMENT.
+IBM products are warranted according to the terms and conditions of the agreements under which they are provided.
+
+This runbook is intended for general guidance only. It is not intended to be a substitute for detailed research or the exercise of professional judgment.
+IBM shall not be responsible for any loss whatsoever sustained by any organization or person who relies on this material.
+
+The data used in this runbook may be derived from third-party sources and IBM does not independently verify, validate or audit such data.
+The results from the use of such data are provided on an “as is” basis and IBM makes no representations or warranties, express or implied.
+
+The installation steps described in this document are restricted to development environments only and must not be used in production environments.
+Microsoft Windows is known not to work as a supported target platform for this installation.

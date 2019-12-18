@@ -1,0 +1,83 @@
+###############################################################################
+# Copyright 2019 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}-batch
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "batch.labels" . | indent 4 }}
+spec:
+  schedule: "{{ .Values.batch.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.batch.successfulJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.batch.backoffLimit }}
+      template:
+        spec:
+          {{- if .Values.global.imagePullSecret.username }}
+          imagePullSecrets:
+            - name: {{ .Release.Name }}-pull-secret
+          {{- end }}
+          volumes:
+            - name: bootstrap-file
+              configMap:
+                name: {{ .Release.Name }}-bootstrap-cm
+          {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+            - name: keystore-volume
+              emptyDir: {}
+            - name: db2-cert
+              secret:
+                secretName: {{ $.Values.global.database.ssl.secretName }}
+          initContainers:
+          - name: import-db2-cert
+            image: ibmjava:8-sdk
+            env:
+              - name: certfile
+                value: /mnt/certificates/{{ $.Values.global.database.ssl.certFile | default "db2admin.arm" }}
+              - name: keystore_jks
+                value: /mnt/keystores/db2TrustStore.jks
+            command:
+              - /bin/sh
+              - -c
+              - keytool -import -trustcacerts -noprompt -file $certfile -keystore $keystore_jks -storepass changeit -storetype jks
+            volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: db2-cert
+              mountPath: /mnt/certificates
+          {{- end }}
+          containers:
+          - name: running-batch
+            image: {{ .Values.global.images.registry }}/batch:latest
+            imagePullPolicy: {{ .Values.global.images.pullPolicy }}
+            command:
+              - build.sh
+              - runbatch
+            {{- with .Values.batch.programName }}
+            args:
+              - -Dbatch.program={{ . }}
+            {{- end }}
+            volumeMounts:
+              - name: bootstrap-file
+                mountPath: /opt/ibm/Curam/release/project/properties/Bootstrap.properties
+                subPath: Bootstrap.properties
+              {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+              - name: keystore-volume
+                mountPath: /mnt/keystores
+              {{- end }}
+          restartPolicy: Never

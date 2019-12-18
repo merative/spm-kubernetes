@@ -1,0 +1,18 @@
+###############################################################################
+# Licensed Materials - Property of IBM.
+# Copyright IBM Corporation 2019. All Rights Reserved.
+# U.S. Government Users Restricted Rights - Use, duplication or disclosure
+# restricted by GSA ADP Schedule Contract with IBM Corp.
+#
+# Contributors:
+#  IBM Corporation
+###############################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-customsql
+  namespace: {{ .Release.Namespace }}
+data:
+  custom.sql: |
+    UPDATE PROPERTIES SET VALUE='{{ $.Release.Name }}-xmlserver' WHERE NAME='curam.xmlserver.host';
+    UPDATE PROPERTIES SET VALUE='{{ $.Values.global.xmlserver.port }}' WHERE NAME='curam.xmlserver.port';
