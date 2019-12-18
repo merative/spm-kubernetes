@@ -24,8 +24,8 @@ git clone git@github.com/IBM/spm-containerization.git
 The Git clone command creates a folder that is named `spm-containerization` in your current path. This folder is referred to `$SPM_HOME` for the remainder of this runbook. The `$SPM_HOME` folder contains three subfolders:
 
 * *docs:* Contains the source files for this runbook, do not modify the source files.
-* *dockerfiles:* Contains the docker files and other artifacts that are used to generate the containers. For more information, see [Building Docker images](../02-BUILD-CONTAINERS/build_docker.md).
-* *helm-charts:* Contains the charts that are used to deploy the containers on Kubernetes. For more information, see [Generate Docker containers](../03-DEPLOYMENT/hc_preparation.md).
+* *dockerfiles:* Contains the docker files and other artifacts that are used to generate the containers. For more information, see [Setting up the Docker context](../02-BUILD-CONTAINERS/build_docker.md).
+* *helm-charts:* Contains the charts that are used to deploy the containers on Kubernetes. For more information, see [Preparing Helm Charts](../03-DEPLOYMENT/hc_preparation.md).
 
 You must create a local branch if you want to make local modifications to any of these files,
 so you can continue to pull the latest code from the master branch without accidentally overriding any local change.
