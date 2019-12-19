@@ -6,7 +6,7 @@ The SPM release that supports deployment to Kubernetes requires running a base l
 
 1. SPM 7.0.5.0 (full SPM platform installer from [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html))
 1. SPM 7.0.8.0 (delta installer from [Fix Central](https://www-945.ibm.com/support/fixcentral/))
-1. Early Adapter Cloud Enablement is available from [Fix Central](https://www-945.ibm.com/support/fixcentral/). To access the preview, contact your local IBM Account executive.
+1. Enablement of SPM for Cloud deployment (Early Release) is available from [Fix Central](https://www-945.ibm.com/support/fixcentral/). To access the preview, contact your local IBM Account executive.
 
 ## Installing SPM
 
