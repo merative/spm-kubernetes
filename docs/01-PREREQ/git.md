@@ -11,14 +11,10 @@ Git is the distributed version control system on which GitHub is built. Usually 
 
 ## Obtain the code
 
-The [spm-containerization](https://github.com/IBM/spm-containerization) repository is stored in an Enterprise instance of GitHub that requires extra security measures.
-You cannot clone a repository by using a username and password. Instead, you must configure an ssh key pair to be able to download the repo.
-The download procedure is detailed in [Connecting to GitHub with SSH](https://help.github.com/en/enterprise/2.16/user/authenticating-to-github/connecting-to-github-with-ssh).
-
-When the ssh keys are configured, clone the repository locally by using the following command:
+Clone the repository locally by using the following command:
 
 ```shell
-git clone git@github.com/IBM/spm-containerization.git
+git clone https://github.com/IBM/spm-containerization
 ```
 
 The Git clone command creates a folder that is named `spm-containerization` in your current path. This folder is referred to `$SPM_HOME` for the remainder of this runbook. The `$SPM_HOME` folder contains three subfolders:
