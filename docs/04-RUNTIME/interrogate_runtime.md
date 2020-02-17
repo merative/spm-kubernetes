@@ -14,7 +14,7 @@ Because Minikube is a minimal environment, the dashboard addon doesn't have the 
 
 Use the dashboard to list the Kubernetes objects, including the status and names of the pods, and more information such as how long the pods are running.
 
-Start the dashboard by running the following shell script:
+Start the dashboard by running the following command:
 
 ```shell
 minikube dashboard
@@ -37,7 +37,7 @@ kubectl get pods -w
 
 This command lists the names of all the pods and their status.
 
-When a pod is running, you can read the log of that pod by running the following shell script:
+When a pod is running, you can read the log of that pod by running the following command:
 
 ```shell
 kubectl logs pod-name
@@ -67,7 +67,7 @@ THe command opens a `bash` session within the pod.
 ## Modify Kubernetes object
 
 You can also modify Kubernetes objects at run time by running the `edit` command. Use this command carefully because it might modify the health of the system.
-For example, to modify a deployment object called `deploymentname`, run the following shell script:
+For example, to modify a deployment object called `deploymentname`, run the following command:
 
 ```shell
 kubectl edit deployment/deploymentname

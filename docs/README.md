@@ -36,7 +36,7 @@ The development path is described in figure 2.
 Note: The implementation of SPM that is described in this runbook uses the following .ear files only:
 
 * curam.ear
-* curamServerCode.ear
+* CuramServerCode.ear
 
 The document assumes that the steps to build the containers and run MiniKube are run on a development machine, preferably a Red Hat or OSX machine.
-The steps related to [build the Cúram environment](01-PREREQ/spm-build) can be executed on a separate machine.
+The steps related to [Building the IBM Cúram Social Program Management application](01-PREREQ/spm-build) can be executed on a separate machine.

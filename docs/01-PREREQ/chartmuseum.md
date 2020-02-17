@@ -8,45 +8,50 @@ Use ChartMuseum to develop, test, and deploy locally before you distribute the c
 
 ## Installing ChartMuseum in a Docker container
 
-ChartMuseum can run in a Docker container by using the `docker run` command when the docker container is created and entered in a folder that stores the charts.
+ChartMuseum can run in a Docker container by using the `docker run` command when the docker container is created.
 
 Take the following steps:
 
-* Define and create the folder to contain the chart museum in your preferred path. This path is referred to as `$CHART_MUSEUM` for the rest of the document.
+* Start a Docker container that is accessible locally on port 8080:
 
 ```shell
-mkdir -p $CHART_MUSEUM/charts
-```
-
-* Start a Docker container that mounts the `$CHART_MUSEUM/charts` folder and is accessible locally on port 8080:
-
-```
 docker run --rm -d --name chartmuseum \
   -p 8080:8080 \
-  -v $CHART_MUSEUM/charts:/charts \
   -e DEBUG=true \
   -e STORAGE=local \
-  -e STORAGE_LOCAL_ROOTDIR=/charts \
+  -e STORAGE_LOCAL_ROOTDIR=/tmp/charts \
   chartmuseum/chartmuseum:v0.8.1
 ```
 
 * Run the `docker logs` command to view the Chart Museum logs:
 
-```
+```shell
 docker logs chartmuseum
 ```
 
 ### Testing ChartMuseum connectivity
 
-Run the following command to test connectivity. `127.0.0.1` is the localhost IP address:
+Run the following command to test connectivity. `127.0.0.1` is the localhost IP address.
 
-```
+On OSX/Linux:
+
+```shell
 curl http://127.0.0.1:8080/index.yaml
 ```
 
-You see something like the following example:
+On Windows:
 
+```powershell
+Invoke-RestMethod http://$(minikube ip):8080/index.yaml
+# OR
+Invoke-RestMethod http://$(docker-machine ip):8080/index.yaml
 ```
+
+> **Note:** On Windows, the Docker Engine can run in a dedicated `docker-machine`, or can be reused from the Minikube VM
+
+You will see something like the following example:
+
+```yaml
 apiVersion: v1
 entries: {}
 generated: "2019-06-17T10:55:37Z"
@@ -55,7 +60,14 @@ serverInfo: {}
 
 ## Provisioning Charts
 
-When ChartMuseum is running, you can copy the compressed tar files that are produced by Helm.
+When ChartMuseum is running, you can copy the compressed `tgz` files that are produced by Helm, or by using the [Helm Push](https://github.com/chartmuseum/helm-push) plugin (recommended approach).
+
+```shell
+helm plugin install https://github.com/chartmuseum/helm-push
+```
+
+> **Note:** On Windows, the Helm Push plugin must be installed from a Git Bash window.
+
 Creating these files is covered later in the runbook when you run the `helm package` command. For more information, see [Preparing Helm Charts](../03-DEPLOYMENT/hc_preparation.md).
 
 ## Configure Helm to access the local repository

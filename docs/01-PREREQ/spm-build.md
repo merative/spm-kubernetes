@@ -1,6 +1,6 @@
 # Building the IBM Cúram Social Program Management application
 
-_**Note:**_ Before proceeding with the following, ensure that the steps defines in [Create SPM Database](create_spm_db.md) are completed. This action should only be a one off set-up.
+_**Note:**_ Before proceeding with the following, ensure that the steps defines in [Create the SPM Database](create_spm_db.md) are completed. This action should only be a one off set-up.
 
 Building Social Program Management (SPM) for deployment to Kubernetes is similar to on-premises SPM builds with some differences.
 Notably, because the application server for the cloud environment is IBM WebSphere Liberty some target names are changed or are not supported.
@@ -9,7 +9,7 @@ Take the following steps to build SPM:
 
 ## Source the SPM environment variables
 
-Enter the directory where SPM is installed and source the SetEnvironment script; for example, in a shell script:
+Enter the directory where SPM is installed and source the SetEnvironment script; for example:
 
 ```shell
 cd /opt/IBM/Curam/Development
@@ -44,7 +44,7 @@ curam.webservices.httpport=10102
 curam.server.port=2809
 ```
 
-To confirm your configuration, run the following shell script:
+To confirm your configuration, run the following commands:
 
 ```shell
 cd $SERVER_DIR
@@ -72,7 +72,7 @@ Add the following to `curam-config.xml`:
 
 ## Build the SPM server
 
-To build the SPM server, run the following shell script:
+To build the SPM server, run the following command:
 
 ```shell
 ./build.sh clean server
@@ -80,7 +80,7 @@ To build the SPM server, run the following shell script:
 
 ## Build the database
 
-To build the database, run the following shell script:
+To build the database, run the following command:
 
 ```shell
 ./build.sh database prepare.application.data
@@ -88,7 +88,7 @@ To build the database, run the following shell script:
 
 ## Build the SPM client
 
-To build the client, run the following shell script:
+To build the client, run the following commands:
 
 ```shell
 cd $CLIENT_DIR
@@ -97,7 +97,7 @@ cd $CLIENT_DIR
 
 ## Build `StaticContent.zip`
 
-To build `StaticContent.zip`, run the following shell script:
+To build `StaticContent.zip`, run the following commands:
 
 ```shell
 cd $CLIENT_DIR
@@ -105,7 +105,7 @@ cd $CLIENT_DIR
 ```
 
 The `StaticContent.zip` file that is created is in the `$CLIENT_DIR/build` folder and is needed for the steps in
-[Building Docker images](../02-BUILD-CONTAINERS/build_docker.md).
+[Setting up the Docker context](../02-BUILD-CONTAINERS/build_docker.md).
 
 ### Build the Cúram EAR files for WebSphere Liberty
 
@@ -115,7 +115,7 @@ Modify the `requireServer` setting in the `$SERVER_DIR/project/config/deployment
 sed -i  's/name="Curam" requireServer="true"/name="Curam" requireServer="false"/g' $SERVER_DIR/project/config/deployment_packaging.xml
 ```
 
-To build the application EAR files for WebSphere Liberty, run the following shell script:
+To build the application EAR files for WebSphere Liberty, run the following commands:
 
 ```shell
 cd $SERVER_DIR
@@ -125,7 +125,7 @@ cd $SERVER_DIR
 
 ## Package a release.zip file
 
-To package the build into a `release.zip` file, run the following shell script:
+To package the build into a `release.zip` file, run the following command:
 
 ```shell
 ./build.sh release -Dcreate.zip=true

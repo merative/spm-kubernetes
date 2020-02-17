@@ -4,7 +4,7 @@ Similar to batch processes, XML server usage is limited in this deployment. Howe
 
 To connect the XML server to the application server, change the `curam.xmlserver.host` in the system to point to the service name that you created during deployment.
 
-To verify the service name, run the following shell script:
+To verify the service name, run the following command:
 
 ```shell
 kubectl get services
