@@ -6,7 +6,7 @@ The SPM release that supports deployment to Kubernetes requires running a base l
 
 1. SPM 7.0.5.0 (full SPM platform installer from [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html))
 1. SPM 7.0.8.0 (delta installer from [Fix Central](https://www-945.ibm.com/support/fixcentral/))
-1. Enablement of SPM for Cloud deployment (Early Release) is available from [Fix Central](https://www-945.ibm.com/support/fixcentral/). To access the preview, contact your local IBM Account executive.
+1. Early Adapter Cloud Enablement is available from [Fix Central](https://www-945.ibm.com/support/fixcentral/). To access the preview, contact your local IBM Account executive.
 
 ## Installing SPM
 
@@ -22,14 +22,22 @@ Run each of the installers (full or delta) using the following steps:
 
 This command starts the SPM (izPack) installer.
 
-* Go through the installation dialogs as follows:
+_Note the following:_
 
+* Some of the dialogs are not displayed by the EA installer.
+* If _Select the language of the application_ is left blank _English - United States_ is the default.
+* If the language dialog is empty,  clicking _Next_ installs the default English language.
+* If you require additional languages, restart the installer until the dialog is displayed.
+
+Go through the installation dialogs as follows:
+
+* Click _Next_.:
 * Click _Next_ on the Welcome screen.
   * The value for _Select the installation path:_ defaults to: `./IBM/Curam/Development`
     Change this value as needed, be aware that the default value appends to the working directory from where you ran the Java command.
     * Click _Next_.
     * Respond to the dialog to create or reuse the installation folder.
-  * For _Select the language of the application_, select a language. Note: If left blank _English - United States_ is the default.
+  * For _Select the language of the application_, select a language.
     * Click _Next_.
   * For _Please select the license types for which you are licensed:_ select the appropriate type(s)
     * Click _Next_.

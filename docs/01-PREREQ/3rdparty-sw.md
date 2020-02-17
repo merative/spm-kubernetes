@@ -1,21 +1,27 @@
 # Base third-party software
 
-## IBM Installation Manager
+Install the "base" third-party software that is needed to build IBM Cúram Social Program Management and run Liberty.
+
+## IBM WebSphere Liberty
+
+The following sections show you how to download and install WebSphere Liberty,
+
+### IBM Installation Manager
 
 Download and install [1.8.9.6 Installation Manager](https://www-945.ibm.com/support/fixcentral/swg/downloadFixes?parent=ibm%7ERational&product=ibm/Rational/IBM+Installation+Manager&release=1.8.9.6&platform=All&function=fixId&fixids=1.8.9.6-IBMIM-*-X86_64*,1.8.9.6-IBMIM-WIN64*&includeRequisites=1&includeSupersedes=0&downloadMethod=http).
 
-## IBM WebSphere Liberty licensing
+### IBM WebSphere Liberty licensing
 
 If you are an existing WebSphere customer, you are entitled to access a WebSphere Liberty license. If you are not an existing WebSphere customer, you can download a 60-day trial of Liberty. For more information, see [IBM WebSphere Liberty: Pricing](https://www.ibm.com/cloud/websphere-liberty/pricing).
 
-## IBM WebSphere Liberty
+### Install IBM WebSphere Liberty
 
 WebSphere Liberty 19.0.0.6 is the only application server that supports SPM on Kubernetes and is therefore required. Download and install WebSphere Liberty 19.0.0.6.
 
 * Browse to [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html), search for and download one of the following packages:
 
-1. **IBM WebSphere Application Server Liberty Network Deployment**
-1. **IBM WebSphere Application Server Liberty Base**
+1. **IBM WebSphere Application Server Liberty Network Deployment (part number CND1NML)**
+1. **IBM WebSphere Application Server Liberty Base (part number CNXH7ML)**
 
 If you are unsure of what installer to use, contact your IBM Account Executive.
 
@@ -28,20 +34,9 @@ Install WebSphere Liberty as described in [Installing Liberty](https://www.ibm.c
 
 When installed, create an environment variable `WLP_HOME` that points to the Liberty installation directory. For example:
 
-    ```shell
-    WLP_HOME=/opt/IBM/WebSphere/Liberty
-    ```
-
-## IBM MQ Resource Adapter
-
-MQ is required for Liberty JMS support, therefore you must install the MQ Resource Adapter.
-
-Browse to:
-[Fix Central](https://www-945.ibm.com/support/fixcentral/swg/downloadFixes?parent=ibm%2FWebSphere&product=ibm/WebSphere/WebSphere+MQ&release=All&platform=All&function=fixId&fixids=9.1.3.0-IBM-MQ-Java-InstallRA&includeRequisites=1&includeSupersedes=0&downloadMethod=http)
-to download the 9.1.3.0-IBM-MQ-Java-InstallRA.jar file.
-
-You are prompted to log in, if an error occurs refresh the Fix Central link. Then, go to the download page, review the license and if you agree with its terms, select 'I agree'.
-When the download completes, copy `9.1.3.0-IBM-MQ-Java-InstallRA.jar` to `$SPM_HOME/dockerfiles/Liberty/content`.
+```shell
+WLP_HOME=/opt/IBM/WebSphere/Liberty
+```
 
 ## Java
 

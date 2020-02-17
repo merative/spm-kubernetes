@@ -30,3 +30,9 @@ For example:
 The root cause is users not clearing the browser cache after the application is redeployed. Users might have old, local cookie files.
 
 However, after a redeployment or an upgrade, the application does not recognize the cookies that are presented to it by the computer, which causes the error messages in the logs.
+
+* **Limitations when using the Minikube none driver**
+
+There are a number of limitations associated with the Minikube none driver that are documented on the [Minikube site](https://minikube.sigs.k8s.io/docs/reference/drivers/none/). You must evaluate the impacts of these limitations for your implementation.
+
+However, the unavailability of the `minikube ssh` command might make it difficult to analyze and resolve problems and issues. For example, switching to the kvm2 driver enables the use of `minikube ssh` and resolves issues with the Docker Registry.

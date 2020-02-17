@@ -1,24 +1,32 @@
 # Deploying Helm charts
 
-When the Helm charts are uploaded to the repository, you can deploy the application by using the following shell script:
+When the Helm charts are uploaded to the repository, you can deploy the application by using one of the following commands:
 
 ```shell
-helm install spm --name releaseName
+# Helm v2
+helm install local-development/spm --name releaseName
+
+# Helm v3 ('releaseName' is mandatory in this case)
+helm install releaseName local-development/spm
 ```
 
 Where `releaseName` is the name of this Helm release. For example, MyRelease-1.0.
 If you do not specify a name, Helm auto generates one. All the names of the Kubernetes objects are created with `releaseName-` as prefix.
 
 The `helm install` command installs the Helm charts in the order in which they were loaded in the repository, with all the values defined in the files.
-However, as described in [Building Docker containers](../02-BUILD-CONTAINERS/build_docker.html), you can override the configuration value, run the following shell script:
+However, as described in [Setting up the Docker context](../02-BUILD-CONTAINERS/build_docker.html). You can override the configuration value by running of the following commands:
 
 ```shell
+# Helm v2
 helm install local-development/spm --name releaseName -f override-values.yaml
+
+# Helm v3
+helm install releaseName local-development/spm -f override-values.yaml
 ```
 
 ## Status of the system
 
-The `helm install` command shows all the Kubernetes objects and also runs the containers. You can track the status of the containers on real time by running the following shell script:
+The `helm install` command shows all the Kubernetes objects and also runs the containers. You can track the status of the containers on real time by running the following command:
 
 ```shell
 kubectl get pods -w
@@ -29,7 +37,7 @@ The command lists the pods and their status, each status change is on a new line
 Some of the pods have initialization steps, so they are not shown until satisfied.
 
 The output of the `kubectl get pods` command provides the names of the pods that you can use to substitute for `podname` in the following example commands.
-For example, the Liberty pod that contains SPM code is named that uses a pattern of: `releaseName-apps-curam-`).
+For example, the Liberty pod that contains SPM code is named that uses a pattern of: `releaseName-apps-curam-`.
 
 You can also describe a pod by running the following command:
 
@@ -37,7 +45,7 @@ You can also describe a pod by running the following command:
 kubectl describe pod/pod name
 ```
 
-You can also read the log, when the status is `running` by running the following shell script:
+You can also read the log, when the status is `running` by running the following command:
 
 ```shell
 kubectl logs -f pod/podname
@@ -45,17 +53,15 @@ kubectl logs -f pod/podname
 
 ## Accessing the application
 
-To access the application, a URL is provided to access the pod within the cluster. Usually this access is done by using an ingress object, for example:
+To access the application, a URL is provided to access the pod within the cluster. Usually this access is done by using an ingress object, for example: `https://minikube.local/Curam`
 
-`https://minikube.local/cúram`
-
-However, on Minikube there is a more convenient way to access the application. To access the application on Minikube, you must the service to which you want to connect. Run the following shell script:
+The application may also be accessed using a Service Port directly. To do so, identify the name of the service, to which you want to connect. Run the following command:
 
 ```shell
 kubectl get services
 ```
 
-The SPM application service should be called `releaseName-apps-curam`. For example, if you run the `helm install` command with a service name of `spm` you can then get the SPM application URL by running the following shell script:
+The SPM application service should be called `releaseName-apps-curam`. For example, if you run the `helm install` command with a service name of `spm` you can then get the SPM application URL by running the following command:
 
 ```shell
 minikube service spm-apps-curam --url

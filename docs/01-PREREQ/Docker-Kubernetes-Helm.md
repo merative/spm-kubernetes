@@ -5,24 +5,28 @@
 [Docker](https://www.docker.com/get-started) is an open source tool that creates, deploys, and runs applications by using containers.
 Install Docker by following the instructions in [docker.com](https://docs.docker.com/install/overview/). You can follow this runbook by using any Docker edition, including the community edition.
 
-_**NOTE:**_ Docker version used to verify this runbook: 19.03.5
+> **Note:** Docker versions used to verify this runbook:
+>
+> * Docker Engine: 19.03.5
+> * Docker Desktop for Windows: 2.1.0.5
+> * Docker Desktop for Mac: 2.1.0.5
 
 ## Kubernetes and Minikube
 
-[Kubernetes](https://kubernetes.io/) (also referred to as "K8s") is an open source system for automating deployment, scaling, and management of containerized applications.
-You will use the command-line tool, `kubectl` extensively when you follow the steps that are described in this runbook. `kubectl` installation steps are described in [kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+Kubernetes (also referred to as "K8s" and is described at a high-level on the [Kubernetes home page](https://kubernetes.io/)) is an open source system for automating deployment, scaling, and management of containerized applications.
+You will use the command-line tool, `kubectl` extensively when you follow the steps that are described in this runbook. `kubectl` download and installation steps are described on [kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-Minikube is a variant of Kubernetes that runs a single-node cluster inside a virtual machine (VM) on your laptop.
+Minikube is a variant of Kubernetes that runs a single-node cluster inside a virtual machine (VM) on your laptop. See [next page](minikube.md) for Minikube configuration details for SPM.
 
-In this guide, the kubectl command is used with [Minikube](minikube.md).
-
-_**NOTE:**_ Kubernetes version used to verify this runbook: 1.14.7
-
-_**NOTE:**_ MiniKube version used to verify this runbook: 1.6.0
+> **Note:** The following versions were used to verify this runbook:
+>
+> * kubectl: 1.14.8
+>   * **Important**: Take note of the version used. This will be required when creating a new Minikube environment.
+> * Minikube: 1.6.0
 
 ## Helm V2
 
-_**NOTE:**_ Helm version used to verify this runbook: 2.16.1. All the Helm commands that are used in this runbook are based on Helm version 2.
+> **Note:** Helm version used to verify this runbook: 2.16.1. All the Helm commands that are used in this runbook are based on Helm version 2.
 
 [Helm](https://helm.sh/) is a package manager that helps you to find, share, and use software that is built for Kubernetes.
 Helm streamlines the installation and management of Kubernetes applications, it can be thought of as the equivalent of the apt, yum, or homebrew utilities for Kubernetes.
