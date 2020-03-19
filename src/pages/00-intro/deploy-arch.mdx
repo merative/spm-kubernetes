@@ -1,0 +1,67 @@
+---
+title: Deployment architecture
+description: Deployment architecture
+---
+
+This runbook is designed for first-time users of Helm, Minikube, and Kubernetes.
+
+Minikube is a variant of Kubernetes that runs a single-node cluster inside a virtual machine (VM) on your laptop.
+
+The procedure that is described uses a minimal architecture, where the intent is to get you familiar with using the main artifacts needed to run SPM on Kubernetes. Figure 1 describes the example architecture:
+
+![Example architecture](../../images/dev_workstation_architecture.png)
+<Caption>
+
+*Figure 1:* Example dev workstation architecture
+
+</Caption>
+
+The architecture is defined by a Kubernetes environment (contained in a virtual machine) that is composed of the following elements:
+
+* An IBM® WebSphere® Liberty based pod that contains the Cúram EAR file.
+* A pod with an IBM MQ Server configured as the message engine to support JMS-based deferred processing in SPM.
+* A pod that contains the XML server.
+* A pod that runs batch processes.
+
+This environment is linked to an external IBM Db2 or Oracle database.
+
+For the Kubernetes cluster, this runbook uses Minikube. Minikube can easily run on a developer computer, which is convenient for describing the application flow.
+
+Figure 2 describes the following development path.
+
+* Create a build and deployment environment for SPM.
+* Build SPM to deploy it on Kubernetes on Minikube.
+* Create the Docker® images for SPM.
+* Deploy SPM Docker images to Kubernetes on Minikube.
+* Troubleshoot SPM when deployed in Kubernetes.
+
+![Process summary](../../images/summary_process.png)
+<Caption>
+
+*Figure 2:* Process summary
+
+</Caption>
+
+<InlineNotification>
+
+**Note:** The implementation of SPM that is described in this runbook uses only the following .ear files:
+
+* Curam.ear
+* CuramServerCode.ear
+
+The scripts can be easily extended to include the other SPM applications, such as Rest or Citizen Portal.
+
+</InlineNotification>
+
+The runbook makes the following assumptions:
+
+* Steps to build the SPM containers and run Minikube are run on a development machine, preferably a Red Hat or OSX machine.
+* Steps related to [Building the IBM Cúram Social Program Management application](../01-deploy-spm/spm-build) can be executed on a separate machine.
+* Base knowledge of the Linux command line for navigating folders.
+
+<InlineNotification>
+
+**Note:** This is enablement documentation. This does not affect 3rd party software that SPM currently supports. Refer to [IBM Curam Social Program Management Support Prerequisites](https://www.ibm.com/software/reports/compatibility/clarity-reports/report/html/softwareReqsForProduct?deliverableId=4250BFF0E44711E9BBE3B807AD202AB8&osPlatforms=Linux&duComponentIds=S000#sw-3)
+ for more details.
+
+</InlineNotification>

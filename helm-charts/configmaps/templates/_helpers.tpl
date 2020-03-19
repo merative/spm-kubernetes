@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ Define Database hostname
 {{- end -}}
 
 {{/*
-SSL properties for JDBC connection in Liberty. If global.database.ssl.secretName is provided, assume it has been imported into a Trust Store
+SSL properties for JDBC connection in Liberty. If global.db2.ssl.secretName is provided, assume it has been imported into a Trust Store
 */}}
 {{- define "configmaps.ssljdbc" -}}
 {{- if .enabled }}
@@ -81,14 +81,14 @@ Liberty Datastore properties fragment
   fullyMaterializeLobData="false"
   portNumber="{{ $dbConfig.port }}"
   serverName="{{ include "configmaps.dbhostname" . }}"
-  password="{{ $dbConfig.wlp_psw }}"
-  user="{{ $dbConfig.username }}"
+  password="{{ required "XOR-encoded password is required" $dbConfig.wlp_psw }}"
+  user="{{ required "Database username is required" $dbConfig.username }}"
   {{- include "configmaps.ssljdbc" $dbConfig.ssl }}
 />
 {{- else if eq ($dbConfig.type | upper) "ORA" -}}
-<properties.oracle 
-  URL="{{ include "configmaps.oracleurl" . }}" 
-  password="{{ required "XOR-encoded password is required" $dbConfig.wlp_psw }}" 
+<properties.oracle
+  URL="{{ include "configmaps.oracleurl" . }}"
+  password="{{ required "XOR-encoded password is required" $dbConfig.wlp_psw }}"
   user="{{ required "Database username is required" $dbConfig.username }}"
 />
 {{- else -}}
@@ -118,6 +118,28 @@ db2jcc4.jar db2jcc_license_cu.jar
 ojdbc.jar
 {{- else -}}
 {{ fail ("Unsupported database type provided: " .type) }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
+*/}}
+{{- define "persistence.mountPoint" -}}
+{{- if .Values.global.apps.common.persistence.mountPoint -}}
+{{- .Values.global.apps.common.persistence.mountPoint -}}
+{{- else -}}
+{{- "/tmp/persistence" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/release_name/")
+*/}}
+{{- define "persistence.subDir" -}}
+{{- if .Values.global.apps.common.persistence.subDir -}}
+{{- .Values.global.apps.common.persistence.subDir -}}
+{{- else -}}
+{{- printf "%s" $.Release.Name -}}
 {{- end -}}
 {{- end -}}
 

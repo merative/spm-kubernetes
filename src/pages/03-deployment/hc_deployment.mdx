@@ -1,0 +1,242 @@
+---
+title: Deploying Helm charts
+description: Deploying Helm charts
+---
+
+When the Helm charts are uploaded to the repository, you can deploy the application by using one of the following commands:
+
+```shell
+# Helm v2
+helm install local-development/spm --name releasename
+
+# Helm v3 ('releasename' is mandatory for Helm v3)
+helm install releasename local-development/spm
+```
+
+<InlineNotification>
+
+**Note**: releasename should contain no capital letters.
+
+</InlineNotification>
+
+Where `releasename` is the name of this Helm release. For example, MyRelease-1.0.
+If you do not specify a name, Helm auto generates one. All the names of the Kubernetes objects are created with `releasename-` as prefix.
+
+The `helm install` command installs the Helm charts in the order in which they were loaded in the repository, with all the values defined in the files.
+However, as described in [Setting up the Docker® context](../02-build-images/setup_docker_context), you can override the configuration value by running the following shell script:
+
+```shell
+# Helm v2
+helm install local-development/spm --name releasename -f override-values.yaml
+
+# Helm v3
+helm install releasename local-development/spm -f override-values.yaml
+```
+
+### Sample `override-values.yaml` files
+
+Here are two sample override files for deploying to Minikube and to IBM® Kubernetes Service (IKS).
+
+<InlineNotification>
+
+While the Minikube configuration is sufficiently generic to be used almost as-is (given all images were built and pushed with the names outlined in the [Building Docker images](../02-build-images/build_images) section):
+
+* The IKS example requires IAM credentials for the [IBM Container Registry](https://cloud.ibm.com/docs/containers?topic=containers-registry) (`global.imagePullSecret`)
+* The [Application Load Balancer IDs](https://cloud.ibm.com/docs/containers?topic=containers-ingress_annotation#alb-id) (`ingress.annotations."ingress.bluemix.net/ALB-ID"`) to be updated.
+
+</InlineNotification>
+
+<Tabs>
+
+<Tab label="Minikube">
+<Row>
+<Column>
+
+```yaml path=minikube-values.yaml src=/resources/minikube-values.yaml
+---
+global:
+  license: '' # Set to 'accept' after reviewing all license agreements
+  images:
+    registry: minikube.local
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
+    pullPolicy: Always
+  ceApp:
+    imageLibrary: ''
+    imageName: ce-app
+    imageTag: latest
+  apps:
+    common:
+      initialDelaySeconds: 60
+      security:
+        username: SYSTEM
+    config:
+      curam:
+        enabled: true
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+      rest:
+        enabled: false
+      citizenportal:
+        enabled: false
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+ingress:
+  enabled: true
+  tlsSecretName: testkube-tls
+  generateCert: true
+  hostname: minikube.local
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="IBM Kubernetes Service">
+<Row>
+<Column>
+
+```yaml path=iks-values.yaml src=/resources/iks-values.yaml
+---
+global:
+  license: '' # Set to 'accept' after reviewing all license agreements
+  images:
+    registry: us.icr.io
+    imageLibrary: foo-library
+    imagePrefix: test_
+    imageTag: latest
+    pullPolicy: Always
+  ceApp:
+    imageLibrary: foo-library
+    imageName: ce-app
+    imageTag: latest
+  imagePullSecret:
+    registry: us.icr.io
+    username: '' # IAM username for IBM Container Registry
+    password: '' # IAM API Key for IBM Container Registry
+  database:
+    initTime: 30
+  apps:
+    common:
+      initialDelaySeconds: 60
+      security:
+        username: SYSTEM
+    config:
+      curam:
+        enabled: true
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+      rest:
+        enabled: false
+      citizenportal:
+        enabled: false
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+ingress:
+  annotations:
+    ingress.bluemix.net/ALB-ID: ''
+  enabled: true
+  hostname: foo.domain.com
+  tlsSecretName: default-us-icr-io
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+<InlineNotification>
+
+The above example of configuration for IKS will build up the full image name based on the `registry`, `imageLibrary`, `imagePrefix`, and `imageTag` options as follows: `{registry}/{imageLibrary}/{imagePrefix}curam:{imageTag}`
+
+With the given values, the resulting image name will look like this: `us.icr.io/foo-library/test_curam:latest`
+
+</InlineNotification>
+
+The license agreements for the IBM® WebSphere® Liberty and IBM WebSphere MQ images must be accepted in order to proceed with the deployment of these elements. This can be done by setting the `global.license` property to `accept`.
+
+The respective license agreements can be reviewed by running the following commands:
+
+```shell
+# IBM WebSphere Liberty
+docker run --rm -e LICENSE=view websphere-liberty:19.0.0.12-java8-ibmjava
+
+# IBM WebSphere MQ
+docker run --rm -e LICENSE=view ibmcom/mq:9.1.3.0
+```
+
+## Status of the system
+
+The `helm install` command shows all the Kubernetes objects and also runs the SPM containers. You can track the status of the SPM containers on real time by running the following command:
+
+```shell
+kubectl get pods -w
+
+NAME                                              READY  STATUS    RESTARTS  AGE
+releasename-apps-curam-consumer-595c8bf95f-zn2l5  0/1    Init 3/4  0         5m
+releasename-apps-curam-producer-6b5569c4ff-nvxtd  1/1    Running   0         5m
+releasename-apps-rest-consumer-85b4865b9d-wr6hj   0/1    Init 3/4  0         5m
+releasename-apps-rest-producer-cd8fdbbbf-j2mjj    0/1    Init 3/4  0         5m
+releasename-ce-app-7cdd64987-qx8l8                1/1    Running   0         5m
+releasename-ihs-67697ffb8b-fdsk2                  1/1    Running   0         5m
+releasename-mqserver-curam-7f45bcd64d-rlqns       1/1    Running   0         5m
+releasename-mqserver-rest-544c5b4758-pnbpz        1/1    Running   0         5m
+releasename-xmlserver-77d6d9b75d-4xr8k            1/1    Running   0         5m
+
+```
+
+The command lists the pods and their status, where each status change is on a new line.
+
+Some of the pods have initialization steps, so they are not shown until the steps are completed.
+
+The output of the `kubectl get pods` command provides the names of the pods that you can use to substitute for `podname` in the following example commands.
+For example, the Liberty pod that contains SPM code is a name that uses a pattern of: `releasename-apps-curam-`.
+
+You can also describe a pod by running the following command:
+
+```shell
+kubectl describe pod/pod name
+```
+
+You can also read the log when the status is `running`, by running the following command:
+
+```shell
+kubectl logs -f pod/podname
+```
+
+## Accessing the application
+
+To access the application, a URL is provided to access the pod within the cluster. Usually this access is done by using an ingress object, for example: `https://minikube.local/Curam`
+
+The application can also be accessed by using a service port directly. To do so, identify the name of the service, to which you want to connect. Run the following command:
+
+```shell
+kubectl get services
+```
+
+The SPM application service should be called `releasename-apps-curam`. For example, if you run the `helm install` command with a service name of `spm`, you can then get the SPM application URL by running the following command:
+
+```shell
+minikube service spm-apps-curam --url
+```
+
+This command provides an IP address and a port to connect to.  To use the provided URL, replace  `http` with `https`. Point your browser to that URL to open the SPM login page.
+
+When running `minikube service spm-apps-curam --url` on Red Hat, you might encounter an error
+[Minikube issue 3558](https://github.com/kubernetes/minikube/issues/3558) where the command attempts to start a browser by using X Window System. Ignore this error if it occurs.

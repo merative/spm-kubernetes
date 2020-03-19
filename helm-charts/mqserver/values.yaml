@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +13,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-
 global:
+  # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
+  license: ''
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: Always
   imagePullSecret:
     registry: *imageRegistry
   apps:
+    common:
+      persistence:
+        ## Persistence volume to store data
+        enabled: false
     config:
       curam:
         enabled: true
+      citizenportal:
+        enabled: true
+      rest:
+        enabled: true
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+      cpmexternalns:
+        enabled: false
+      cpmexternals:
+        enabled: false
+      navigatorns:
+        enabled: false
+      navigators:
+        enabled: false
+      mdtworkspace:
+        enabled: false
+      samplepublicaccess:
+        enabled: false
   mq:
     version: 9.1.3.0
+    # Set to True if running MQ in HA mode
+    useConnectionNameList: false
+    tlsSecretName: mq-secret
     queueManager:
       name: "QM1"
       secret:
@@ -56,11 +87,6 @@ readinessProbe:
 log:
   format: basic
   debug: false
-
-license: "accept"
-
-tls:
-  secretName: mq-secret
 
 imagePullSecret:
   registry: *imageRegistry

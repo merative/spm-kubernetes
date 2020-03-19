@@ -1,5 +1,7 @@
+{{- if .Values.ingress.enabled }}
+---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +16,7 @@
 # limitations under the License.
 ###############################################################################
 
-{{- if .Values.ingress.enabled }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}
@@ -23,8 +24,14 @@ metadata:
   labels:
 {{ include "spm.labels" . | indent 4 }}
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/ssl-redirect: \"false\"
+    ingress.bluemix.net/ssl-services: {{ include "sslServicesChain" . }}
+    ingress.bluemix.net/sticky-cookie-services: {{ include "stickyCookieServicesChain" . }}
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/session-cookie-path: /
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   {{- if or .Values.ingress.tlsSecretName .Values.ingress.generateCert }}
   tls:
@@ -37,7 +44,7 @@ spec:
       {{- end }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.hostname }}
+    - host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.ingress.hostname }}
       http:
         paths:
           {{- range $name, $app := .Values.global.apps.config }}
@@ -48,8 +55,14 @@ spec:
               servicePort: {{ $.Values.global.apps.common.port }}
           {{- end }}
           {{- end }}
-          - path: /CuramStatic
+          {{- if .Values.global.ceApp.imageTag }}
+          - path: {{ .Values.global.ceApp.ingressPath | default "/universal" }}
+            backend:
+              serviceName: {{ $.Release.Name }}-ce-app
+              servicePort: http
+          {{- end }}
+          - path: {{ .Values.global.ihs.ingressPath | default "/CuramStatic" }}
             backend:
               serviceName: {{ $.Release.Name }}-ihs
-              servicePort: {{ $.Values.global.ihs.servicePort }}
+              servicePort: http
 {{- end }}

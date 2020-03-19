@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -55,13 +55,49 @@ Create the image pull secret
 {{- end }}
 
 {{/*
-Define DB2 hostname
+Build up full image path
+*/}}
+{{- define "xmlserver.imageFullName" -}}
+{{- .registry -}}/
+{{- if .imageLibrary -}}
+{{- .imageLibrary -}}/
+{{- end -}}
+{{- if .imagePrefix -}}
+{{- .imagePrefix -}}
+{{- end -}}
+xmlserver:{{- .imageTag -}}
+{{- end -}}
+
+{{/*
+Define Database hostname
 */}}
 {{- define "xmlserver.dbhostname" -}}
 {{- if .Values.global.database.hostname -}}
 {{- .Values.global.database.hostname -}}
 {{- else -}}
 {{- .Release.Name -}}-db2
+{{- end -}}
+{{- end -}}
+
+{{/*
+Define Database username (or use default)
+*/}}
+{{- define "xmlserver.db2username" -}}
+{{- if .Values.global.database.username -}}
+{{- .Values.global.database.username -}}
+{{- else -}}
+{{- printf "db2admin" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Define Database password (or use default)
+*/}}
+{{- define "xmlserver.db2password" -}}
+{{- if .Values.global.database.password -}}
+{{- .Values.global.database.password -}}
+{{- else -}}
+{{- printf "%s" "ZGIyYWRtaW4=" | b64dec -}}
 {{- end -}}
 {{- end -}}
 

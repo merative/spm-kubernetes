@@ -1,5 +1,6 @@
+---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
----
+
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -22,11 +23,13 @@ metadata:
   labels:
 {{ include "batch.labels" . | indent 4 }}
 spec:
-  schedule: "{{ .Values.batch.schedule }}"
-  successfulJobsHistoryLimit: {{ .Values.batch.successfulJobsHistoryLimit }}
+  schedule: "{{ .Values.global.batch.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.global.batch.successfulJobsHistoryLimit }}
   jobTemplate:
     spec:
-      backoffLimit: {{ .Values.batch.backoffLimit }}
+      backoffLimit: {{ .Values.global.batch.backoffLimit }}
+      # Disabled until TTLAfterFinished feature graduates from 'alpha' status
+      # ttlSecondsAfterFinished: {{ .Values.global.batch.ttlSecondsAfterFinished }}
       template:
         spec:
           {{- if .Values.global.imagePullSecret.username }}
@@ -63,14 +66,27 @@ spec:
           {{- end }}
           containers:
           - name: running-batch
-            image: {{ .Values.global.images.registry }}/batch:latest
+            image: {{ include "batch.imageFullName" $.Values.global.images }}
             imagePullPolicy: {{ .Values.global.images.pullPolicy }}
             command:
               - build.sh
               - runbatch
-            {{- with .Values.batch.programName }}
+            {{- if or $.Values.global.batch.programName $.Values.global.batch.javaMetrics}}
             args:
+            {{- end }}
+            {{- with $.Values.global.batch.programName }}
               - -Dbatch.program={{ . }}
+            {{- with $.Values.global.batch.programParameters}}
+              - -Dbatch.parameters={{ . }}
+            {{- end }}
+            {{- end }}
+            {{- if $.Values.global.batch.javaMetrics}}
+              - {{ $.Values.global.batch.javaMetrics.timer}}
+              - {{ $.Values.global.batch.javaMetrics.timerFolder}}
+              - {{ $.Values.global.batch.javaMetrics.timerPeriod}}
+            env:
+              - name: ANT_OPTS
+                value: {{ $.Values.global.batch.javaMetrics.antOpts }}
             {{- end }}
             volumeMounts:
               - name: bootstrap-file

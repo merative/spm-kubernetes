@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=19.0.0.6
-FROM alpine
-ARG ANT_VERSION=1.9.9
+ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava
+ARG ANT_VERSION=1.10.6
+
+# Intermediate image: extract Ant
+FROM alpine AS AntStage
+ARG ANT_VERSION
 COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/
 
-FROM websphere-liberty:${WLP_VERSION}-javaee7
+FROM websphere-liberty:${WLP_VERSION}
 
 WORKDIR /opt/ibm/Curam/release
 ENTRYPOINT ["build.sh"]
 CMD ["runbatch"]
 
-ARG ANT_VERSION=1.9.9
+ARG ANT_VERSION
 ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     ANT_OPTS='-Xmx1400m -Dcmp.maxmemory=1400m' \
     JAVA_HOME=/opt/ibm/java \
@@ -34,17 +37,14 @@ ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     WLP_HOME=/opt/ibm/wlp
 ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
 
-COPY --from=0 --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
-
 USER root
 RUN mkdir -p /opt/ibm/Curam/release \
-    && chown -Rv 1001:0 /opt/ibm/Curam
+    && chown -Rc 1001:0 /opt/ibm/Curam
 USER 1001
 
-COPY --chown=1001:0 content/res-stage/CryptoConfig.jar /opt/ibm/java/jre/lib/ext/
+COPY --from=AntStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
 COPY --chown=1001:0 content/dependencies/javax.mail.jar /opt/javamail/mail.jar
 COPY --chown=1001:0 content/dependencies/activation.jar /opt/javamail/activation.jar
-COPY --chown=1001:0 content/batch-stage/SetEnvironment.sh /opt/ibm/Curam/
-COPY --chown=1001:0 content/batch-stage /opt/ibm/Curam/release
-
-RUN chmod +x /opt/ibm/Curam/release/*.sh
+COPY --chown=1001:0 content/release-stage/build/CryptoConfig.jar /opt/ibm/java/jre/lib/ext/
+COPY --chown=1001:0 content/release-stage/SetEnvironment.sh /opt/ibm/Curam/
+COPY --chown=1001:0 content/release-stage /opt/ibm/Curam/release

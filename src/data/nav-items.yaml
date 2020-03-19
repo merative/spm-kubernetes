@@ -1,0 +1,86 @@
+- title: Introduction
+  pages:
+    - title: Overview
+      path: /00-intro/arch-overview
+    - title: Deployment Architecture
+      path: /00-intro/deploy-arch
+    - title: SPM Architecture on IKS
+      path: /00-intro/referenceArchSPM
+    - title: Static Content Deployment Architecture
+      path: /00-intro/IHSStaticContent
+- title: Prerequisites
+  pages:
+    - title: Install prerequisite software
+      path: /01-prereq/prereq
+    - title: Base third-party software
+      path: /01-prereq/3rdparty-sw
+    - title: Docker, Kubernetes, and Helm
+      path: /01-prereq/Docker-Kubernetes-Helm
+    - title: Minikube
+      path: /01-prereq/minikube
+    - title: IBM Cloud Kubernetes Service
+      path: /01-prereq/iks
+    - title: ChartMuseum
+      path: /01-prereq/chartmuseum
+    - title: GitHub repo
+      path: /01-prereq/git
+- title: IBM Cúram Social Program Management application
+  pages:
+    - title: Installing SPM software
+      path: /01-deploy-spm/SPM-sw
+    - title: Create SPM Database
+      path: /01-deploy-spm/create_spm_db
+    - title: Building the SPM application
+      path: /01-deploy-spm/spm-build
+- title: Building Docker images
+  pages:
+    - title: Setting up the Docker context
+      path: /02-build-images/setup_docker_context
+    - title: Building the Docker images
+      path: /02-build-images/build_images
+- title: Deploying with Helm Charts
+  pages:
+    - title: Preparing Helm charts
+      path: /03-deployment/hc_preparation
+    - title: Deploying Helm charts
+      path: /03-deployment/hc_deployment
+- title: Operations
+  pages:
+    - title: Updating Tools
+      path: /04-operations/updating_tools
+    - title: Updating SPM Deployment
+      path: /04-operations/updating_curam
+- title: Supporting Infrustructure
+  pages:
+    - title: MQ Configuration
+      path: /05-supporting-infrastructure/MQSetupConfig
+    - title: Cloud Object Storage
+      path: /05-supporting-infrastructure/COS
+    - title: LDAP
+      path: /05-supporting-infrastructure/LDAP
+    - title: LogDNA
+      path: /05-supporting-infrastructure/LogDNA
+    - title: SPM Batch Processing on IKS
+      path: /05-supporting-infrastructure/batch
+- title: Monitoring and troubleshooting
+  pages:
+    - title: Monitor the application in Minikube
+      path: /06-runtime/interrogate_runtime
+    - title: Batch processing
+      path: /06-runtime/batch
+    - title: XML Server
+      path: /06-runtime/xmlserver
+    - title: Troubleshooting problems
+      path: /06-runtime/troubleshoot
+    - title: Remote Debugging
+      path: /06-runtime/Remote-Debugging
+- title: Known Issues
+  pages:
+    - path: /known_issues
+- title: Feedback
+  pages:
+    - title: Contact Us
+      path: /contact/contact_us
+- title: Disclaimer
+  pages:
+    - path: /disclaimer

@@ -1,5 +1,21 @@
 {{- with .Values.global.ihs }}
 ---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,7 +24,7 @@ metadata:
   labels:
 {{ include "ihs.labels" $ | indent 4 }}
 spec:
-  replicas: {{ .replicaCount | default 1 }}
+  replicas: {{ .replicaCount }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "ihs.fullname" $ }}
@@ -28,14 +44,42 @@ spec:
         - name: {{ $.Release.Name }}-pull-secret
       {{- end }}
       restartPolicy: {{ .restartPolicy | default "Always" }}
+      {{- if $.Values.global.apps.common.persistence.enabled }}
+      volumes:
+        - name: {{ $.Release.Name }}-persistence-volume
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-persistence-pvc
+      {{- end }}
       containers:
         - name: {{ $.Chart.Name }}
-          image: {{ $.Values.global.images.registry }}/ihs:latest
+          image: {{ include "ihs.imageFullName" $.Values.global.images }}
           imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+          {{- if $.Values.global.apps.common.persistence.enabled }}
+          env:
+            - name: MOUNT_POINT
+              value: {{ include "persistence.mountPoint" $ }}
+          {{- end }} 
           ports:
-            - containerPort: {{ $.Values.global.ihs.servicePort | default 443 }}
+            - name: client
+              containerPort: 8443
+              protocol: TCP
+          {{- with .readinessPath }}
+          readinessProbe:
+            httpGet:
+              path: {{ . }}
+              port: client
+              scheme: HTTPS
+            periodSeconds: 10
+          {{- end }}
           {{- with .resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- if $.Values.global.apps.common.persistence.enabled }}
+          volumeMounts:
+            - name: {{ $.Release.Name }}-persistence-volume
+              mountPath: {{ include "persistence.mountPoint" $ }}
+              subPath: {{ include "persistence.subDir" $ }}
+          {{- end }}
+
 {{ end }}

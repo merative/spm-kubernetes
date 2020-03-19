@@ -1,5 +1,6 @@
+---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -40,13 +42,28 @@ data:
       </messagingEngine>
 
       <variable name="wmqJmsClient.rar.location" value="/opt/wmq/wmq.jmsra.rar"/>
-      <variable name="mqHostName" value="${env.MQ_SERVICE_NAME}"/>
+      <variable name="mqName" value="${env.MQ_QMGR_NAME}"/>
+      <variable name="channel" value="${env.MQ_CHANNEL_NAME}"/>
+      {{- if .Values.global.mq.useConnectionNameList }}
+      <variable name="connectionNameList" value="${env.MQ_CONN_NAME_LIST}"/>
+      {{- else }}
+      <variable name="mqHostName" value="${env.MQ_HOST_NAME}"/>
       <variable name="listenerPort" value="1414"/>
-      <variable name="mqName" value="{{ $.Values.global.mq.queueManager.name | default "QM1" }}"/>
-      <variable name="channel" value="MQ_CHN"/>
+      {{- end }}
 
       <jmsActivationSpec id="eis/DPEnactmentAS">
-        <properties.wmqJms destinationRef="DPEnactment" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="DPEnactment"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="DPEnactment" jndiName="jms/DPEnactment">
@@ -54,7 +71,18 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/DPErrorAS">
-        <properties.wmqJms destinationRef="DPError" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="DPError"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="DPError" jndiName="jms/DPError">
@@ -62,7 +90,18 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowEnactmentAS">
-        <properties.wmqJms destinationRef="WorkflowEnactment" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="WorkflowEnactment"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowEnactment" jndiName="jms/WorkflowEnactment">
@@ -70,7 +109,18 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowActivityAS">
-        <properties.wmqJms destinationRef="WorkflowActivity" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="WorkflowActivity"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowActivity" jndiName="jms/WorkflowActivity">
@@ -78,7 +128,18 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowErrorAS">
-        <properties.wmqJms destinationRef="WorkflowError" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="WorkflowError"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowError" jndiName="jms/WorkflowError">
@@ -86,19 +147,54 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/CuramDeadMessageQueueAS">
-        <properties.wmqJms destinationRef="CuramDeadMessageQueue" destinationType="javax.jms.Queue" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="CuramDeadMessageQueue"
+          destinationType="javax.jms.Queue"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsQueue id="CuramDeadMessageQueue" jndiName="jms/CuramDeadMessageQueue">
         <properties.wmqJms persistence="PERS" baseQueueName="QN.CURAMDEADMESSAGEQUEUE" />
       </jmsQueue>
 
+      <!-- Activation Spec for CuramCacheInvalidationTopic in EJB Infrastructure Module -->
       <jmsActivationSpec id="eis/CuramCacheInvalidationTopicAS">
-        <properties.wmqJms destinationRef="CuramCacheInvalidationTopic" destinationType="javax.jms.Topic" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="CuramCacheInvalidationTopic"
+          destinationType="javax.jms.Topic"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
+      <!-- Activation Spec for CuramCacheInvalidationTopic in Invalidation Module -->
       <jmsActivationSpec id="Curam/InvalidationModule/CuramCacheInvalidationTopicMDB">
-        <properties.wmqJms destinationRef="CuramCacheInvalidationTopic" destinationType="javax.jms.Topic" hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" subscriptionDurability="Durable" />
+        <properties.wmqJms
+          destinationRef="CuramCacheInvalidationTopic"
+          destinationType="javax.jms.Topic"
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          subscriptionDurability="Durable"
+        />
       </jmsActivationSpec>
 
       <jmsTopic id="CuramCacheInvalidationTopic" jndiName="jms/CuramCacheInvalidationTopic">
@@ -106,12 +202,32 @@ data:
       </jmsTopic>
 
       <jmsConnectionFactory id="CuramQueueConnectionFactory" jndiName="jms/CuramQueueConnectionFactory" connectionManagerRef="ConMgr6">
-        <properties.wmqJms hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" channel="${channel}" sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256" />
+        <properties.wmqJms
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          channel="${channel}"
+          sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+        />
       </jmsConnectionFactory>
-      <connectionManager id="ConMgr6" maxPoolSize="2"/>
+      <connectionManager id="ConMgr6" maxPoolSize="12"/>
 
       <jmsTopicConnectionFactory id="CuramTopicConnectionFactory" jndiName="jms/CuramTopicConnectionFactory">
-        <properties.wmqJms hostName="${mqHostName}" port="${listenerPort}" queueManager="${mqName}" channel="${channel}" sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256" />
+        <properties.wmqJms
+          {{- if .Values.global.mq.useConnectionNameList }}
+          connectionNameList="${connectionNameList}"
+          {{- else }}
+          hostName="${mqHostName}"
+          port="${listenerPort}"
+          {{- end }}
+          queueManager="${mqName}"
+          channel="${channel}"
+          sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+        />
       </jmsTopicConnectionFactory>
 
     </server>

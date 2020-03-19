@@ -1,24 +1,24 @@
 language: node_js
 node_js:
-  - "8"
+  - "12"
 
 group: bluezone
 dist: xenial
 
 install:
-  - npm install -g gitbook-cli markdownlint-cli
-  - gitbook install
+  - npm install -g gatsby markdownlint-cli
+  - npm install
 
 script:
-  - markdownlint docs
-  - gitbook build
+  - markdownlint **/*.mdx --ignore src/pages/index.mdx
+  - gatsby build --prefix-paths
 
 deploy:
   - provider: pages
     skip_cleanup: true
-    local_dir: _book
+    local_dir: public
     github_token: $GITHUB_TOKEN
-    github_url: github.com
+    github_url: github.ibm.com
     committer_from_gh: true
     target_branch: gh-pages
     on:

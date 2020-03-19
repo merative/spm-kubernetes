@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -56,9 +56,6 @@ data:
 
       <!-- Server Logging Config -->
       <include location="adc_conf/server_logging.xml"/>
-
-      <!-- Server Extra Config -->
-      <include location="adc_conf/server_extra_config.xml"/>
 
       <!-- Sessions Management -->
       <include location="adc_conf/sessions_management.xml"/>

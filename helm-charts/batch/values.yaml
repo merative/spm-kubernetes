@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,31 +14,36 @@
 # limitations under the License.
 ###############################################################################
 
+# Default values for fat-spm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 global:
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: IfNotPresent
   database:
-    type: "db2"
-    hostname: "db2hostname"
-    dbName: "DATABASE"
-    username: "db2admin"
-    password: "db2admin"
-    spm_psw: "spmEncryptedDBPassword"
-    wlp_psw: "xorEncodedDBPassword"
-    ssl:
-      enabled: false
-      secretName: 'secretName'
+    type: db2
+    ssl: {}
   imagePullSecret:
     registry: *imageRegistry
 
-batch:
-  schedule: "*/15 * * * *"
-  successfulJobsHistoryLimit: 3
-  ttlSecondsAfterFinished: 60
-  backoffLimit: 5
-  # programName: curam.healthcare.sl.intf.BulkICReassessment.process
-  programName: ""
-
-nameOverride: ""
-fullnameOverride: ""
+  batch:
+    schedule: "*/30 * * * *"
+    successfulJobsHistoryLimit: 3
+    ttlSecondsAfterFinished: 60
+    backoffLimit: 5
+    # programName could be used to call a specific batch program, example:
+    # programName: curam.healthcare.sl.intf.BulkICReassessment.process
+    # programParameters can be used to include additional parameters, example:
+    # programParameters: '"evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"'
+    programName: ""
+    programParameters: ""
+    # javaMetrics:
+    #   antOpts: "-Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_chunker.log"
+    #   timer: "-Dcuram.jmx.output_statistics_timer_enabled=true"
+    #   timerFolder: "-Dcuram.jmx.output_statistics_timer_folder=/tmp"
+    #   timerPeriod: "-Dcuram.jmx.output_statistics_timer_period=60000"

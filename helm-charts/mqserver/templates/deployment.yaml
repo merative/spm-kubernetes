@@ -1,11 +1,9 @@
 {{ $apps := .Values.global.apps.config }}
-{{ $pvcs := .Values.global.mq.pvcs }}
-
 {{- range $name, $app := $apps }}
-{{- if $app.enabled }}
+{{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
 ---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,10 +48,10 @@ spec:
             name: {{ $.Release.Name }}-mq-config
         - name: modified-cmds
           emptyDir: {}
-        {{- if $.Values.tls.secretName }}
+        {{- if $.Values.global.mq.tlsSecretName }}
         - name: service-certs
           secret:
-            secretName: {{ $.Release.Name }}-{{ $.Values.tls.secretName }}
+            secretName: {{ $.Release.Name }}-{{ $.Values.global.mq.tlsSecretName }}
         {{- end}}
       initContainers:
         - name: set-mq-conname
@@ -70,32 +68,30 @@ spec:
           - name: modified-cmds
             mountPath: /mnt/mod-mqsc
       containers:
-        - name: {{ $.Chart.Name }}
-          image: {{ $.Values.global.images.registry }}/mqserver:latest
+        - name: {{ $.Chart.Name }}-{{ $name }}
+          image: {{ include "mqserver.imageFullName" $.Values.global.images }}
           imagePullPolicy: {{ $.Values.global.pullPolicy }}
           env:
             - name: LICENSE
-              value: {{ $.Values.license }}
+              value: {{ $.Values.global.license }}
             - name: MQ_QMGR_NAME
               value: {{ $.Values.global.mq.queueManager.name | default "QM1" }}
-            # - name: MQ_MULTI_INSTANCE
-            #   value: "{{ $.Values.global.mq.queueManager.multiInstance | default false }}"
             - name: LOG_FORMAT
               value: {{ $.Values.log.format | default "basic" }}
             - name: MQ_ENABLE_METRICS
-              value: "{{ $.Values.global.mq.metrics.enabled | default false }}"
+              value: {{ $.Values.global.mq.metrics.enabled | default false | quote }}
             - name: DEBUG
-              value: "{{ $.Values.log.debug | default false }}"
+              value: {{ $.Values.log.debug | default false | quote }}
             - name: MQ_EPHEMERAL_PREFIX
-              value: "/run/mqm"
+              value: /run/mqm
             - name: MQ_DEV
               value: "false"
             - name: MQ_ADMIN_PASSWORD
               value: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
-            {{- if $.Values.global.mq.queueManager.secret.appPasswordKey }}
-            - name: MQ_APP_PASSWORD
-              value: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
-            {{- end }}
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: {{ $.Values.global.mq.queueManager.secret.name }}
+              #     key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
           ports:
             - containerPort: 1414
             - containerPort: 9443
@@ -143,7 +139,7 @@ spec:
             - name: modified-cmds
               mountPath: /etc/mqm/20-config.mqsc
               subPath: 20-config.mqsc
-            {{- if $.Values.tls.secretName }}
+            {{- if $.Values.global.mq.tlsSecretName }}
             - name: service-certs
               mountPath: "/etc/mqm/pki/keys/ibmwebspheremqqm1"
               readOnly: true

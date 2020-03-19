@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,23 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-
 dependencies:
-- name: configmaps
-  version: "~1.1.0"
-  repository: "@local-development"
-- name: xmlserver
-  version: "~1.1.0"
-  repository: "@local-development"
 - name: apps
-  version: "~1.1.0"
-  repository: "@local-development"
-- name: mqserver
-  version: "~1.1.0"
+  version: "~2.0.0"
   repository: "@local-development"
 - name: batch
   version: "~1.1.0"
   repository: "@local-development"
+- name: ce-app
+  version: "~1.0.0"
+  repository: "@local-development"
+- name: configmaps
+  version: "~1.2.0"
+  repository: "@local-development"
 - name: ihs
+  version: "~2.0.0"
+  repository: "@local-development"
+- name: mqserver
+  version: "~1.2.0"
+  repository: "@local-development"
+- name: openldap
+  version: "~1.0.0"
+  repository: "@local-development"
+  condition: global.openldap.enabled
+- name: xmlserver
   version: "~1.1.0"
   repository: "@local-development"

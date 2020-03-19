@@ -1,0 +1,61 @@
+---
+title: Remote debugging
+description: Remote debugging
+---
+
+## Remote debugging
+
+It might be necessary to use a remote debugger to step through code execution on the cluster, where log analysis does not provide sufficient information to resolve an issue.
+The following is an outline of the steps required to connect eclipse's remote debugger to the SPM code running on the cluster.
+
+* Edit the Curam Producer deployment spec to pass debug arguments to the WebSphere® Liberty server.
+* Forward the debugging port from the port running the Curam Producer pod.
+* Create the remote debug configuration in eclipse.
+* Connect the remote debugger to the listener.
+
+### Edit the Curam Producer deployment
+
+Edit the deployment spec for the Curam Producer deployment.
+
+```kubectl edit deployment release-apps-curam-producer```
+
+Add the following lines under containers:
+
+```
+containers:
+- args:
+  - /opt/ibm/wlp/bin/server
+  - debug
+  - defaultServer
+```
+
+The Curam Producer deployment will terminate its pod and start a new one with the debug configuration.
+
+### Forward the debugging port
+
+Next, forward the WebSphere® Liberty server's debug port to make it available to the remote debugger. 7777 is the default debug port for WebSphere® Liberty.
+
+```kubectl port-forward release-apps-curam-producer-XXXX 7777:7777```
+
+### View the logs in real-time
+
+In order to tail the logs while you debug use the following command:
+
+```kubectl logs -f release-apps-curam-producer-XXXX```
+
+Note, WebSphere® Liberty will not start the Curam application until the remote debugger attaches to the listener. Therefore, the log will not be populated before you launch the remote debugger.
+
+### Create the remote debug configuration
+
+From the Eclipse debug view, create a Java Remote Application. Attach an appropriate source code project, and attach the Java Remote Application to the port you forwarded in the above step.
+
+![Figure 1: Example Debugger Config](../../images/remote_debugger.png)
+<Caption>
+
+*Figure 1:* Example debugger config
+
+</Caption>
+
+### Connect the remote debugger to the listener
+
+Launch the debugger and debug as usual.

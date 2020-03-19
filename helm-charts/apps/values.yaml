@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,60 +15,234 @@
 ###############################################################################
 
 global:
+  # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
+  license: ''
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: Always
   imagePullSecret:
     registry: *imageRegistry
+  database:
+    ## Database connection configuration
+    # The property wlp_psw: contains the XOR password injected in the Liberty configuration
+    # The property spm_psw: contains the encrypted password injected in Bootstrap.properties
+    type: db2
+    port: 50000
+    dbName: DATABASE
+    username: db2admin
+    initTime: 120
+    ssl: {}
+  resources:
+    limits:
+      cpu: 2
+      memory: 6Gi
+    requests:
+      cpu: 2
+      memory: 6Gi
   xmlserver:
     port: 1800
   apps:
     common:
       runAs: 1001
       port: 8443
-      serviceType: NodePort
-      volumes:
-        - name: dbconn-cm
-          mountPath: /config/adc_conf/server_resources_jdbc.xml
-          subPath: server_resources_jdbc.xml
-        - name: log4j-cm
-          mountPath: /opt/log4j
-        - name: endpoints-cm
-          mountPath: /config/adc_conf/server_endpoints.xml
-          subPath: server_endpoints.xml
-        - name: logging-cm
-          mountPath: /config/adc_conf/server_logging.xml
-          subPath: server_logging.xml
-        - name: server-cm
-          mountPath: /config/server.xml
-          subPath: server.xml
+      initialDelaySeconds: 300
+      security: {}
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        # mountPoint: "/tmp/persistence"
+        # subDir: "/folder/name"
+        jmxstats:
+          ## Parameters of the JMX Stats to be persisted on the PVC
+          # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
+          enabled: false
+          timerPeriod: 60000
     config:
       curam:
         enabled: true
         readinessPath: /Curam
         ingressPath: /Curam
+        earName: Curam
+        jvm: 
+          - "-Xms2048m"
+          - "-Xmx2048m"
         resources:
-          limits:
-            cpu: 4
-            memory: 4Gi
           requests:
-            cpu: 4
-            memory: 4Gi
-  database:
-    type: "db2"
-    hostname: "dbhostname"
-    dbName: "DATABASE"
-    serviceName: ""
-    username: "db2admin"
-    password: "db2admin"
-    spm_psw: "spmEncryptedDBPassword"
-    wlp_psw: "xorEncodedDBPassword"
-    ssl:
-      enabled: false
-      secretName: 'secretName'
-
-tls:
-  secretName: mq-secret
+            cpu: 1
+            memory: 2.5Gi
+          limits:
+            cpu: 1.5
+            memory: 3Gi
+      rest:
+        enabled: true
+        ingressPath: /Rest
+        earName: Rest
+        warName: RestModule
+        jvm: 
+          - "-Xms1536m"
+          - "-Xmx1536m"
+        resources:
+          requests:
+            cpu: 0.75
+            memory: 1.5Gi
+          limits:
+            cpu: 1.5
+            memory: 2Gi
+        readinessString: "application available .*/Rest"
+      citizenportal:
+        enabled: false
+        readinessPath: /CitizenPortal
+        ingressPath: /CitizenPortal
+        earName: CitizenPortal
+        jvm: 
+          - "-Xms2048m"
+          - "-Xmx2048m"
+        resources:
+          requests:
+            cpu: 1
+            memory: 2.5Gi
+          limits:
+            cpu: 1.5
+            memory: 3Gi
+      curamwebservices:
+        enabled: false
+        readinessPath: /CuramWS2/SOAPMonitor
+        ingressPath: /CuramWS2
+        earName: CuramWebServices
+        warName: webservices2
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      curambirtviewer:
+        enabled: false
+        readinessTCPProbe: true
+        ingressPath: /CuramBIRTViewer
+        earName: CuramBIRTViewer
+        producerOnly: true
+        jvm: 
+          - "-Xms768m"
+          - "-Xmx768m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 1Gi
+          limits:
+            cpu: 0.75
+            memory: 1.5Gi
+      cpmexternalns:
+        enabled: false
+        readinessPath: /CPMExternalNS
+        ingressPath: /CPMExternalNS
+        earName: CPMExternalNS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      cpmexternals:
+        enabled: false
+        readinessPath: /CPMExternalS
+        ingressPath: /CPMExternalS
+        earName: CPMExternalS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      navigatorns:
+        enabled: false
+        readinessPath: /NavigatorNS
+        ingressPath: /NavigatorNS
+        earName: NavigatorNS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      navigators:
+        enabled: false
+        readinessPath: /NavigatorS
+        ingressPath: /NavigatorS
+        earName: NavigatorS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      mdtworkspace:
+        enabled: false
+        readinessPath: /MDTWorkspace
+        ingressPath: /MDTWorkspace
+        earName: MDTWorkspace
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      samplepublicaccess:
+        enabled: false
+        readinessPath: /SamplePublicAccess
+        ingressPath: /SamplePublicAccess
+        earName: SamplePublicAccess
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+  openldap:
+    enabled:
+      false
+  mq:
+    useConnectionNameList: false
+    objectSuffix: minikube
+    tlsSecretName: mq-secret
 
 nameOverride: ""
 fullnameOverride: ""

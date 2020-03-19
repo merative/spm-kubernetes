@@ -1,0 +1,59 @@
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.global.openldap.service.annotations }}
+  annotations:
+{{ toYaml .Values.global.openldap.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "openldap.fullname" . }}
+  labels:
+    app: {{ template "openldap.name" . }}
+    chart: {{ template "openldap.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.global.openldap.extraLabels }}
+{{ toYaml .Values.global.openldap.extraLabels | indent 4 }}
+{{- end }}
+spec:
+  clusterIP: {{ .Values.global.openldap.service.clusterIP | quote }}
+{{- if .Values.global.openldap.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.global.openldap.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.global.openldap.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.global.openldap.service.loadBalancerIP | quote }}
+{{- end }}
+{{- if .Values.global.openldap.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.global.openldap.service.loadBalancerSourceRanges | indent 4 }}
+{{- end }}
+  ports:
+    - name: ldap-port
+      protocol: TCP
+      port: {{ .Values.global.openldap.service.ldapPort }}
+      targetPort: ldap-port
+    - name: ssl-ldap-port
+      protocol: TCP
+      port: {{ .Values.global.openldap.service.sslLdapPort }}
+      targetPort: ssl-ldap-port
+  selector:
+    app: {{ template "openldap.name" . }}
+    release: {{ .Release.Name }}
+  type: {{ .Values.global.openldap.service.type }}

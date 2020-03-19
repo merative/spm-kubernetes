@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -58,13 +58,60 @@ Create the image pull secret
 {{- end }}
 
 {{/*
-Define Database hostname
+Build up full image path
+*/}}
+{{- define "apps.imageFullName" -}}
+{{- .ImageConfig.registry -}}/
+{{- if .ImageConfig.imageLibrary -}}
+{{- .ImageConfig.imageLibrary -}}/
+{{- end -}}
+{{- if .ImageConfig.imagePrefix -}}
+{{- .ImageConfig.imagePrefix -}}
+{{- end -}}
+{{- .ImageName -}}:{{- .ImageConfig.imageTag -}}
+{{- end -}}
+
+{{/*
+Define DB2 hostname
 */}}
 {{- define "apps.dbhostname" -}}
 {{- if .Values.global.database.hostname -}}
 {{- .Values.global.database.hostname -}}
 {{- else -}}
 {{- .Release.Name -}}-db2
+{{- end -}}
+{{- end -}}
+
+{{/*
+Folder name where the Liberty application will store its logs
+*/}}
+{{- define "apps.logsDir" -}}
+{{- if .Values.global.apps.common.persistence.enabled -}}
+{{- "/tmp/logs" -}}
+{{- else -}}
+{{- "/logs" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
+*/}}
+{{- define "persistence.mountPoint" -}}
+{{- if .Values.global.apps.common.persistence.mountPoint -}}
+{{- .Values.global.apps.common.persistence.mountPoint -}}
+{{- else -}}
+{{- "/tmp/persistence" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/release_name/")
+*/}}
+{{- define "persistence.subDir" -}}
+{{- if .Values.global.apps.common.persistence.subDir -}}
+{{- .Values.global.apps.common.persistence.subDir -}}
+{{- else -}}
+{{- printf "%s" $.Release.Name -}}
 {{- end -}}
 {{- end -}}
 

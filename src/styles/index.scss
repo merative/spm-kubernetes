@@ -1,0 +1,61 @@
+// This is where your application styles could go.
+
+[class*='PageHeader-module--page-header'] {
+  height: auto !important;
+  min-height: 13rem;
+  max-height: 15rem;
+  padding-top: 1rem;
+}
+
+@media (min-width: 99rem) {
+  [class*='PageHeader-module--text'] {
+    font-size: 4rem !important;
+  }
+}
+
+.bx--inline-notification__subtitle .bx--list--unordered {
+  width: 100%;
+}
+
+.bx--inline-notification__subtitle .bx--list--unordered .bx--list__item {
+  font-size: 0.875rem;
+  line-height: 1.2rem;
+}
+
+[class*='Tabs-module--panel'] {
+  padding-bottom: 1rem;
+  max-width: calc(67% + 1rem);
+}
+
+@media (min-width: 66rem) {
+  [class*='Tabs-module--panel'] .Code-module--row--3_5cm {
+    width: 100%;
+  }
+  [class*='InlineNotification-module--notification'] .bx--inline-notification .Code-module--row--3_5cm {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 66rem) {
+  [class*='Tabs-module--panel'] {
+    max-width: calc(100% + 2rem);
+  }
+  [class*='Tabs-module--panel'] .Code-module--row--3_5cm {
+    width: 100%;
+  }
+  [class*='InlineNotification-module--notification'] .bx--inline-notification .Code-module--row--3_5cm {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+// Hide SideBar and Footer when printing
+@media print {
+  [class*='LeftNavWrapper-module--expanded'] {
+    display: none;
+  }
+  [class*='Footer-module--footer'] {
+    display: none;
+  }
+}

@@ -1,0 +1,331 @@
+{{- range $name, $app := .Values.global.apps.config }}
+{{- if and $app.enabled (not $app.producerOnly) }}
+{{- $imageData := dict "ImageConfig" $.Values.global.images "ImageName" $name }}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
+  namespace: {{ $.Release.Namespace }}
+  labels:
+{{ include "apps.labels" $ | indent 4 }}
+spec:
+  replicas: {{ $app.consumerReplicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+    spec:
+      {{- with $.Values.global.apps.common.runAs }}
+      securityContext:
+        runAsUser: {{ . }}
+      {{- end }}
+      {{- if $.Values.global.imagePullSecret.username }}
+      imagePullSecrets:
+        - name: {{ $.Release.Name }}-pull-secret
+      {{- end }}
+      restartPolicy: {{ $app.restartPolicy | default "Always" }}
+      volumes:
+        - name: server-cm
+          configMap:
+            name: {{ $.Release.Name }}-server-cm
+        - name: jvm-override
+          configMap:
+            name: {{ $.Release.Name }}-jvm-override-{{ $name }}
+        - name: jvm-options-cm
+          configMap:
+            name: {{ $.Release.Name }}-jvm-options-cm
+        - name: messaging-config
+          configMap:
+            name: {{ $.Release.Name }}-messaging-config
+        - name: applications-cm
+          configMap:
+            name: {{ $.Release.Name }}-applications-cm
+        - name: ejb-bindings
+          configMap:
+            name: {{ $.Release.Name }}-jms-consumer-bind
+        - name: dbconn-cm
+          configMap:
+            name: {{ $.Release.Name }}-dbconn-cm
+        - name: log4j-cm
+          configMap:
+            name: {{ $.Release.Name }}-log4j-cm
+        - name: endpoints-cm
+          configMap:
+            name: {{ $.Release.Name }}-endpoints-cm
+        - name: logging-cm
+          configMap:
+            name: {{ $.Release.Name }}-logging-cm
+        - name: transactions-cm
+          configMap:
+            name: {{ $.Release.Name }}-transactions-cm
+        - name: sessions-cm
+          configMap:
+            name: {{ $.Release.Name }}-sessions-cm
+        - name: security-cm
+          configMap:
+            name: {{ $.Release.Name }}-jms-consumer-security
+        - name: ltpa-keys-cm
+          configMap:
+            name: {{ $.Release.Name }}-ltpa-keys-cm
+        {{- if eq $name "curam" }}
+        - name: customsql-files
+          configMap:
+            name: {{ $.Release.Name }}-customsql-cm
+        - name: bootstrap-file
+          configMap:
+            name: {{ $.Release.Name }}-bootstrap-cm
+        {{- end }}
+        {{- if or $.Values.global.database.ssl.secretName $.Values.global.mq.tlsSecretName }}
+        - name: keystore-volume
+          emptyDir: {}
+        {{- end }}
+        {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+        - name: db2-cert
+          secret:
+            secretName: {{ $.Values.global.database.ssl.secretName }}
+        {{- end }}
+        {{- if $.Values.global.mq.tlsSecretName }}
+        - name: service-certs
+          secret:
+            {{- if $.Values.global.mq.useConnectionNameList }}
+            secretName: {{ $.Values.global.mq.tlsSecretName }}
+            {{- else }}
+            secretName: {{ $.Release.Name }}-mq-secret
+            {{- end }}
+        {{- end}}
+        {{- if $.Values.global.apps.common.persistence.enabled }}
+        - name: {{ $.Release.Name }}-persistence-volume
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-persistence-pvc
+        {{- end }}
+      initContainers:
+        - name: wait-for-database
+          image: busybox:1.28
+          command:
+            - /bin/sh
+            - -c
+            - >
+              until nslookup {{ include "apps.dbhostname" $ }}; do
+                echo waiting for {{ include "apps.dbhostname" $ }} to be available...;
+                sleep 2;
+              done;
+              until nc -z -w3 {{ include "apps.dbhostname" $ }} {{ $.Values.global.database.port | default 50000 }}; do
+                echo waiting for {{ include "apps.dbhostname" $ }}:{{ $.Values.global.database.port | default 50000 }} to be reachable;
+                sleep 2;
+              done;
+              echo waiting {{ $.Values.global.database.initTime | default 120 }} additional seconds...;
+              sleep {{ $.Values.global.database.initTime | default 120 }};
+        {{- if not (hasKey $app "mqConnectionNameList") }}
+        - name: wait-for-mq
+          image: busybox:1.28
+          command:
+            - /bin/sh
+            - -c
+            - >
+              until nslookup {{ $.Release.Name }}-mqserver-{{ $name }}; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }} to be available...;
+                sleep 2;
+              done
+        {{- end }}
+        {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+        - name: import-db2-cert
+          image: ibmjava:8-sdk
+          env:
+            - name: certfile
+              value: /mnt/certificates/{{ $.Values.global.database.ssl.certFile | default "db2admin.arm" }}
+            - name: keystore_jks
+              value: /mnt/keystores/db2TrustStore.jks
+          command:
+            - /bin/sh
+            - -c
+            - keytool -import -trustcacerts -noprompt -file $certfile -keystore $keystore_jks -storepass changeit -storetype jks
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: db2-cert
+              mountPath: /mnt/certificates
+        {{- end }}
+        {{- if $.Values.global.mq.tlsSecretName }}
+        - name: import-certs-for-mq
+          image: ibmjava:8-sdk
+          env:
+            - name: keyfile
+              value: /mnt/certificates/tls.key
+            - name: crtfile
+              value: /mnt/certificates/tls.crt
+            - name: keystore_pkcs12
+              value: /tmp/tls_keystore.p12
+            - name: keystore_jks
+              value: /mnt/keystores/key.jks
+            - name: password
+              value: password
+          command:
+            - /bin/sh
+            - -c
+            - >
+              openssl pkcs12 -export -inkey $keyfile -in $crtfile -out $keystore_pkcs12 -password pass:$password;
+              keytool -importkeystore -noprompt -srckeystore $keystore_pkcs12 -srcstoretype pkcs12 -destkeystore $keystore_jks -storepass $password -srcstorepass $password -srcalias 1 -destalias default;
+              {{- if $.Values.global.mq.useConnectionNameList }}
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm_{{ $.Values.global.mq.objectSuffix | lower }}_{{ $name }} -file $crtfile -keystore $keystore_jks -storepass $password -storetype jks
+              {{- else }}
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $crtfile -keystore $keystore_jks -storepass $password -storetype jks
+              {{- end }}
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: service-certs
+              mountPath: /mnt/certificates
+        {{- end }}
+        - name: wait-for-curam
+          image: busybox:1.28
+          command:
+            - /bin/sh
+            - -c
+            - >
+              until nslookup {{ include "apps.fullname" $ }}-curam; do
+                echo waiting for {{ include "apps.fullname" $ }}-curam to be available...;
+                sleep 2;
+              done;
+              until nc -z -w3 {{ include "apps.fullname" $ }}-curam {{ $.Values.global.apps.common.port | default 8443 }}; do
+                echo waiting for {{ include "apps.fullname" $ }}-curam:{{ $.Values.global.apps.common.port | default 8443 }} to be reachable;
+                sleep 2;
+              done;
+      containers:
+        - name: {{ $.Chart.Name }}-consumer-{{ $name }}
+          image: {{ include "apps.imageFullName" $imageData }}
+          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+          ports:
+            - name: client
+              containerPort: {{ $.Values.global.apps.common.port | default 8443 }}
+          env:
+            - name: LICENSE
+              value: {{ $.Values.global.license }}
+            - name: EAR_NAME
+              value: {{ required "earName not specified!" $app.earName }}
+            - name: WAR_NAME
+              value: {{ $app.warName | default "ClientModule" }}
+            - name: SESSION_COOKIE_NAME
+              {{- if eq $name "curambirtviewer" }}
+              value: BIRTJSESSIONID
+              {{- else }}
+              value: JSESSIONID
+              {{- end }}
+            - name: LOG_DIR
+              value: {{ include "apps.logsDir" $ }}
+            - name: SYSTEM_USER
+              value: {{ $.Values.global.apps.common.security.username | default "SYSTEM" }}
+            - name: SYSTEM_PASSWORD
+              value: {{ $.Values.global.apps.common.security.password | default "{xor}LCYsLz4sLA==" | quote }}
+            {{- if $.Values.global.mq.useConnectionNameList }}
+            - name: MQ_CONN_NAME_LIST
+              value: {{ $app.mqConnectionNameList }}
+            - name: MQ_QMGR_NAME
+              value: QM_{{ $.Values.global.mq.objectSuffix }}_{{ $name }}
+            - name: MQ_CHANNEL_NAME
+              value: CHL_{{ $.Values.global.mq.objectSuffix | upper }}_{{ $name | upper }}
+            {{- else }}
+            - name: MQ_HOST_NAME
+              value: {{ $.Release.Name }}-mqserver-{{ $name }}
+            - name: MQ_QMGR_NAME
+              value: QM1
+            - name: MQ_CHANNEL_NAME
+              value: MQ_CHN
+            {{- end }}
+            {{- if $.Values.global.apps.common.persistence.enabled }}
+            - name: MOUNT_POINT
+              value: {{ include "persistence.mountPoint" $ }}
+            {{- end }}
+          readinessProbe:
+            exec:
+              command:
+                - /bin/grep
+                - "Application CuramServerCode started"
+                - {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: 90
+            periodSeconds: 10
+          {{- if .resources }}
+          {{- with .resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- else }}
+          {{- with $.Values.global.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            - name: server-cm
+              mountPath: /config/server.xml
+              subPath: server.xml
+            - name: jvm-override
+              mountPath: /config/configDropins/overrides/jvm.options
+              subPath: jvm.options
+            - name: jvm-options-cm
+              mountPath: /config/jvm.options
+              subPath: jvm.options
+            - name: messaging-config
+              mountPath: /config/adc_conf/server_resources_messaging.xml
+              subPath: server_resources_messaging.xml
+            - name: applications-cm
+              mountPath: /config/adc_conf/server_applications.xml
+              subPath: server_applications.xml
+            - name: ejb-bindings
+              mountPath: /config/configDropins/defaults/application_CuramServerCode.xml
+              subPath: application_CuramServerCode.xml
+            - name: dbconn-cm
+              mountPath: /config/adc_conf/server_resources_jdbc.xml
+              subPath: server_resources_jdbc.xml
+            - name: log4j-cm
+              mountPath: /opt/log4j
+            - name: endpoints-cm
+              mountPath: /config/adc_conf/server_endpoints.xml
+              subPath: server_endpoints.xml
+            - name: logging-cm
+              mountPath: /config/adc_conf/server_logging.xml
+              subPath: server_logging.xml
+            - name: transactions-cm
+              mountPath: /config/adc_conf/server_resources_tx.xml
+              subPath: server_resources_tx.xml
+            - name: sessions-cm
+              mountPath: /config/adc_conf/sessions_management.xml
+              subPath: sessions_management.xml
+            - name: security-cm
+              mountPath: /config/adc_conf/server_security.xml
+              subPath: server_security.xml
+            - name: ltpa-keys-cm
+              mountPath: /opt/ibm/wlp/output/defaultServer/resources/security/ltpa.keys
+              subPath: ltpa.keys
+            {{- if or $.Values.global.database.ssl.secretName $.Values.global.mq.tlsSecretName }}
+            - name: keystore-volume
+              mountPath: /output/resources/security
+            {{- end }}
+            {{- if $.Values.global.apps.common.persistence.enabled }}
+            - name: {{ $.Release.Name }}-persistence-volume
+              mountPath: {{ include "persistence.mountPoint" $ }}
+              subPath: {{ include "persistence.subDir" $ }}
+            {{- end }}
+{{- end }}
+{{- end }}

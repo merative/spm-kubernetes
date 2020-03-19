@@ -1,39 +1,45 @@
-# Default values for fat-spm.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
 #
-#    prodConfig: v75CrossSolutions
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-#    prodConfig: v75PlatformExProd
+# http://www.apache.org/licenses/LICENSE-2.0
 #
-
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
 global:
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: Always
-  ihs: 
-    servicePort: 443
-    serviceType: NodePort
-    config: 
-      readinessPath: /CuramStatic
-      ingressPath: /CuramStatic
+  ihs:
+    runAs: 1000
+    replicaCount: 1
+    readinessPath: /CuramStatic
+    ingressPath: /CuramStatic
+    resources: {}
   imagePullSecret:
     registry: *imageRegistry
-  resources:
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    limits:
-      cpu: 1
-      memory: 1Gi
-    requests:
-      cpu: 1
-      memory: 1Gi
-  
-  ingress:
-    enabled: true
-    hostname: minikube.local
-
-nameOverride: ""
-fullnameOverride: ""
+  apps:
+    common:
+      port: 8443
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        # mountPoint: "/tmp/persistence"
+        # subDir: "/folder/name"

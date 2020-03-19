@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,14 +15,23 @@
 ###############################################################################
 
 global:
+  # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
+  license: ''
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: Always
+  database:
+    type: db2
+    port: 50000
+    dbName: DATABASE
+    username: db2admin
+    initTime: 2
   xmlserver:
     port: 1800
     replicaCount: 1
   imagePullSecret:
     registry: *imageRegistry
 
-nameOverride: ""
-fullnameOverride: ""

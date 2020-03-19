@@ -1,0 +1,154 @@
+---
+title: SPM batch processing on Kubernetes
+description: SPM batch processing on Kubernetes
+---
+
+## How batch streaming is deployed in IBM® Cloud™ Kubernetes Services (IKS)
+
+SPM on Kubernetes supports a different model for batch processing in IKS, where, as outlined earlier in this runbook, SPM batch processing can be built and deployed into its own pod.
+By running SPM batch processing in its own pod, the pod can leverage the benefits of flexibility, elasticity, efficiency and the strategic value offered by cloud native architecture.
+
+### What is batch streaming
+
+The batch streaming infrastructure provides a straightforward mechanism to implement a batch process so that it can be run in parallel (streams) across multiple pods.
+For example, if we wanted to issue payments, the chunker identifies all the cases to be paid and the stream would process a case and issue the the payment(s) that are due.
+
+<InlineNotification>
+
+**Note:** For more information, see [Batch Streaming Architecture](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/BatchPerformanceMechanisms/c_BATCHPER_Architecture1AdditionalInformation1.html)
+
+</InlineNotification>
+
+### Setting up Batch Streaming yaml files
+
+Outlined below is an example for the steps required to set up Batch Streaming.
+For this example we are going to use the bulk reassessment of food assistance case types.
+
+The first stage is to set up a new yaml file for the streaming and chunking batch processing.
+
+<InlineNotification>
+
+**Note:** No SPM default installation settings were changed.
+
+</InlineNotification>
+
+```shell
+export NAMESPACE=
+export releasename=
+kubectl create job --from=cronjob/$releasename-batch -n $NAMESPACE -o yaml --dry-run testjob > yaml_chart_name.yaml
+```
+
+<InlineNotification>
+
+**Note:** where
+
+* NAMESPACE is the namespace where you want to run the batch processing
+* releaseName is the name of the release you are using
+* yaml_chart_name is the name of the chart you are creating
+  * It is recommended that a new chart is created for each process, e.g. stream_foodassistance, chunker_foodassistance
+
+</InlineNotification>
+
+A coresponding `yaml` file is created.
+Open the yaml file in an editor e.g  vi `chunker_foodassistance.yaml`
+
+In the yaml file, add the following lines after the `containers` section:
+
+<Tabs>
+
+<Tab label="Chunker">
+<Row>
+<Column>
+
+```yaml
+spec:
+  backoffLimit: 5
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+          - build.sh
+          - runbatch
+        args:
+          - -Dcuram.jmx.output_statistics_timer_enabled=true
+          - -Dcuram.jmx.output_statistics_timer_folder=/tmp
+          - -Dcuram.jmx.output_statistics_timer_period=60000
+          - -Dbatch.program=curam.core.sl.infrastructure.assessment.intf.CREOLEBulkCaseChunkReassessmentByProduct.process
+          - -Dbatch.parameters="productID=4200"
+        env:
+          - name: ANT_OPTS
+            value: -Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_chunker.log
+        image: ......
+
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Stream">
+<Row>
+<Column>
+
+```yaml
+spec:
+  backoffLimit: 5
+  template:
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - command:
+          - build.sh
+          - runbatch
+        args:
+          - -Dcuram.jmx.output_statistics_timer_enabled=true
+          - -Dcuram.jmx.output_statistics_timer_folder=/tmp
+          - -Dcuram.jmx.output_statistics_timer_period=60000
+          - -Dbatch.program=curam.core.sl.infrastructure.assessment.intf.CREOLEBulkCaseChunkReassessmentStream.process
+        env:
+          - name: ANT_OPTS
+            value: -Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_stream.log
+        image: ......
+
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+At this point you should now have a yaml file for a chunker and streamer for bulk reassessment of food assistance case types.
+
+### Running batch streaming yaml files
+
+To orchestrate the batch process, run the following command and repeat for the chunker and streamer(s).
+
+```shell
+kubectl create -f yaml_chart_name.yaml -n $NAMESPACE
+```
+
+![spm batch on kubernetes](../../images/spm_batch_processing_on_kubernetes.png)
+<Caption>
+
+*Figure 1:* SPM batch processing on Kuberbetes
+
+</Caption>
+
+<InlineNotification>
+
+**Note:** where
+
+* NAMESPACE is the namespace where you want to run the batch processing
+* yaml_chart_name is the name of the chart you are creating
+
+</InlineNotification>
+
+### Post batch processing
+
+When the batch processes complete, the pods remain behind and are not shut down.
+
+The batch pods that are created for batch streaming are on demand. After the batch process finishes, the related pods should be destroyed to free resources in the IKS cluster.

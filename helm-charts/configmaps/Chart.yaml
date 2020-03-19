@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,17 +16,15 @@
 apiVersion: v1
 name: configmaps
 description: Helm Chart for Config Maps preparation in support of Container Deployment of SPM within a Kubernetes Cluster
+version: 1.2.0
 maintainers:
   - name: Cúram SPM Dev Team
-    url: https://github.com/IBM/spm-containerization
+    url: https://github.com/IBM/spm-kubernetes
 sources:
-  - https://github.com/IBM/spm-containerization
-version: 1.1.0
+  - https://github.com/IBM/spm-kubernetes
 keywords:
   - Liberty
-  - runtime
-  - microservices
-  - ICP
+  - Minikube
   - IKS
   - Curam
   - SPM

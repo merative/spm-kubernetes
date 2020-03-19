@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -45,6 +45,20 @@ Create chart name and version as used by the chart label.
 */}}
 {{- define "batch.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Build up full image path
+*/}}
+{{- define "batch.imageFullName" -}}
+{{- .registry -}}/
+{{- if .imageLibrary -}}
+{{- .imageLibrary -}}/
+{{- end -}}
+{{- if .imagePrefix -}}
+{{- .imagePrefix -}}
+{{- end -}}
+batch:{{- .imageTag -}}
 {{- end -}}
 
 {{/*

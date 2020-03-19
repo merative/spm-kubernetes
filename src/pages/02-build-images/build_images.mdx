@@ -1,0 +1,136 @@
+---
+title: Building the Docker® images
+description: Building the Docker images
+---
+
+Now that all the elements are in place, build the images as follows:
+
+* To build the XML server image, run the following commands:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+echo -e 'content/release-stage/*\n!content/release-stage/CuramSDEJ/xmlserver' > .dockerignore
+docker build \
+     --tag minikube.local:5000/xmlserver:latest \
+     --file XMLServer.Dockerfile .
+```
+
+* To build the batch image, run the following commands:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+echo -e 'content/release-stage/ear' > .dockerignore
+docker build \
+     --tag minikube.local:5000/batch:latest \
+     --file Batch.Dockerfile .
+```
+
+* To build the application image, run the following commands for each of the applications (EAR files) needed:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+echo -e 'content/release-stage/*\n!content/release-stage/build\n!content/release-stage/ear\n!content/release-stage/CuramSDEJ' > .dockerignore
+docker build \
+     --tag minikube.local:5000/curam:latest \
+     --file EAR.Dockerfile \
+     --build-arg MQ_RA_LICENSE=--acceptLicense \
+     --build-arg EAR_NAME=Curam .
+```
+
+<InlineNotification>
+
+For additional SPM applications (e.g. Rest, CitizenPortal), make the following changes to the command:
+
+* the value of the `--tag` argument must be the application name in _lowercase_
+* the value of the `--build-arg EAR_NAME` argument must be the name of the EAR file _without_ the file extension (that is, for `Rest.ear`, use the value `Rest`)
+
+```shell
+docker build \
+     --tag minikube.local:5000/citizenportal:latest \
+     --file EAR.Dockerfile \
+     --build-arg MQ_RA_LICENSE=--acceptLicense \
+     --build-arg EAR_NAME=CitizenPortal .
+```
+
+</InlineNotification>
+
+* To build the IBM MQ server image, run the following commands:
+
+```shell
+cd $SPM_HOME/dockerfiles/MQ/
+docker build \
+     --tag minikube.local:5000/mqserver:latest \
+     --file Dockerfile .
+```
+
+* To build the static content image, run the following commands:
+
+```shell
+cd $SPM_HOME/dockerfiles/HTTPServer/
+docker build \
+     --tag minikube.local:5000/ihs:latest \
+     --file StaticContent.Dockerfile .
+```
+
+* To build an SPM Docker image for your *built* Universal Access application:
+  * Copy the `build` directory from the React application to `$SPM_HOME/dockerfiles/HTTPServer`
+  * Run the following commands:
+
+<InlineNotification>
+
+This is applicable only if you are licensed for [Universal Access](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.universalaccess.doc/CitizenEngagement/ctr_CitizenEngagementApplication.html)
+
+</InlineNotification>
+
+```shell
+cd $SPM_HOME/dockerfiles/HTTPServer/
+docker build \
+     --tag minikube.local:5000/ce-app:latest \
+     --file CE.Dockerfile .
+```
+
+## Pushing the images to the registry
+
+When you set up Minikube by following the steps in [Minikube](../01-prereq/minikube), a registry was also created to store the Docker images.
+To push the new images that you created to the registry, run the following shell script:
+
+```shell
+docker push minikube.local:5000/xmlserver:latest
+docker push minikube.local:5000/batch:latest
+docker push minikube.local:5000/curam:latest
+docker push minikube.local:5000/mqserver:latest
+docker push minikube.local:5000/ihs:latest
+```
+
+<InlineNotification>
+
+If any additional images were built (for other SPM applications or for the React application), do not forget to push the images too. For example:
+
+```shell
+docker push minikube.local:5000/citizenportal:latest
+docker push minikube.local:5000/ce-app:latest
+```
+
+</InlineNotification>
+
+## View the artifacts in the repository
+
+Confirm that the pushes to the Docker registry succeeded. Run the following command:
+
+```shell
+curl http://minikube.local:5000/v2/_catalog
+```
+
+The command returns the following result:
+
+```json
+{"repositories":["batch","curam","mqserver","xmlserver","ihs"]}
+```
+
+<InlineNotification>
+
+**Note:** When you shut down Minikube, you might need to repush the Docker images to the registry.
+
+</InlineNotification>
+
+For more information about the Docker Registry HTTP API, see [Docker Registry HTTP API V2](https://docs.docker.com/registry/spec/api/).

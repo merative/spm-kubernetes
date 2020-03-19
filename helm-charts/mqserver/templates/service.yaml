@@ -1,8 +1,8 @@
 {{- range $name, $app := .Values.global.apps.config }}
-{{- if $app.enabled }}
+{{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
 ---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

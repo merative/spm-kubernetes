@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,49 +16,232 @@
 
 global:
   images:
-    registry: &imageRegistry minikube.local:5000
+    registry: &imageRegistry us.icr.io
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
     pullPolicy: Always
   imagePullSecret:
     registry: *imageRegistry
+  ceApp:
+    replicaCount: 1
+    imageLibrary: ''
+    imageName: ce-ihs
+    imageTag: latest
+    ingressPath: /universal
+    resources: {}
+  ihs:
+    runAs: 1000
+    replicaCount: 1
+    readinessPath: /CuramStatic
+    ingressPath: /CuramStatic
+    resources: {}
+  database:
+    ## Database connection configuration
+    # The property wlp_psw: contains the XOR password injected in the Liberty  configuration
+    # The property spm_psw: contains the encrypted password injected in Bootstrap.properties
+    type: db2
+    port: 50000
+    dbName: DATABASE
+    username: db2admin
+    wlp_psw: "{xor}Oz1tPjsyNjE="
+    spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
+    ssl: {}
   apps:
     common:
       port: 8443
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        # mountPoint: "/tmp/persistence"
+        # subDir: "/folder/name"
+        jmxstats:
+          ## Parameters of the JMX Stats to be persisted on the PVC
+          # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
+          enabled: false
+          timerPeriod: 60000
+      sessionTimeout: 30m
+      transactionTimeout: 3m
+      cookieHttpOnly: true
+      security: {}
+      loginTrace: true
     config:
       curam:
         enabled: true
-        ingressPath: /Curam
         readinessPath: /Curam
+        ingressPath: /Curam
+        jvm: 
+          - "-Xms2048m"
+          - "-Xmx2048m"
         resources:
-          limits:
-            cpu: 2
-            memory: 4Gi
           requests:
-            cpu: 2
-            memory: 4Gi
-  ihs: 
-    servicePort: 443
+            cpu: 1
+            memory: 2.5Gi
+          limits:
+            cpu: 1.5
+            memory: 3Gi
+      rest:
+        enabled: true
+        ingressPath: /Rest
+        jvm: 
+          - "-Xms1536m"
+          - "-Xmx1536m"
+        resources:
+          requests:
+            cpu: 0.75
+            memory: 1.5Gi
+          limits:
+            cpu: 1.5
+            memory: 2Gi
+        readinessExec:
+          - /bin/grep
+          - "application available .*/Rest"
+          - /logs/messages.log
+      citizenportal:
+        enabled: false
+        readinessPath: /CitizenPortal
+        ingressPath: /CitizenPortal
+        jvm: 
+          - "-Xms2048m"
+          - "-Xmx2048m"
+        resources:
+          requests:
+            cpu: 1
+            memory: 2.5Gi
+          limits:
+            cpu: 1.5
+            memory: 3Gi
+      curamwebservices:
+        enabled: false
+        readinessPath: /CuramWS2/SOAPMonitor
+        ingressPath: /CuramWS2
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      curambirtviewer:
+        enabled: false
+        readinessTCPProbe: true
+        ingressPath: /CuramBIRTViewer
+        jvm: 
+          - "-Xms768m"
+          - "-Xmx768m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 1Gi
+          limits:
+            cpu: 0.75
+            memory: 1.5Gi
+      cpmexternalns:
+        enabled: false
+        readinessPath: /CPMExternalNS
+        ingressPath: /CPMExternalNS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      cpmexternals:
+        enabled: false
+        readinessPath: /CPMExternalS
+        ingressPath: /CPMExternalS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      navigatorns:
+        enabled: false
+        readinessPath: /NavigatorNS
+        ingressPath: /NavigatorNS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      navigators:
+        enabled: false
+        readinessPath: /NavigatorS
+        ingressPath: /NavigatorS
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      mdtworkspace:
+        enabled: false
+        readinessPath: /MDTWorkspace
+        ingressPath: /MDTWorkspace
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+      samplepublicaccess:
+        enabled: false
+        readinessPath: /SamplePublicAccess
+        ingressPath: /SamplePublicAccess
+        jvm: 
+          - "-Xms512m"
+          - "-Xmx512m"
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 768Mi
+          limits:
+            cpu: 0.75
+            memory: 1Gi
+  ihs:
     serviceType: NodePort
-    config: 
+    config:
       readinessPath: /CuramStatic
       ingressPath: /CuramStatic
-  database:
-    type: "db2"
-    hostname: "db2hostname"
-    dbName: "DATABASE"
-    serviceName: ""
-    username: "db2admin"
-    password: "db2adminpassword"
-    spm_psw: "spmEncryptedDBPassword"
-    wlp_psw: "xorEncodedDBPassword"
-    port: 50000
-    ssl:
-      enabled: false
-      secretName: 'secretName'
+  openldap:
+    enabled: false
+    identityOnly: false
 
 ingress:
-  enabled: true
-  generateCert: true
-  hostname: minikube.local
+  enabled: false
+  #hostname: minikube.local
 
 nameOverride: ""
 fullnameOverride: ""

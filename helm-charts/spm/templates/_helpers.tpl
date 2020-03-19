@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -55,6 +55,15 @@ Create the image pull secret
 {{- end }}
 
 {{/*
+Create the persistence secret
+*/}}
+{{- define "persistenceSecret" -}}
+secret-key: {{ required "secretKey is required" .secretKey | b64enc | quote }}
+access-key: {{ required "accessKey is required" .accessKey | b64enc | quote}}
+service-instance-id: {{ required "instanceId is required" .instanceId | b64enc | quote }}
+{{- end -}}
+
+{{/*
 Build up ssl-services value
 */}}
 {{- define "sslServicesChain" }}
@@ -63,9 +72,10 @@ Build up ssl-services value
 ssl-service={{ $.Release.Name }}-apps-{{ $name }};
 {{- end -}}
 {{- end -}}
-{{- if .Values.global.images.ceDistTag -}}
-ssl-service={{ $.Release.Name }}-ce-app
+{{- if .Values.global.ceApp.imageTag -}}
+ssl-service={{ $.Release.Name }}-ce-app;
 {{- end -}}
+ssl-service={{ $.Release.Name }}-ihs;
 {{- end }}
 
 {{/*
@@ -77,9 +87,10 @@ Build up sticky-cookie-services value
 serviceName={{ $.Release.Name }}-apps-{{ $name }} name={{ $name }}Route hash=sha1 path=/;
 {{- end -}}
 {{- end -}}
-{{- if .Values.global.images.ceDistTag -}}
+{{- if .Values.global.ceApp.imageTag -}}
 serviceName={{ $.Release.Name }}-ce-app name=ceRoute hash=sha1 path=/;
 {{- end -}}
+serviceName={{ $.Release.Name }}-ihs name=ihsRoute hash=sha1 path=/;
 {{- end }}
 
 {{/*

@@ -1,0 +1,37 @@
+{{- if $.Values.global.apps.common.persistence.enabled }}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $.Release.Name }}-persistence-pvc
+  annotations:
+    ibm.io/auto-create-bucket: "false"
+    ibm.io/auto-delete-bucket: "false"
+    ibm.io/bucket: {{ required "bucketName is required" $.Values.global.apps.common.persistence.bucketName | quote }}
+    ibm.io/secret-name: "{{ $.Release.Namespace }}-persistence-secret"
+  labels:
+{{ include "apps.labels" $ | indent 4 }}
+spec:
+  accessModes:
+    - "ReadWriteMany"
+  resources:
+    requests:
+      storage: 10Gi # Enter a fictitious value
+  storageClassName: ibmc-s3fs-standard-regional
+{{- end }}

@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019 IBM Corporation
+Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,6 +53,20 @@ Create the image pull secret
 {{- define "imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
+
+{{/*
+Build up full image path
+*/}}
+{{- define "mqserver.imageFullName" -}}
+{{- .registry -}}/
+{{- if .imageLibrary -}}
+{{- .imageLibrary -}}/
+{{- end -}}
+{{- if .imagePrefix -}}
+{{- .imagePrefix -}}
+{{- end -}}
+mqserver:{{- .imageTag -}}
+{{- end -}}
 
 {{/*
 Common labels

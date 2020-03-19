@@ -2,7 +2,7 @@
 {{- if $app.enabled }}
 ---
 ###############################################################################
-# Copyright 2019 IBM Corporation
+# Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ spec:
     - port: {{ $.Values.global.apps.common.port | default 8443 }}
       targetPort: client
   selector:
-    app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}
+    app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-producer
     app.kubernetes.io/instance: {{ $.Release.Name }}
 {{- end }}
 {{- end }}
