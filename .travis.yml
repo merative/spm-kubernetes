@@ -18,7 +18,7 @@ deploy:
     skip_cleanup: true
     local_dir: public
     github_token: $GITHUB_TOKEN
-    github_url: github.ibm.com
+    github_url: github.com
     committer_from_gh: true
     target_branch: gh-pages
     on:
