@@ -55,7 +55,7 @@ spec:
               servicePort: {{ $.Values.global.apps.common.port }}
           {{- end }}
           {{- end }}
-          {{- if .Values.global.ceApp.imageTag }}
+          {{- if .Values.global.ceApp.imageName }}
           - path: {{ .Values.global.ceApp.ingressPath | default "/universal" }}
             backend:
               serviceName: {{ $.Release.Name }}-ce-app

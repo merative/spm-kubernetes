@@ -1,4 +1,5 @@
 {{- with .Values.global.ceApp }}
+{{- if .imageName }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -85,4 +86,5 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+{{- end }}
 {{- end }}

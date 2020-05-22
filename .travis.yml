@@ -10,7 +10,7 @@ install:
   - npm install
 
 script:
-  - markdownlint **/*.mdx --ignore src/pages/index.mdx
+  - markdownlint **/*.mdx
   - gatsby build --prefix-paths
 
 deploy:
@@ -18,8 +18,18 @@ deploy:
     skip_cleanup: true
     local_dir: public
     github_token: $GITHUB_TOKEN
-    github_url: github.com
+    github_url: github.ibm.com
     committer_from_gh: true
     target_branch: gh-pages
     on:
       branch: master
+  - provider: pages
+    skip_cleanup: true
+    local_dir: public
+    repo: wh-curamspm-devops/vnext-assets
+    github_token: $GITHUB_TOKEN
+    github_url: github.ibm.com
+    committer_from_gh: true
+    target_branch: master
+    on:
+      branch: next-release

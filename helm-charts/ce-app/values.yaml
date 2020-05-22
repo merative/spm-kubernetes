@@ -18,7 +18,7 @@ global:
   ceApp:
     replicaCount: 1
     imageLibrary: ''
-    imageName: ce-ihs
+    imageName: ''
     imageTag: latest
     ingressPath: /universal
     readinessPath: /universal
