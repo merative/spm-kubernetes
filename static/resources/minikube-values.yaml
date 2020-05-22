@@ -1,0 +1,41 @@
+---
+global:
+  license: '' # Set to 'accept' after reviewing all license agreements
+  images:
+    registry: minikube.local
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
+    pullPolicy: Always
+  ceApp:
+    imageLibrary: ''
+    imageName: ce-app
+    imageTag: latest
+  apps:
+    common:
+      initialDelaySeconds: 60
+      security:
+        username: SYSTEM
+    config:
+      curam:
+        enabled: true
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+      rest:
+        enabled: false
+      citizenportal:
+        enabled: false
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+ingress:
+  enabled: true
+  tlsSecretName: testkube-tls
+  generateCert: true
+  hostname: minikube.local

@@ -62,6 +62,18 @@ batch:{{- .imageTag -}}
 {{- end -}}
 
 {{/*
+Build up Ant Options for general and JMS Stats configuration
+*/}}
+{{- define "antOpts" }}
+{{- if ($.Values.global.batch.javaMetrics) ($.Values.global.batch.javaMetrics.antOpts) -}}
+{{- $.Values.global.batch.javaMetrics.antOpts -}}
+{{- end }}
+{{- if ($.Values.global.batch.javaMetrics) ($.Values.global.batch.javaMetrics.heapSize) -}}
+{{- $.Values.global.batch.javaMetrics.heapSize -}}
+{{- end }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "batch.labels" -}}

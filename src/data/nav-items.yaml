@@ -74,6 +74,8 @@
       path: /06-runtime/troubleshoot
     - title: Remote Debugging
       path: /06-runtime/Remote-Debugging
+    - title: MustGather
+      path: /06-runtime/must_gather
 - title: Known Issues
   pages:
     - path: /known_issues

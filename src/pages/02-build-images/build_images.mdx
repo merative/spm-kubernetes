@@ -113,6 +113,23 @@ docker push minikube.local:5000/ce-app:latest
 
 </InlineNotification>
 
+## Pushing the images to the IBM Cloud Container Registry
+
+IBM Cloud Container Registry is the service to distribute the containers across Kubernetes clusters. In order to configure it, some preparation steps are
+required to obtain the credentials and a namespace, globally unique between all the tenants of IBM Cloud. Please refer to the IBM Cloud Container Registry
+documentation [here](https://cloud.ibm.com/docs/Registry?topic=Registry-getting-started) for more information on configuring the registry and obtaining the required credentials.
+
+```shell
+ibmcloud login -c <ICR_ENDPOINT> --apikey <ICR_API_KEY> -r <ICR_DC_REGION>
+ibmcloud cr login
+
+docker push us.icr.io/<ICR_NAMESPACE>/xmlserver:latest
+docker push us.icr.io/<ICR_NAMESPACE>/batch:latest
+docker push us.icr.io/<ICR_NAMESPACE>/curam:latest
+docker push us.icr.io/<ICR_NAMESPACE>/mqserver:latest
+docker push us.icr.io/<ICR_NAMESPACE>/ihs:latest
+```
+
 ## View the artifacts in the repository
 
 Confirm that the pushes to the Docker registry succeeded. Run the following command:

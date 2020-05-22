@@ -16,7 +16,7 @@
 apiVersion: v1
 name: batch
 description: Batch Chart for SPM Batch within a Kubernetes Cluster
-version: 1.1.1
+version: 1.2.0
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

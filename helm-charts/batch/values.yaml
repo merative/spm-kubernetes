@@ -44,6 +44,7 @@ global:
     programParameters: ""
     # javaMetrics:
     #   antOpts: "-Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_chunker.log"
+    #   heapSize: "-Xms512m -Xmx512m"
     #   timer: "-Dcuram.jmx.output_statistics_timer_enabled=true"
     #   timerFolder: "-Dcuram.jmx.output_statistics_timer_folder=/tmp"
     #   timerPeriod: "-Dcuram.jmx.output_statistics_timer_period=60000"

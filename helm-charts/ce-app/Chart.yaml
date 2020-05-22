@@ -17,7 +17,7 @@
 apiVersion: v1
 name: ce-app
 description: Helm Chart for deploying the Universal Access React application
-version: 1.0.0
+version: 1.1.0
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

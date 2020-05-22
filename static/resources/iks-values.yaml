@@ -1,0 +1,48 @@
+---
+global:
+  license: '' # Set to 'accept' after reviewing all license agreements
+  images:
+    registry: us.icr.io
+    imageLibrary: foo-library
+    imagePrefix: test_
+    imageTag: latest
+    pullPolicy: Always
+  ceApp:
+    imageLibrary: foo-library
+    imageName: ce-app
+    imageTag: latest
+  imagePullSecret:
+    registry: us.icr.io
+    username: '' # IAM username for IBM Container Registry
+    password: '' # IAM API Key for IBM Container Registry
+  database:
+    initTime: 30
+  apps:
+    common:
+      initialDelaySeconds: 60
+      security:
+        username: SYSTEM
+    config:
+      curam:
+        enabled: true
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+      rest:
+        enabled: false
+      citizenportal:
+        enabled: false
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+ingress:
+  annotations:
+    ingress.bluemix.net/ALB-ID: ''
+  enabled: true
+  hostname: foo.domain.com
+  tlsSecretName: default-us-icr-io

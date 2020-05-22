@@ -15,6 +15,7 @@
     "test:prefix": "yarn build:prefix && yarn serve:prefix"
   },
   "dependencies": {
+    "carbon-icons": "^7.0.7",
     "gatsby": "^2.19.16",
     "gatsby-theme-carbon": "^1.20.0",
     "react": "^16.8.6",

@@ -15,6 +15,9 @@
 ###############################################################################
 
 global:
+  batch:
+    javaMetrics:
+      heapSize: "-Xms512m -Xmx512m"
   images:
     registry: &imageRegistry us.icr.io
     imageLibrary: ''
@@ -26,16 +29,17 @@ global:
   ceApp:
     replicaCount: 1
     imageLibrary: ''
-    imageName: ce-ihs
+    imageName: ''
     imageTag: latest
     ingressPath: /universal
     resources: {}
   ihs:
+    serviceType: NodePort
     runAs: 1000
     replicaCount: 1
+    resources: {}
     readinessPath: /CuramStatic
     ingressPath: /CuramStatic
-    resources: {}
   database:
     ## Database connection configuration
     # The property wlp_psw: contains the XOR password injected in the Liberty  configuration
@@ -230,11 +234,6 @@ global:
           limits:
             cpu: 0.75
             memory: 1Gi
-  ihs:
-    serviceType: NodePort
-    config:
-      readinessPath: /CuramStatic
-      ingressPath: /CuramStatic
   openldap:
     enabled: false
     identityOnly: false
