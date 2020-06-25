@@ -1,11 +1,11 @@
 ---
-title: SPM Kubernetes cluster application architecture
-description: SPM Kubernetes cluster application architecture
+title: SPM architecture on IKS
+description: SPM architecture on IKS
 ---
 
 ## SPM Kubernetes cluster application architecture
 
-The application architecture overview in this section is represents how SPM should be deployed in to IKS.  
+The application architecture overview in this section represents how SPM should be deployed into IKS.
 This architecture allows SPM to leverage the benefits of flexibility, elasticity, efficiency and the strategic value offered by cloud native architecture.
 
 ![SPM on Kubernetes - Static Content](../../images/spm-reference-arch-kube.png)
@@ -20,7 +20,7 @@ This architecture allows SPM to leverage the benefits of flexibility, elasticity
 * Liberty instances packaged in Docker images, which are run as Docker containers.
 * Batch packaged as Docker images, which are run as containers.
 * XMLServer packaged as Docker images, which are run as containers.
-* SPM only support SPM Docker container when deployed into Kubernetes pods.
+* SPM only supports SPM Docker containers when deployed into Kubernetes pods.
 * JMS messaging engine deployed separately using IBM MQ, managed through Helm charts.
 * Database and IBM MQ deployed on VM.
   * Deployment of database on bare metal and VMs will still be supported when application tier is running in Kubernetes.

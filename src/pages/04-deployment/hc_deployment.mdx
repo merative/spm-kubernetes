@@ -3,6 +3,7 @@ title: Deploying Helm charts
 description: Deploying Helm charts
 ---
 
+
 When the Helm charts are uploaded to the repository, you can deploy the application by using one of the following commands:
 
 ```shell
@@ -23,7 +24,7 @@ Where `releasename` is the name of this Helm release. For example, MyRelease-1.0
 If you do not specify a name, Helm auto generates one. All the names of the Kubernetes objects are created with `releasename-` as prefix.
 
 The `helm install` command installs the Helm charts in the order in which they were loaded in the repository, with all the values defined in the files.
-However, as described in [Setting up the Docker® context](../02-build-images/setup_docker_context), you can override the configuration value by running the following shell script:
+However, as described in [Setting up the Docker® context](/03-build-images/setup_docker_context), you can override the configuration value by running the following shell script:
 
 ```shell
 # Helm v2
@@ -35,11 +36,11 @@ helm install releasename local-development/spm -f override-values.yaml
 
 ### Sample `override-values.yaml` files
 
-Here are two sample override files for deploying to Minikube and to IBM® Kubernetes Service (IKS).
+Here are three sample override files for deploying.
 
 <InlineNotification>
 
-While the Minikube configuration is sufficiently generic to be used almost as-is (given all images were built and pushed with the names outlined in the [Building Docker images](../02-build-images/build_images) section):
+While the Minikube configuration is sufficiently generic to be used almost as-is (given all images were built and pushed with the names outlined in the [Building Docker images](/03-build-images/build_images) section):
 
 * The IKS example requires IAM credentials for the [IBM Container Registry](https://cloud.ibm.com/docs/containers?topic=containers-registry) (`global.imagePullSecret`)
 * The [Application Load Balancer IDs](https://cloud.ibm.com/docs/containers?topic=containers-ingress_annotation#alb-id) (`ingress.annotations."ingress.bluemix.net/ALB-ID"`) to be updated.
@@ -159,6 +160,66 @@ ingress:
 </Row>
 </Tab>
 
+<Tab label="CodeReady Containers">
+<Row>
+<Column>
+
+```yaml path=crc-values.yaml src=/resources/crc-values.yaml
+---
+global:
+  license: 'accept' # Set to 'accept' after reviewing all license agreements
+  images:
+    registry: &imageRegistry image-registry.openshift-image-registry.svc:5000
+    imageLibrary: 'ocp'
+    imagePrefix: ''
+    imageTag: latest
+    pullPolicy: Always
+  imagePullSecret:
+    registry: *imageRegistry
+    username: kubeadmin
+    password:
+  database:
+    hostname: 192.168.0.32
+  ceApp:
+    imageLibrary: ''
+    imageName: ''
+    imageTag: latest
+  apps:
+    common:
+      initialDelaySeconds: 60
+      security:
+        username: SYSTEM
+    config:
+      curam:
+        enabled: true
+        resources:
+          limits:
+            cpu: 2
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 2Gi
+      rest:
+        enabled: false
+      citizenportal:
+        enabled: false
+      curamwebservices:
+        enabled: false
+      curambirtviewer:
+        enabled: false
+  isam:
+    enabled: false
+  ingress:
+    enabled: true
+    tlsSecretName: testkube-tls
+    generateCert: true
+    hostname: conor-ocp.apps-crc.testing
+```
+
+</Column>
+</Row>
+</Tab>
+
 </Tabs>
 
 <InlineNotification>
@@ -222,21 +283,9 @@ kubectl logs -f pod/podname
 
 ## Accessing the application
 
-To access the application, a URL is provided to access the pod within the cluster. Usually this access is done by using an ingress object, for example: `https://minikube.local/Curam`
+To access the application, a URL is provided to access the pod within the cluster. This access is provided using Ingress resources on Kubernetes, and Routes resources on OpenShift.
 
-The application can also be accessed by using a service port directly. To do so, identify the name of the service, to which you want to connect. Run the following command:
+Example URLs:
 
-```shell
-kubectl get services
-```
-
-The SPM application service should be called `releasename-apps-curam`. For example, if you run the `helm install` command with a service name of `spm`, you can then get the SPM application URL by running the following command:
-
-```shell
-minikube service spm-apps-curam --url
-```
-
-This command provides an IP address and a port to connect to.  To use the provided URL, replace  `http` with `https`. Point your browser to that URL to open the SPM login page.
-
-When running `minikube service spm-apps-curam --url` on Red Hat, you might encounter an error
-[Minikube issue 3558](https://github.com/kubernetes/minikube/issues/3558) where the command attempts to start a browser by using X Window System. Ignore this error if it occurs.
+* Minikube: `https://minikube.local/Curam`
+* CRC: `https://spm-ocp.apps-crc.testing/Curam`

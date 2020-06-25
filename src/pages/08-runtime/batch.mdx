@@ -3,8 +3,6 @@ title: Batch processing
 description: Batch processing
 ---
 
-Batch processes are not relevant in this deployment. However, they are included to prove the way that they are deployed and run.
-
 The Kubernetes object that is being created by using the code in this repository is a Cron job, which is scheduled to run every 15 minutes.
 Therefore, initially no pod is listed, but a pod is started after 15 minutes and is visible when you run the `kubectl get pods` command.
 

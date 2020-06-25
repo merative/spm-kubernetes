@@ -28,7 +28,7 @@ Before you run the charts, you must configure the database, configure IBM MQ, an
 ### Configuring the database
 
 Update the Helm charts to point to the database that you installed in
-[Install Prerequisite Software](../../01-prereq/prereq).
+[Install Prerequisite Software](/01-prereq/prereq).
 The following values are provided in the  `values.yaml` files and must be modified before deployment to reflect your local environment:
 
 ```
@@ -101,9 +101,9 @@ batch:
 
 ## Packaging the Helm charts
 
-To use the Helm Charts to install SPM on Minikube, package the charts and load them into a repository. For more information, see [ChartMuseum](../../01-prereq/chartmuseum).
+To use the Helm Charts to install SPM, package the charts and load them into a repository. For more information, see [ChartMuseum](/01-prereq/chartmuseum).
 
-To publish the individual charts to the Chart museum repository, run the following commands from the helm-charts folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](../../01-prereq/git):
+To publish the individual charts to the Chart museum repository, run the following commands from the helm-charts folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](/01-prereq/git):
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -113,6 +113,8 @@ helm push configmaps local-development
 helm push xmlserver local-development
 helm push batch local-development
 helm push ihs local-development
+helm push ce-app local-development
+helm push openldap local-development
 helm repo update
 ```
 

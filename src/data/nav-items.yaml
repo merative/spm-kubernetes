@@ -20,6 +20,8 @@
       path: /01-prereq/minikube
     - title: IBM Cloud Kubernetes Service
       path: /01-prereq/iks
+    - title: CodeReady Containers
+      path: /01-prereq/crc_installation
     - title: ChartMuseum
       path: /01-prereq/chartmuseum
     - title: GitHub repo
@@ -27,55 +29,55 @@
 - title: IBM Cúram Social Program Management application
   pages:
     - title: Installing SPM software
-      path: /01-deploy-spm/SPM-sw
+      path: /02-deploy-spm/SPM-sw
     - title: Create SPM Database
-      path: /01-deploy-spm/create_spm_db
+      path: /02-deploy-spm/create_spm_db
     - title: Building the SPM application
-      path: /01-deploy-spm/spm-build
+      path: /02-deploy-spm/spm-build
 - title: Building Docker images
   pages:
     - title: Setting up the Docker context
-      path: /02-build-images/setup_docker_context
+      path: /03-build-images/setup_docker_context
     - title: Building the Docker images
-      path: /02-build-images/build_images
+      path: /03-build-images/build_images
 - title: Deploying with Helm Charts
   pages:
     - title: Preparing Helm charts
-      path: /03-deployment/hc_preparation
+      path: /04-deployment/hc_preparation
     - title: Deploying Helm charts
-      path: /03-deployment/hc_deployment
+      path: /04-deployment/hc_deployment
 - title: Operations
   pages:
     - title: Updating Tools
-      path: /04-operations/updating_tools
+      path: /06-operations/updating_tools
     - title: Updating SPM Deployment
-      path: /04-operations/updating_curam
+      path: /06-operations/updating_curam
 - title: Supporting Infrustructure
   pages:
     - title: MQ Configuration
-      path: /05-supporting-infrastructure/MQSetupConfig
+      path: /07-supporting-infrastructure/MQSetupConfig
     - title: Cloud Object Storage
-      path: /05-supporting-infrastructure/COS
+      path: /07-supporting-infrastructure/COS
     - title: LDAP
-      path: /05-supporting-infrastructure/LDAP
+      path: /07-supporting-infrastructure/LDAP
     - title: LogDNA
-      path: /05-supporting-infrastructure/LogDNA
+      path: /07-supporting-infrastructure/LogDNA
     - title: SPM Batch Processing on IKS
-      path: /05-supporting-infrastructure/batch
+      path: /07-supporting-infrastructure/batch
 - title: Monitoring and troubleshooting
   pages:
-    - title: Monitor the application in Minikube
-      path: /06-runtime/interrogate_runtime
+    - title: Monitor the application
+      path: /08-runtime/interrogate_runtime
     - title: Batch processing
-      path: /06-runtime/batch
+      path: /08-runtime/batch
     - title: XML Server
-      path: /06-runtime/xmlserver
+      path: /08-runtime/xmlserver
     - title: Troubleshooting problems
-      path: /06-runtime/troubleshoot
+      path: /08-runtime/troubleshoot
     - title: Remote Debugging
-      path: /06-runtime/Remote-Debugging
+      path: /08-runtime/Remote-Debugging
     - title: MustGather
-      path: /06-runtime/must_gather
+      path: /08-runtime/must_gather
 - title: Known Issues
   pages:
     - path: /known_issues
@@ -86,3 +88,6 @@
 - title: Disclaimer
   pages:
     - path: /disclaimer
+- title: Contributing
+  pages:
+    - path: /contributing

@@ -9,6 +9,10 @@ const links = [
   {
     title: 'Knowledge Center',
     href: 'https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.nav.doc/spm_7010_welcome.html',
+  },
+  {
+    title: 'Change Log',
+    href: 'https://github.com/IBM/spm-kubernetes/blob/master/CHANGELOG.md',
   }
 ];
 
