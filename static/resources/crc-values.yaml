@@ -2,21 +2,21 @@
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
   images:
-    registry: us.icr.io
-    imageLibrary: foo-library
-    imagePrefix: test_
+    registry: &imageRegistry image-registry.openshift-image-registry.svc:5000
+    imageLibrary: 'ocp'
+    imagePrefix: ''
     imageTag: latest
     pullPolicy: Always
-  ceApp:
-    imageLibrary: foo-library
-    imageName: ce-app
-    imageTag: latest
   imagePullSecret:
-    registry: us.icr.io
-    username: '' # IAM username for IBM Container Registry
-    password: '' # IAM API Key for IBM Container Registry
+    registry: *imageRegistry
+    username: kubeadmin
+    password:
   database:
-    initTime: 30
+    hostname: 192.168.0.32
+  ceApp:
+    imageLibrary: ''
+    imageName: ''
+    imageTag: latest
   apps:
     common:
       initialDelaySeconds: 60
@@ -40,9 +40,10 @@ global:
         enabled: false
       curambirtviewer:
         enabled: false
-ingress:
-  annotations:
-    ingress.bluemix.net/ALB-ID: ''
-  enabled: true
-  hostname: spm.<cluster_name>-<hash>-0000.<region>.containers.appdomain.cloud
-  tlsSecretName: default-us-icr-io
+  isam:
+    enabled: false
+  ingress:
+    enabled: true
+    tlsSecretName: testkube-tls
+    generateCert: true
+    hostname: spm-ocp.apps-crc.testing
