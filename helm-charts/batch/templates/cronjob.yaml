@@ -36,6 +36,11 @@ spec:
           imagePullSecrets:
             - name: {{ .Release.Name }}-pull-secret
           {{- end }}
+          {{- if .Values.global.batch.runAs }}
+          securityContext:
+            runAsUser: {{ .Values.global.batch.runAs }}
+            fsGroup: {{ .Values.global.batch.runAs }}
+          {{- end }}
           volumes:
             - name: bootstrap-file
               configMap:
@@ -80,14 +85,9 @@ spec:
               - -Dbatch.parameters={{ . }}
             {{- end }}
             {{- end }}
-            {{- if $.Values.global.batch.javaMetrics}}
-              - {{ $.Values.global.batch.javaMetrics.timer}}
-              - {{ $.Values.global.batch.javaMetrics.timerFolder}}
-              - {{ $.Values.global.batch.javaMetrics.timerPeriod}}
             env:
               - name: ANT_OPTS
-                value: {{ $.Values.global.batch.javaMetrics.antOpts }}
-            {{- end }}
+                value: {{ include "antOpts" . | quote }} 
             volumeMounts:
               - name: bootstrap-file
                 mountPath: /opt/ibm/Curam/release/project/properties/Bootstrap.properties

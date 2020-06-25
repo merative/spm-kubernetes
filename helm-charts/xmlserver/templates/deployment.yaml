@@ -35,15 +35,22 @@ spec:
         app.kubernetes.io/name: {{ include "xmlserver.fullname" $ }}
         app.kubernetes.io/instance: {{ $.Release.Name }}
     spec:
+      restartPolicy: {{ .restartPolicy | default "Always" }}
       {{- if .runAs }}
       securityContext:
         runAsUser: {{ .runAs }}
+        fsGroup: {{ .runAs }}
       {{- end }}
       {{- if $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
         - name: {{ $.Release.Name }}-pull-secret
       {{- end }}
-      restartPolicy: {{ .restartPolicy | default "Always" }}
+      {{- if $.Values.global.apps.common.persistence.enabled }}
+      volumes:
+        - name: {{ $.Release.Name }}-persistence-volume
+          persistentVolumeClaim:
+            claimName: {{ $.Release.Name }}-persistence-pvc
+      {{- end }}
       initContainers:
         - name: wait-db2
           image: busybox:1.28
@@ -64,5 +71,14 @@ spec:
           {{- with .resources }}
           resources:
             {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $.Values.global.apps.common.persistence.enabled }}
+          env:
+            - name: MOUNT_POINT
+              value: {{ include "persistence.mountPoint" $ }}
+          volumeMounts:
+            - name: {{ $.Release.Name }}-persistence-volume
+              mountPath: {{ include "persistence.mountPoint" $ }}
+              subPath: {{ include "persistence.subDir" $ }}
           {{- end }}
 {{ end }}

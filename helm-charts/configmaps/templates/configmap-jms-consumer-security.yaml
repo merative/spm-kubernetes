@@ -25,8 +25,8 @@ data:
     <server description="Server security configuration">
 
       <ssl clientAuthentication="false" clientAuthenticationSupported="false" id="defaultSSLConfig" keyStoreRef="defaultKeyStore"
-          securityLevel="HIGH" sslProtocol="TLSv1.2"  />
-      <keyStore id="defaultKeyStore" location="key.jks" password="{xor}Lz4sLCgwLTs=" type="JKS"/>
+          securityLevel="HIGH" sslProtocol="TLSv1.2" />
+      <keyStore id="defaultKeyStore" location="key.p12" password="{xor}Lz4sLCgwLTs=" />
 
       <basicRegistry id="basic" realm="BasicRegistry">
         <user name="websphere" password="{xor}KDo9LC83Oi06" />

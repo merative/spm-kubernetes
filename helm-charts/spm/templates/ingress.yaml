@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled }}
+{{- if and .Values.global.ingress.enabled (not (.Capabilities.APIVersions.Has "route.openshift.io/v1")) }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -29,22 +29,22 @@ metadata:
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     nginx.ingress.kubernetes.io/session-cookie-path: /
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.global.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if or .Values.ingress.tlsSecretName .Values.ingress.generateCert }}
+  {{- if or .Values.global.ingress.tlsSecretName .Values.global.ingress.generateCert }}
   tls:
     - hosts:
-        -  {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.ingress.hostname }}
-      {{- if .Values.ingress.generateCert }}
+        -  {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.global.ingress.hostname }}
+      {{- if .Values.global.ingress.generateCert }}
       secretName: {{ .Release.Name }}-tls
       {{- else }}
-      secretName: {{ .Values.ingress.tlsSecretName }}
+      secretName: {{ .Values.global.ingress.tlsSecretName }}
       {{- end }}
   {{- end }}
   rules:
-    - host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.ingress.hostname }}
+    - host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.global.ingress.hostname }}
       http:
         paths:
           {{- range $name, $app := .Values.global.apps.config }}
@@ -52,17 +52,23 @@ spec:
           - path: {{ $app.ingressPath }}
             backend:
               serviceName: {{ $.Release.Name }}-apps-{{ $name }}
-              servicePort: {{ $.Values.global.apps.common.port }}
+              servicePort: https
           {{- end }}
           {{- end }}
           {{- if .Values.global.ceApp.imageName }}
           - path: {{ .Values.global.ceApp.ingressPath | default "/universal" }}
             backend:
               serviceName: {{ $.Release.Name }}-ce-app
-              servicePort: http
+              servicePort: https
+          {{- end }}
+          {{- if .Values.global.isam.enabled }}
+          - path: "/ibm" 
+            backend:
+              serviceName: {{ $.Release.Name }}-apps-curam
+              servicePort: https
           {{- end }}
           - path: {{ .Values.global.ihs.ingressPath | default "/CuramStatic" }}
             backend:
               serviceName: {{ $.Release.Name }}-ihs
-              servicePort: http
+              servicePort: https
 {{- end }}

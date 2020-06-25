@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,13 +23,11 @@ COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/
 
 # Final image
-FROM ibmjava:8-sdk
+FROM registry.connect.redhat.com/ibm/ibmjava8
 
 EXPOSE 1800
 WORKDIR /opt/ibm/Curam/xmlserver
-ENTRYPOINT ["ant", "-f", "xmlserver.xml"]
-
-RUN useradd -u 1001 -r -g 0 -s /usr/sbin/nologin default
+ENTRYPOINT ["/opt/ibm/Curam/xmlserver/start-xmlserver.sh"]
 
 ARG ANT_VERSION
 ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
@@ -37,9 +35,11 @@ ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     JAVA_HOME=/opt/ibm/java
 ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
 
+USER root
 RUN mkdir -p /opt/ibm/Curam/xmlserver \
     && chown -Rc 1001:0 /opt/ibm/Curam
 USER 1001
 
 COPY --from=AntStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
 COPY --chown=1001:0 content/release-stage/CuramSDEJ/xmlserver /opt/ibm/Curam/xmlserver
+COPY --chown=1001:0 content/start-xmlserver.sh /opt/ibm/Curam/xmlserver/start-xmlserver.sh

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 ###############################################################################
 
 ARG EAR_NAME
-ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava
+ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava-ubi
 ARG MQ_ADAPTER_VERSION=9.1.3.0
 ARG MQ_RA_LICENSE
 
@@ -45,7 +45,7 @@ COPY content/${MQ_ADAPTER_VERSION}-IBM-MQ-Java-InstallRA.jar /tmp/
 RUN java -jar /tmp/${MQ_ADAPTER_VERSION}-IBM-MQ-Java-InstallRA.jar ${MQ_RA_LICENSE} /opt
 
 # Create final image
-FROM websphere-liberty:${WLP_VERSION}
+FROM ibmcom/websphere-liberty:${WLP_VERSION}
 ARG EAR_NAME
 
 USER root

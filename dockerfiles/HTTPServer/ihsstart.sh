@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 ###############################################################################
 # Copyright 2020 IBM Corporation
 #
@@ -51,15 +52,32 @@ stopServer()
 
 # Creates a directory for persistence on the PV volume (if set by Helm)
 if [ -n "$MOUNT_POINT" ]; then
+  # Persistence volume can be slow to mount
+  while [ ! -d "$MOUNT_POINT" ]; do
+    sleep 1
+  done
   LOG_PATH=$MOUNT_POINT/$HOSTNAME/logs
   mkdir -p $LOG_PATH
   rm -rf /opt/IBM/HTTPServer/logs
   ln -s $LOG_PATH /opt/IBM/HTTPServer/logs
 fi
 
+mkdir -p /opt/IBM/WebSphere/Plugins/config/ssl
+# Note label must match the SSLServerCert setting located within custom_ssl.conf file
+gskcapicmd -keydb -create -db /opt/IBM/WebSphere/Plugins/config/ssl/key.kdb -pw wasadmin -type cms -stash
+if [ -n "$SSL_CERT_PATH" ]; then
+  echo "Importing SSL certificate from $SSL_CERT_PATH ..."
+  openssl pkcs12 -export -inkey $SSL_CERT_PATH/tls.key -in $SSL_CERT_PATH/tls.crt -out /tmp/keystore.p12 -password pass:password -name websphere
+  gskcapicmd -cert -import -db /tmp/keystore.p12 -type pkcs12 -pw password -target /opt/IBM/WebSphere/Plugins/config/ssl/key.kdb -target_stashed
+  gskcapicmd -cert -setdefault -db /opt/IBM/WebSphere/Plugins/config/ssl/key.kdb -stashed -label websphere
+else
+  echo "Generating self-signed SSL certificate ..."
+  gskcapicmd -cert -create -db /opt/IBM/WebSphere/Plugins/config/ssl/key.kdb -stashed -label websphere -size 2048 -sigalg SHA256WithRSA -expire 3650 -dn "CN=$HOSTNAME,OU=SPM,O=IBM Watson Health,C=US" -default_cert yes
+fi
+
 # Starts the server and catchs exit signal
 startServer
-trap "stopServer" SIGTERM
+trap "stopServer" SIGTERM  
 sleep 10
 
 # Only start tailing logs if a pid file has been created (i.e. IHS started successfully)

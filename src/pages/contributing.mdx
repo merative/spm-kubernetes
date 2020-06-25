@@ -7,7 +7,7 @@ This is a guide for contributing to the SPM DevOps runbook.
 
 | Branch | Status |
 |:-:|:-:|
-| _Master_ | [![Build Status](https://travis.ibm.com/wh-curamspm-devops/spm-kubernetes.svg?token=NKvU4jxhcjZxNi7gZ83L&branch=master)](https://pages.github.ibm.com/wh-curamspm-devops/spm-kubernetes/) |
+| _Master_ | [![Build Status](https://travis-ci.com/IBM/spm-kubernetes.svg?branch=master)](https://travis-ci.com/IBM/spm-kubernetes) |
 
 ## House Rules
 
@@ -25,24 +25,24 @@ This is a guide for contributing to the SPM DevOps runbook.
 
 ## Prerequisites
 
-* NodeJS 8.x
+* NodeJS 12.x
 * Markdown-compatible editor
 
 ## Setting up
 
-* Install GitBook and MarkdownLint CLI tools:
-  * `npm install -g gitbook-cli markdownlint-cli`
+* Install Gatsby and MarkdownLint CLI tools:
+  * `npm install -g gatsby markdownlint-cli`
 * [Install and Setup GitHub Desktop](https://services.github.com/on-demand/github-desktop/install-github-desktop) on your laptop
-* [Sign into IBM GitHub Enterprise from GitHub Desktop](https://help.github.com/desktop/guides/getting-started-with-github-desktop/authenticating-to-github/)
+* [Sign into GitHub from GitHub Desktop](https://help.github.com/desktop/guides/getting-started-with-github-desktop/authenticating-to-github/)
 * Learn [Markdown Syntax](https://guides.github.com/features/mastering-markdown/) and notice the formatting standards in the existing docs for examples of how we want you to construct a page
-* [Clone this repository](https://github.ibm.com/spm-devops/runbook) to your local workstation from the GitHub UI or [use GitHub Desktop](https://services.github.com/on-demand/github-desktop/clone-repository-github-desktop)
-* [Create a branch](https://services.github.com/on-demand/github-desktop/create-branches-github-desktop) from the [staging branch](https://github.ibm.com/spm-devops/runbook/tree/master)
+* [Clone this repository](https://github.com/IBM/spm-kubernetes) to your local workstation from the GitHub UI or [use GitHub Desktop](https://services.github.com/on-demand/github-desktop/clone-repository-github-desktop)
+* [Create a branch](https://services.github.com/on-demand/github-desktop/create-branches-github-desktop) from the [master branch](https://github.com/IBM/spm-kubernetes/tree/master)
 
 ## Authoring
 
 * Make the changes locally, and build the static content for previewing:
-  * run `gitbook build` OR,
-  * run `gitbook serve` to view your changes in your [browser](http://localhost:4000) as soon as you save.
+  * run `gatsby build` OR,
+  * run `gatsby develop` to view your changes in your [browser](http://localhost:8000) as soon as you save.
 * Check your code and validate the formatting
   * run `markdownlint docs`
 * Add and push local commits with GitHub Desktop or the `git` command.

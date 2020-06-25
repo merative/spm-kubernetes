@@ -7,21 +7,21 @@ To build the required Docker images, the context for building them must be estab
 
 The following components provide this context:
 
-* The artifacts that you downloaded by following the steps that are described in [GitHub repo](../01-prereq/git).
-* The `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](../01-deploy-spm/spm-build).
+* The artifacts that you downloaded by following the steps that are described in [GitHub repo](/01-prereq/git).
+* The `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/02-deploy-spm/spm-build).
 
 ## Building IBM® Social Program Management (SPM) resources
 
-Some of the Docker images that you build rely on the `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](../01-prereq/spm-build).
+Some of the Docker images that you build rely on the `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/02-deploy-spm/spm-build).
 
-If you built `release.zip` and `StaticContent.zip` on a different computer to the one where Minikube will be deployed, you must transfer the files to the computer you're currently working on.
+If you built `release.zip` and `StaticContent.zip` on a different computer to the one where container environment will be deployed, you must transfer the files to the computer you're currently working on.
 For simplicity, it is assumed that these files are copied to `/tmp/`.
 
 ## Preparing the SPM environment
 
 Prepare the SPM Docker environment by using the `release.zip` file.
 
-For the following steps, use the `$SPM_HOME` folder that you created in [GitHub repo](../01-prereq/git).
+For the following steps, use the `$SPM_HOME` folder that you created in [GitHub repo](/01-prereq/git).
 
 1. To create a `release-stage` folder to contain the contents of `release.zip`, run the following command:
 
@@ -60,7 +60,7 @@ cp -vf *.properties release-stage/project/properties/
 
 ## WebSphere Liberty server configuration
 
-All configuration of WebSphere Liberty will be handled by the Helm Charts. See the [Preparing Helm Charts](../03-deployment/hc_preparation) topic for more information.
+All configuration of WebSphere Liberty will be handled by the Helm Charts. See the [Preparing Helm Charts](/04-deployment/hc_preparation) topic for more information.
 
 ## Copying static content artifacts
 
@@ -86,7 +86,12 @@ wget https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.6-bin.zip
 
 ### CryptoConfig.jar
 
-`CryptoConfig.jar` is required for SPM cryptography to function correctly. This jar is automatically created when the `build.sh configtest` target is run at 2 locations: `$SERVER_DIR/build/CryptoConfig.jar` and `$JAVA_HOME/jre/lib/ext/CryptoConfig.jar`.
+`CryptoConfig.jar` is required for SPM cryptography to function correctly. This jar is automatically created in the following locations when you run the
+ `build.sh configtest` target:
+
+* `$SERVER_DIR/build/CryptoConfig.jar`
+* `$JAVA_HOME/jre/lib/ext/CryptoConfig.jar`
+
 However, the `release.zip` does not include this jar file, so the jar file must be copied separately from the environment where the `release.zip` was built.
 
 Place the `CryptoConfig.jar` file in `$SPM_HOME/dockerfiles/Liberty/content/release-stage/build`.

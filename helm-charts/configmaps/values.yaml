@@ -38,6 +38,8 @@ global:
   openldap:
     enabled: false
     identityOnly: false
+  isam:
+    enabled: false
   database:
     ## Database connection configuration
     # The property wlp_psw: contains the XOR password injected in the Liberty  configuration
@@ -49,3 +51,6 @@ global:
     wlp_psw: "{xor}Oz1tPjsyNjE="
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
     ssl: {}
+  ingress:
+    hostname: minikube.local
+  

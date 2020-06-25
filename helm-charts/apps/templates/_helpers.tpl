@@ -116,6 +116,15 @@ Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/re
 {{- end -}}
 
 {{/*
+JMX Stats Persistence enablement options
+*/}}
+{{- define "persistence.jmxStats" -}}
+{{- "-Dcuram.jmx.output_statistics_timer_enabled=true" }}
+{{ "-Dcuram.jmx.output_statistics_timer_folder=/tmp/jmx/" }}
+{{ printf "-Dcuram.jmx.output_statistics_timer_period=%d" ( .Values.global.apps.common.persistence.jmxstats.timerPeriod | default 60000 | int ) -}}
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "apps.labels" -}}

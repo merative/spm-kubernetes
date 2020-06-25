@@ -23,7 +23,7 @@ global:
   ihs:
     runAs: 1000
     replicaCount: 1
-    readinessPath: /CuramStatic
+    readinessPath: /CuramStatic/
     ingressPath: /CuramStatic
     resources: {}
   imagePullSecret:

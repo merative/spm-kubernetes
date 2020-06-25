@@ -30,9 +30,18 @@ global:
     ssl: {}
   imagePullSecret:
     registry: *imageRegistry
-
+  apps:
+    common:
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        # JMX Stats
+        jmxstats:
+          enabled: false
+          timerPeriod: 60000
   batch:
     schedule: "*/30 * * * *"
+    runAs: 1001
     successfulJobsHistoryLimit: 3
     ttlSecondsAfterFinished: 60
     backoffLimit: 5
@@ -45,6 +54,3 @@ global:
     # javaMetrics:
     #   antOpts: "-Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_chunker.log"
     #   heapSize: "-Xms512m -Xmx512m"
-    #   timer: "-Dcuram.jmx.output_statistics_timer_enabled=true"
-    #   timerFolder: "-Dcuram.jmx.output_statistics_timer_folder=/tmp"
-    #   timerPeriod: "-Dcuram.jmx.output_statistics_timer_period=60000"

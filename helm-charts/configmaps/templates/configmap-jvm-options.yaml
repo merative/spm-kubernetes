@@ -32,3 +32,5 @@ data:
     -verbose:gc
     -Xverbosegclog:verbosegc.log
     {{- end }}
+    # Enable Beta features in Liberty 20.0.0.5
+    -Dcom.ibm.ws.beta.edition=true

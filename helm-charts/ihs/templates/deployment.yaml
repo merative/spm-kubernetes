@@ -38,30 +38,36 @@ spec:
       {{- if .runAs }}
       securityContext:
         runAsUser: {{ .runAs }}
+        fsGroup: {{ .runAs }}
       {{- end }}
       {{- if $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
         - name: {{ $.Release.Name }}-pull-secret
       {{- end }}
       restartPolicy: {{ .restartPolicy | default "Always" }}
-      {{- if $.Values.global.apps.common.persistence.enabled }}
       volumes:
+        - name: service-certs
+          secret:
+            secretName: {{ include "ihs.fullname" $ }}
+        {{- if $.Values.global.apps.common.persistence.enabled }}
         - name: {{ $.Release.Name }}-persistence-volume
           persistentVolumeClaim:
             claimName: {{ $.Release.Name }}-persistence-pvc
-      {{- end }}
+        {{- end }}
       containers:
         - name: {{ $.Chart.Name }}
           image: {{ include "ihs.imageFullName" $.Values.global.images }}
           imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
-          {{- if $.Values.global.apps.common.persistence.enabled }}
           env:
+            - name: SSL_CERT_PATH
+              value: /mnt/service-certs
+            {{- if $.Values.global.apps.common.persistence.enabled }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
-          {{- end }} 
+            {{- end }} 
           ports:
             - name: client
-              containerPort: 8443
+              containerPort: 443
               protocol: TCP
           {{- with .readinessPath }}
           readinessProbe:
@@ -75,11 +81,13 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if $.Values.global.apps.common.persistence.enabled }}
           volumeMounts:
+            - name: service-certs
+              mountPath: /mnt/service-certs
+            {{- if $.Values.global.apps.common.persistence.enabled }}
             - name: {{ $.Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
               subPath: {{ include "persistence.subDir" $ }}
-          {{- end }}
+            {{- end }}
 
 {{ end }}
