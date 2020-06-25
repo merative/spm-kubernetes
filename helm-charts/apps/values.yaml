@@ -60,6 +60,7 @@ global:
         # accessKey: ""
         # instanceId: ""
         # bucketName: ""
+        # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
         # mountPoint: "/tmp/persistence"
         # subDir: "/folder/name"
         jmxstats:
@@ -70,7 +71,8 @@ global:
     config:
       curam:
         enabled: true
-        readinessPath: /Curam
+        replicaCount: 1
+        readinessPath: /Curam/
         ingressPath: /Curam
         earName: Curam
         jvm: 
@@ -85,6 +87,7 @@ global:
             memory: 3Gi
       rest:
         enabled: true
+        replicaCount: 1
         ingressPath: /Rest
         earName: Rest
         warName: RestModule
@@ -101,7 +104,8 @@ global:
         readinessString: "application available .*/Rest"
       citizenportal:
         enabled: false
-        readinessPath: /CitizenPortal
+        replicaCount: 1
+        readinessPath: /CitizenPortal/
         ingressPath: /CitizenPortal
         earName: CitizenPortal
         jvm: 
@@ -116,10 +120,12 @@ global:
             memory: 3Gi
       curamwebservices:
         enabled: false
+        replicaCount: 1
         readinessPath: /CuramWS2/SOAPMonitor
         ingressPath: /CuramWS2
         earName: CuramWebServices
         warName: webservices2
+        excludeJmxStats: true
         jvm: 
           - "-Xms512m"
           - "-Xmx512m"
@@ -132,10 +138,12 @@ global:
             memory: 1Gi
       curambirtviewer:
         enabled: false
+        replicaCount: 1
         readinessTCPProbe: true
-        ingressPath: /CuramBIRTViewer
+        ingressPath: /CuramBIRTViewer/
         earName: CuramBIRTViewer
         producerOnly: true
+        excludeJmxStats: true
         jvm: 
           - "-Xms768m"
           - "-Xmx768m"
@@ -148,7 +156,8 @@ global:
             memory: 1.5Gi
       cpmexternalns:
         enabled: false
-        readinessPath: /CPMExternalNS
+        replicaCount: 1
+        readinessPath: /CPMExternalNS/
         ingressPath: /CPMExternalNS
         earName: CPMExternalNS
         jvm: 
@@ -163,7 +172,8 @@ global:
             memory: 1Gi
       cpmexternals:
         enabled: false
-        readinessPath: /CPMExternalS
+        replicaCount: 1
+        readinessPath: /CPMExternalS/
         ingressPath: /CPMExternalS
         earName: CPMExternalS
         jvm: 
@@ -178,7 +188,8 @@ global:
             memory: 1Gi
       navigatorns:
         enabled: false
-        readinessPath: /NavigatorNS
+        replicaCount: 1
+        readinessPath: /NavigatorNS/
         ingressPath: /NavigatorNS
         earName: NavigatorNS
         jvm: 
@@ -193,7 +204,8 @@ global:
             memory: 1Gi
       navigators:
         enabled: false
-        readinessPath: /NavigatorS
+        replicaCount: 1
+        readinessPath: /NavigatorS/
         ingressPath: /NavigatorS
         earName: NavigatorS
         jvm: 
@@ -208,7 +220,8 @@ global:
             memory: 1Gi
       mdtworkspace:
         enabled: false
-        readinessPath: /MDTWorkspace
+        replicaCount: 1
+        readinessPath: /MDTWorkspace/
         ingressPath: /MDTWorkspace
         earName: MDTWorkspace
         jvm: 
@@ -223,7 +236,8 @@ global:
             memory: 1Gi
       samplepublicaccess:
         enabled: false
-        readinessPath: /SamplePublicAccess
+        replicaCount: 1
+        readinessPath: /SamplePublicAccess/
         ingressPath: /SamplePublicAccess
         earName: SamplePublicAccess
         jvm: 
@@ -237,12 +251,15 @@ global:
             cpu: 0.75
             memory: 1Gi
   openldap:
-    enabled:
-      false
+    enabled: false
+  isam:
+    enabled: false
   mq:
     useConnectionNameList: false
     objectSuffix: minikube
     tlsSecretName: mq-secret
+  ingress:
+    hostname: minikube.local
 
 nameOverride: ""
 fullnameOverride: ""

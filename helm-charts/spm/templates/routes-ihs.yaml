@@ -1,8 +1,7 @@
-{{- range $name, $app := .Values.global.apps.config }}
-{{- if $app.enabled }}
+{{- if and .Values.global.ingress.enabled (.Capabilities.APIVersions.Has "route.openshift.io/v1") }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +16,23 @@
 # limitations under the License.
 ###############################################################################
 
-apiVersion: v1
-kind: ConfigMap
+kind: Route
+apiVersion: route.openshift.io/v1
 metadata:
-  name: {{ $.Release.Name }}-jvm-override-{{ $name }}
-  namespace: {{ $.Release.Namespace }}
-data:
-  jvm.options: |
-    # Placed by Kubernetes Configmap
-    {{- range $app.jvm }}
-    {{ . }}
-    {{- end }}
-    {{- if and (not $app.excludeJmxStats) ($.Values.global.apps.common.persistence.enabled) ($.Values.global.apps.common.persistence.jmxstats.enabled) -}}
-    {{- include "persistence.jmxStats" | nindent 4 -}}
-    {{- end -}}
-{{- end }}
+  name: {{ .Release.Name }}-ihs
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "spm.labels" . | indent 4 }}
+spec:
+  host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.global.ingress.hostname }}
+  path: {{ .Values.global.ihs.ingressPath | default "/CuramStatic" }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-ihs
+  port:
+    targetPort: https
+  tls:
+    termination: reencrypt
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
 {{- end }}

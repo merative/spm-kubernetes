@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava
+ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava-ubi
 ARG ANT_VERSION=1.10.6
 
 # Intermediate image: extract Ant
@@ -23,7 +23,7 @@ ARG ANT_VERSION
 COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/
 
-FROM websphere-liberty:${WLP_VERSION}
+FROM ibmcom/websphere-liberty:${WLP_VERSION}
 
 WORKDIR /opt/ibm/Curam/release
 ENTRYPOINT ["build.sh"]

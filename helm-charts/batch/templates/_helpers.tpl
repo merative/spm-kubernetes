@@ -71,6 +71,9 @@ Build up Ant Options for general and JMS Stats configuration
 {{- if ($.Values.global.batch.javaMetrics) ($.Values.global.batch.javaMetrics.heapSize) -}}
 {{- $.Values.global.batch.javaMetrics.heapSize -}}
 {{- end }}
+{{- if ($.Values.global.apps.common.persistence) ($.Values.global.apps.common.persistence.enabled) ($.Values.global.apps.common.persistence.jmxstats.enabled) -}}
+{{- printf " -Dcuram.jmx.output_statistics_timer_enabled=true -Dcuram.jmx.output_statistics_timer_folder=/tmp/jmx/ -Dcuram.jmx.output_statistics_timer_period=%d" (default 60000 $.Values.global.apps.common.persistence.jmxstats.timerPeriod | int) -}}
+{{- end }}
 {{- end }}
 
 {{/*

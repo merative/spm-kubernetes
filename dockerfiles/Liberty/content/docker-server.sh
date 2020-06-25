@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 ###############################################################################
 # Copyright 2020 IBM Corporation
 #
@@ -36,6 +37,10 @@ esac
 
 # Creates directories for persistence on the PV volume (if set by Helm)
 if [ -n "$MOUNT_POINT" ]; then
+  # Persistence volume can be slow to mount
+  while [ ! -d "$MOUNT_POINT" ]; do
+    sleep 1
+  done
   mkdir -p $MOUNT_POINT/$HOSTNAME/logs
   mkdir -p $MOUNT_POINT/$HOSTNAME/jmx
   mkdir -p $MOUNT_POINT/$HOSTNAME/dump

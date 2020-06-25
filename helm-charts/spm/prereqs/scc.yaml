@@ -1,5 +1,6 @@
+---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,22 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+
 apiVersion: v1
-name: apps
-description: Helm Chart for Deployment of Curam SPM Applications within a Kubernetes Cluster
-version: 2.1.0
-maintainers:
-  - name: Cúram SPM Dev Team
-    url: https://github.com/IBM/spm-kubernetes
-sources:
-  - https://github.com/IBM/spm-kubernetes
-keywords:
-  - Liberty
-  - Minikube
-  - IKS
-  - OpenShift
-  - RHOS
-  - Curam
-  - SPM
-home: https://www.ibm.com/watson-health/solutions/social-program-management
-icon: https://avatars2.githubusercontent.com/u/1459110
+kind: SecurityContextConstraints
+metadata:
+  name: spm-dev-scc
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+allowPrivilegedContainer: false
+allowedCapabilities:
+  - AUDIT_WRITE
+  - CHOWN
+  - DAC_OVERRIDE
+  - IPC_OWNER
+  - SETGID
+  - SETUID
+  - SYS_NICE
+  - SYS_RESOURCE
+users:
+  - system:serviceaccount:%NAMESPACE%:default

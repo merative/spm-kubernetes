@@ -37,8 +37,7 @@ global:
     serviceType: NodePort
     runAs: 1000
     replicaCount: 1
-    resources: {}
-    readinessPath: /CuramStatic
+    readinessPath: /CuramStatic/
     ingressPath: /CuramStatic
   database:
     ## Database connection configuration
@@ -64,6 +63,7 @@ global:
         # accessKey: ""
         # instanceId: ""
         # bucketName: ""
+        # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
         # mountPoint: "/tmp/persistence"
         # subDir: "/folder/name"
         jmxstats:
@@ -79,7 +79,7 @@ global:
     config:
       curam:
         enabled: true
-        readinessPath: /Curam
+        readinessPath: /Curam/
         ingressPath: /Curam
         jvm: 
           - "-Xms2048m"
@@ -110,7 +110,7 @@ global:
           - /logs/messages.log
       citizenportal:
         enabled: false
-        readinessPath: /CitizenPortal
+        readinessPath: /CitizenPortal/
         ingressPath: /CitizenPortal
         jvm: 
           - "-Xms2048m"
@@ -152,7 +152,7 @@ global:
             memory: 1.5Gi
       cpmexternalns:
         enabled: false
-        readinessPath: /CPMExternalNS
+        readinessPath: /CPMExternalNS/
         ingressPath: /CPMExternalNS
         jvm: 
           - "-Xms512m"
@@ -166,7 +166,7 @@ global:
             memory: 1Gi
       cpmexternals:
         enabled: false
-        readinessPath: /CPMExternalS
+        readinessPath: /CPMExternalS/
         ingressPath: /CPMExternalS
         jvm: 
           - "-Xms512m"
@@ -180,7 +180,7 @@ global:
             memory: 1Gi
       navigatorns:
         enabled: false
-        readinessPath: /NavigatorNS
+        readinessPath: /NavigatorNS/
         ingressPath: /NavigatorNS
         jvm: 
           - "-Xms512m"
@@ -194,7 +194,7 @@ global:
             memory: 1Gi
       navigators:
         enabled: false
-        readinessPath: /NavigatorS
+        readinessPath: /NavigatorS/
         ingressPath: /NavigatorS
         jvm: 
           - "-Xms512m"
@@ -208,7 +208,7 @@ global:
             memory: 1Gi
       mdtworkspace:
         enabled: false
-        readinessPath: /MDTWorkspace
+        readinessPath: /MDTWorkspace/
         ingressPath: /MDTWorkspace
         jvm: 
           - "-Xms512m"
@@ -222,7 +222,7 @@ global:
             memory: 1Gi
       samplepublicaccess:
         enabled: false
-        readinessPath: /SamplePublicAccess
+        readinessPath: /SamplePublicAccess/
         ingressPath: /SamplePublicAccess
         jvm: 
           - "-Xms512m"
@@ -234,13 +234,19 @@ global:
           limits:
             cpu: 0.75
             memory: 1Gi
+  ihs:
+    serviceType: NodePort
+    config:
+      readinessPath: /CuramStatic/
+      ingressPath: /CuramStatic
   openldap:
     enabled: false
     identityOnly: false
-
-ingress:
-  enabled: false
-  #hostname: minikube.local
-
+  ingress:
+    enabled: false
+    #hostname: minikube.local
+  isam:
+    enabled: false
+    
 nameOverride: ""
 fullnameOverride: ""

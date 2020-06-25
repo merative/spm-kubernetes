@@ -17,11 +17,8 @@
 global:
   ceApp:
     replicaCount: 1
-    imageLibrary: ''
-    imageName: ''
-    imageTag: latest
     ingressPath: /universal
-    readinessPath: /universal
+    readinessPath: /universal/
     resources: {}
   images:
     registry: &imageRegistry us.icr.io

@@ -27,7 +27,7 @@ metadata:
   labels:
 {{ include "apps.labels" $ | indent 4 }}
 spec:
-  replicas: {{ $app.producerReplicaCount | default 1 }}
+  replicas: {{ $app.replicaCount | default 1 }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-producer
@@ -108,17 +108,30 @@ spec:
           configMap:
             name: {{ $.Release.Name }}-openldap-cm
         {{- end }}
-        {{- if or $.Values.global.database.ssl.secretName $.Values.global.mq.tlsSecretName }}
+        {{- if $.Values.global.isam.enabled }}
+        - name: isam-cm
+          configMap:
+            name: {{ $.Release.Name }}-isam-cm
+        - name: federated-metadata-cm
+          configMap:
+            name: {{ $.Release.Name }}-federated-metadata-cm
+        {{- end }}
         - name: keystore-volume
           emptyDir: {}
-        {{- end }}
+        - name: service-certs
+          secret:
+            {{- if $.Capabilities.APIVersions.Has "route.openshift.io/v1" }}
+            secretName: {{ include "apps.fullname" $ }}-{{ $name }}
+            {{- else }}
+            secretName: {{ $.Release.Name }}-apps-tls
+            {{- end }}
         {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
         - name: db2-cert
           secret:
             secretName: {{ $.Values.global.database.ssl.secretName }}
         {{- end }}
         {{- if $.Values.global.mq.tlsSecretName }}
-        - name: service-certs
+        - name: mq-certs
           secret:
             {{- if $.Values.global.mq.useConnectionNameList }}
             secretName: {{ $.Values.global.mq.tlsSecretName }}
@@ -178,36 +191,53 @@ spec:
             - name: db2-cert
               mountPath: /mnt/certificates
         {{- end }}
-        {{- if $.Values.global.mq.tlsSecretName }}
-        - name: import-certs-for-mq
+        - name: import-tls-certs
           image: ibmjava:8-sdk
           env:
-            - name: keyfile
-              value: /mnt/certificates/tls.key
-            - name: crtfile
-              value: /mnt/certificates/tls.crt
-            - name: keystore_pkcs12
-              value: /tmp/tls_keystore.p12
-            - name: keystore_jks
-              value: /mnt/keystores/key.jks
+            - name: svcKeyFile
+              value: /mnt/svcCertificates/tls.key
+            - name: svcCrtFile
+              value: /mnt/svcCertificates/tls.crt
+            - name: keystore
+              value: /mnt/keystores/key.p12
             - name: password
               value: password
           command:
             - /bin/sh
             - -c
             - >
-              openssl pkcs12 -export -inkey $keyfile -in $crtfile -out $keystore_pkcs12 -password pass:$password;
-              keytool -importkeystore -noprompt -srckeystore $keystore_pkcs12 -srcstoretype pkcs12 -destkeystore $keystore_jks -storepass $password -srcstorepass $password -srcalias 1 -destalias default;
-              {{- if $.Values.global.mq.useConnectionNameList }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm_{{ $.Values.global.mq.objectSuffix | lower }}_{{ $name }} -file $crtfile -keystore $keystore_jks -storepass $password -storetype jks
-              {{- else }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $crtfile -keystore $keystore_jks -storepass $password -storetype jks
-              {{- end }}
+              openssl pkcs12 -export -inkey $svcKeyFile -in $svcCrtFile -out $keystore -password pass:$password -name default;
+              keytool -list -v -keystore $keystore -storepass $password -storetype pkcs12;
           volumeMounts:
             - name: keystore-volume
               mountPath: /mnt/keystores
             - name: service-certs
-              mountPath: /mnt/certificates
+              mountPath: /mnt/svcCertificates
+        {{- if $.Values.global.mq.tlsSecretName }}
+        - name: import-certs-for-mq
+          image: ibmjava:8-sdk
+          env:
+            - name: mqCrtFile
+              value: /mnt/mqCertificates/tls.crt
+            - name: truststore
+              value: /mnt/keystores/key.p12
+            - name: password
+              value: password
+          command:
+            - /bin/sh
+            - -c
+            - >
+              {{- if $.Values.global.mq.useConnectionNameList }}
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm_{{ $.Values.global.mq.objectSuffix | lower }}_{{ $name }} -file $mqCrtFile -keystore $truststore -storepass $password -storetype pkcs12;
+              {{- else }}
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $mqCrtFile -keystore $truststore -storepass $password -storetype pkcs12;
+              {{- end }}
+              keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: mq-certs
+              mountPath: /mnt/mqCertificates
         {{- end }}
         {{- if eq $name "curam" }}
         - name: apply-customsql
@@ -382,10 +412,16 @@ spec:
               mountPath: /config/configDropins/overrides/server_openldap.xml
               subPath: server_openldap.xml
             {{- end }}
-            {{- if or $.Values.global.database.ssl.secretName $.Values.global.mq.tlsSecretName }}
+            {{- if $.Values.global.isam.enabled }}
+            - name: isam-cm
+              mountPath: /config/configDropins/overrides/server_isam.xml
+              subPath: server_isam.xml
+            - name: federated-metadata-cm
+              mountPath: /output/resources/security/federation_metadata.xml
+              subPath: federation_metadata.xml
+            {{- end }}
             - name: keystore-volume
               mountPath: /output/resources/security
-            {{- end }}
             {{- if $.Values.global.apps.common.persistence.enabled }}
             - name: {{ $.Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}

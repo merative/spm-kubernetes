@@ -1,8 +1,9 @@
+{{- if and .Values.global.ingress.enabled (.Capabilities.APIVersions.Has "route.openshift.io/v1") }}
 {{- range $name, $app := .Values.global.apps.config }}
-{{- if $app.enabled }}
+{{- if and $app.enabled $app.ingressPath }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,19 +18,27 @@
 # limitations under the License.
 ###############################################################################
 
-apiVersion: v1
-kind: ConfigMap
+kind: Route
+apiVersion: route.openshift.io/v1
 metadata:
-  name: {{ $.Release.Name }}-jvm-override-{{ $name }}
+  name: {{ $.Release.Name }}-apps-{{ $name }}
   namespace: {{ $.Release.Namespace }}
-data:
-  jvm.options: |
-    # Placed by Kubernetes Configmap
-    {{- range $app.jvm }}
-    {{ . }}
-    {{- end }}
-    {{- if and (not $app.excludeJmxStats) ($.Values.global.apps.common.persistence.enabled) ($.Values.global.apps.common.persistence.jmxstats.enabled) -}}
-    {{- include "persistence.jmxStats" | nindent 4 -}}
-    {{- end -}}
+  labels:
+{{ include "spm.labels" $ | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/timeout: 1m
+spec:
+  host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" $.Values.global.ingress.hostname }}
+  path: {{ $app.ingressPath }}
+  to:
+    kind: Service
+    name: {{ $.Release.Name }}-apps-{{ $name }}
+  port:
+    targetPort: https
+  tls:
+    termination: reencrypt
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}
 {{- end }}
 {{- end }}

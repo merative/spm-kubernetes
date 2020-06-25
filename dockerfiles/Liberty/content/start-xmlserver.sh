@@ -1,3 +1,5 @@
+#!/bin/bash
+set -e
 ###############################################################################
 # Copyright 2020 IBM Corporation
 #
@@ -13,9 +15,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+XMLSERVER_PATH=/opt/ibm/Curam/xmlserver
 
-ARG MQ_VERSION=9.1.3.0
-FROM ibmcom/mq:${MQ_VERSION}
-USER root
-RUN useradd -g 0 -M default && usermod -L default
-USER mqm
+# Creates directories for persistence on the PV volume (if set by Helm)
+if [ -n "$MOUNT_POINT" ]; then
+  # Persistence volume can be slow to mount
+  while [ ! -d "$MOUNT_POINT" ]; do
+    sleep 1
+  done
+  mkdir -p $MOUNT_POINT/$HOSTNAME/tmp
+  mkdir -p $MOUNT_POINT/$HOSTNAME/template
+  mkdir -p $MOUNT_POINT/$HOSTNAME/stats
+  rm -rf $XMLSERVER_PATH/tmp $XMLSERVER_PATH/template $XMLSERVER_PATH/stats
+  ln -s $MOUNT_POINT/$HOSTNAME/tmp $XMLSERVER_PATH/tmp
+  ln -s $MOUNT_POINT/$HOSTNAME/template  $XMLSERVER_PATH/template
+  ln -s $MOUNT_POINT/$HOSTNAME/stats $XMLSERVER_PATH/stats
+fi
+
+# Starts XML Server
+cd $XMLSERVER_PATH
+ant -f xmlserver.xml 2>&1 | tee tmp/xmlserver.log

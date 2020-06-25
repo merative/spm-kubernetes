@@ -23,13 +23,17 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
 {{ include "ihs.labels" $ | indent 4 }}
+{{- if $.Capabilities.APIVersions.Has "route.openshift.io/v1" }}
+  annotations:
+    service.beta.openshift.io/serving-cert-secret-name: {{ include "ihs.fullname" $ }}
+{{- end }}
 spec:
   type: NodePort
   ports:
     - port: {{ $.Values.global.apps.common.port }}
       targetPort: client
       protocol: TCP
-      name: http
+      name: https
   selector:
     app.kubernetes.io/name: {{ include "ihs.fullname" $ }}
     app.kubernetes.io/instance: {{ $.Release.Name }}

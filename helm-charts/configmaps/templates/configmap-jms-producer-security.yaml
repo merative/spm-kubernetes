@@ -25,8 +25,8 @@ data:
     <server description="Server security configuration">
 
       <ssl clientAuthentication="false" clientAuthenticationSupported="false" id="defaultSSLConfig" keyStoreRef="defaultKeyStore"
-          securityLevel="HIGH" sslProtocol="TLSv1.2"  />
-      <keyStore id="defaultKeyStore" location="key.jks" password="{xor}Lz4sLCgwLTs=" type="JKS"/>
+          securityLevel="HIGH" sslProtocol="TLSv1.2" />
+      <keyStore id="defaultKeyStore" location="key.p12" password="{xor}Lz4sLCgwLTs=" />
 
       <basicRegistry id="basic" realm="BasicRegistry">
         <user name="websphere" password="{xor}KDo9LC83Oi06" />
@@ -47,7 +47,7 @@ data:
       <library description="Custom login module shared library" filesetRef="registryFileSet" id="customLoginLib" name="customLoginLib"/>
       <fileset dir="${shared.resource.dir}" id="registryFileSet" includes="*.jar"/>
 
-      <jaasLoginContextEntry id="system.WEB_INBOUND" loginModuleRef="token,myCustomWebInbound,hashtable,userNameAndPassword,certificate" name="system.WEB_INBOUND"/>
+      <jaasLoginContextEntry id="system.WEB_INBOUND" loginModuleRef="myCustomWebInbound,hashtable,userNameAndPassword,certificate,token" name="system.WEB_INBOUND"/>
       <jaasLoginModule className="curam.util.security.CuramLoginModule" controlFlag="REQUIRED" id="myCustomWebInbound" libraryRef="customLoginLib">
         <options
           exclude_usernames="websphere,${env.SYSTEM_USER}"
@@ -58,7 +58,7 @@ data:
         />
       </jaasLoginModule>
 
-      <jaasLoginContextEntry id="system.DEFAULT" loginModuleRef="token,myCustomDefault,hashtable,userNameAndPassword,certificate" name="system.DEFAULT"/>
+      <jaasLoginContextEntry id="system.DEFAULT" loginModuleRef="myCustomDefault,hashtable,userNameAndPassword,certificate,token" name="system.DEFAULT"/>
       <jaasLoginModule className="curam.util.security.CuramLoginModule" controlFlag="REQUIRED" id="myCustomDefault" libraryRef="customLoginLib">
         <options
           exclude_usernames="websphere,${env.SYSTEM_USER}"

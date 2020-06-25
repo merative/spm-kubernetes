@@ -141,7 +141,7 @@ spec:
               subPath: 20-config.mqsc
             {{- if $.Values.global.mq.tlsSecretName }}
             - name: service-certs
-              mountPath: "/etc/mqm/pki/keys/ibmwebspheremqqm1"
+              mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
               readOnly: true
             {{- end }}
 {{- end }}

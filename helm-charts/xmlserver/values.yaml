@@ -32,6 +32,20 @@ global:
   xmlserver:
     port: 1800
     replicaCount: 1
+    runAs: 1001
   imagePullSecret:
     registry: *imageRegistry
-
+  apps:
+    common:
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        # mountPoint: "/tmp/persistence"
+        # subDir: "/folder/name"

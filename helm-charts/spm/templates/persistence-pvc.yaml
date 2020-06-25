@@ -24,6 +24,7 @@ metadata:
     ibm.io/auto-create-bucket: "false"
     ibm.io/auto-delete-bucket: "false"
     ibm.io/bucket: {{ required "bucketName is required" $.Values.global.apps.common.persistence.bucketName | quote }}
+    ibm.io/endpoint: {{ required "bucketEndpoint is required" $.Values.global.apps.common.persistence.bucketEndpoint | quote }}
     ibm.io/secret-name: "{{ $.Release.Namespace }}-persistence-secret"
   labels:
 {{ include "apps.labels" $ | indent 4 }}

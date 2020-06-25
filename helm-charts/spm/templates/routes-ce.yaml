@@ -1,5 +1,7 @@
+{{- if and .Values.global.ingress.enabled (.Capabilities.APIVersions.Has "route.openshift.io/v1") .Values.global.ceApp.imageName }}
+---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,24 +15,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-apiVersion: v1
-kind: ConfigMap
+
+kind: Route
+apiVersion: route.openshift.io/v1
 metadata:
-  name: {{ .Release.Name }}-jvm-options-cm
+  name: {{ .Release.Name }}-ce-app
   namespace: {{ .Release.Namespace }}
-data:
-  jvm.options: |
-    # Placed by Kubernetes Configmap
-    -Dcom.ibm.websphere.ejbcontainer.rmicCompatible=all
-    # Enable verbose garbage collection logs.
-    {{- if $.Values.global.apps.common.persistence.enabled }}
-    -Dfile.encoding=UTF-8
-    -verbose:gc
-    -Xverbosegclog:/tmp/gc/verbosegc.log
-    -Xdump:directory=/tmp/dump
-    {{- else }}
-    -verbose:gc
-    -Xverbosegclog:verbosegc.log
-    {{- end }}
-    # Enable Beta features in Liberty 20.0.0.5
-    -Dcom.ibm.ws.beta.edition=true
+  labels:
+{{ include "spm.labels" . | indent 4 }}
+spec:
+  host: {{ required "When ingress is enabled, you must provide a value for ingress.hostname" .Values.global.ingress.hostname }}
+  path: {{ .Values.global.ceApp.ingressPath | default "/universal" }}
+  to:
+    kind: Service
+    name: {{ .Release.Name }}-ce-app
+  port:
+    targetPort: https
+  tls:
+    termination: reencrypt
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+{{- end }}

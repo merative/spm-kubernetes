@@ -68,7 +68,6 @@ Build up full image path
 ihs:{{- .imageTag -}}
 {{- end -}}
 
-
 {{/*
 Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
 */}}

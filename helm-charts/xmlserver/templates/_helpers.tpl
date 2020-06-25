@@ -102,6 +102,28 @@ Define Database password (or use default)
 {{- end -}}
 
 {{/*
+Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
+*/}}
+{{- define "persistence.mountPoint" -}}
+{{- if .Values.global.apps.common.persistence.mountPoint -}}
+{{- .Values.global.apps.common.persistence.mountPoint -}}
+{{- else -}}
+{{- "/tmp/persistence" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/release_name")
+*/}}
+{{- define "persistence.subDir" -}}
+{{- if .Values.global.apps.common.persistence.subDir -}}
+{{- .Values.global.apps.common.persistence.subDir -}}
+{{- else -}}
+{{- printf "%s" $.Release.Name -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "xmlserver.labels" -}}
