@@ -53,7 +53,7 @@ While the Minikube configuration is sufficiently generic to be used almost as-is
 <Row>
 <Column>
 
-```yaml path=minikube-values.yaml src=/resources/minikube-values.yaml
+```yaml path=minikube-values.yaml src=../../resources/minikube-values.yaml
 ---
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
@@ -105,7 +105,7 @@ ingress:
 <Row>
 <Column>
 
-```yaml path=iks-values.yaml src=/resources/iks-values.yaml
+```yaml path=iks-values.yaml src=../../resources/iks-values.yaml
 ---
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
@@ -152,7 +152,7 @@ ingress:
   annotations:
     ingress.bluemix.net/ALB-ID: ''
   enabled: true
-  hostname: foo.domain.com
+  hostname: spm.<cluster_name>-<hash>-0000.<region>.containers.appdomain.cloud
   tlsSecretName: default-us-icr-io
 ```
 
@@ -164,7 +164,7 @@ ingress:
 <Row>
 <Column>
 
-```yaml path=crc-values.yaml src=/resources/crc-values.yaml
+```yaml path=crc-values.yaml src=../../resources/crc-values.yaml
 ---
 global:
   license: 'accept' # Set to 'accept' after reviewing all license agreements
@@ -213,7 +213,7 @@ global:
     enabled: true
     tlsSecretName: testkube-tls
     generateCert: true
-    hostname: conor-ocp.apps-crc.testing
+    hostname: spm-ocp.apps-crc.testing
 ```
 
 </Column>
@@ -289,3 +289,4 @@ Example URLs:
 
 * Minikube: `https://minikube.local/Curam`
 * CRC: `https://spm-ocp.apps-crc.testing/Curam`
+* IKS: `https://spm.<cluster_name>-<hash>-0000.<region>.containers.appdomain.cloud/Curam`
