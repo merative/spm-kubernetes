@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.6.1 Changes
+
+### Changed
+
+* Updated URL format to match path prefix used by Gatsby build
 
 ## v20.6.0 Changes
 
