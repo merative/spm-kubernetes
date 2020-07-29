@@ -14,14 +14,20 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=19.0.0.12-full-java8-ibmjava-ubi
+ARG WLP_VERSION=20.0.0.6-full-java8-ibmjava-ubi
 ARG ANT_VERSION=1.10.6
 
 # Intermediate image: extract Ant
-FROM alpine AS AntStage
+FROM alpine AS PrepStage
 ARG ANT_VERSION
 COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/
+
+COPY content/dependencies/javax.mail.jar /opt/javamail/mail.jar
+COPY content/dependencies/activation.jar /opt/javamail/activation.jar
+COPY content/release-stage/SetEnvironment.sh /opt/ibm/Curam/
+COPY content/release-stage /opt/ibm/Curam/release
+RUN chmod -R g=u /opt/ibm/Curam
 
 FROM ibmcom/websphere-liberty:${WLP_VERSION}
 
@@ -36,15 +42,9 @@ ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     JAVAMAIL_HOME=/opt/javamail \
     WLP_HOME=/opt/ibm/wlp
 ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
-
-USER root
-RUN mkdir -p /opt/ibm/Curam/release \
-    && chown -Rc 1001:0 /opt/ibm/Curam
 USER 1001
 
-COPY --from=AntStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
-COPY --chown=1001:0 content/dependencies/javax.mail.jar /opt/javamail/mail.jar
-COPY --chown=1001:0 content/dependencies/activation.jar /opt/javamail/activation.jar
+COPY --from=PrepStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
+COPY --from=PrepStage --chown=1001:0 /opt/javamail /opt/javamail
+COPY --from=PrepStage --chown=1001:0 /opt/ibm/Curam /opt/ibm/Curam
 COPY --chown=1001:0 content/release-stage/build/CryptoConfig.jar /opt/ibm/java/jre/lib/ext/
-COPY --chown=1001:0 content/release-stage/SetEnvironment.sh /opt/ibm/Curam/
-COPY --chown=1001:0 content/release-stage /opt/ibm/Curam/release

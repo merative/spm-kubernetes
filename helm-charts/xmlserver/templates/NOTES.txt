@@ -1,0 +1,10 @@
+{{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
+
+The XML Server is not intended to be accessed from outside the cluster.
+
+The following properties must be set in the SPM database to point at the ClusterIP service in front of the XML Server pods:
+
+- curam.xmlserver.host: {{ include "sch.names.fullName" (list .) }}
+- curam.xmlserver.port: {{ .Values.serverPort }}
+
+The service will balance SPM print requests across any replicas of the XML server automatically.

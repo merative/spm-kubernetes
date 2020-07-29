@@ -1,0 +1,30 @@
+version: '2.2'
+services:
+  httpd:
+    build:
+      context: .
+      dockerfile: StaticContent.Dockerfile
+      labels:
+        InstallerBuildID: ${actualInstallerBuildId:-NotSet}
+        CuramVersion: ${VERSION_VALUE}
+        CuramConfiguration: ${CuramInstallation:-NotSet}
+        Locale: ${Locale:-en_US}
+        LangPacks: ${LangPacks:-None}
+      args:
+        CONTENT_DIR: ${STATIC_CONTENT_DIR:-CuramStatic}
+        BASE_REGISTRY: registry.redhat.io/
+    image: ${DOCKER_REGISTRY:-wh-spmdevops-docker-local.artifactory.swg-devops.com}/${CuramVersion}/${IMAGE_PREFIX:?'IMAGE_PREFIX' must be specified}_httpd:${IMAGE_TAG:-untagged}
+  ua:
+    build:
+      context: .
+      dockerfile: UAWebApp.Dockerfile
+      labels:
+        InstallerBuildID: ${actualInstallerBuildId:-NotSet}
+        CuramVersion: ${VERSION_VALUE}
+        CuramConfiguration: ${CuramInstallation:-NotSet}
+        Locale: ${Locale:-en_US}
+        LangPacks: ${LangPacks:-None}
+      args:
+        CONTENT_DIR: ${UA_CONTENT_DIR:-universal}
+        BASE_REGISTRY: registry.redhat.io/
+    image: ${DOCKER_REGISTRY:-wh-spmdevops-docker-local.artifactory.swg-devops.com}/${CuramVersion}/uawebapp:${IMAGE_TAG:-untagged}

@@ -1,6 +1,7 @@
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
+{{- if and (not ($.Values.global.mq.multiInstance.cephEnabled)) (not ($.Values.global.mq.multiInstance.nfsEnabled)) }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -46,36 +47,20 @@ spec:
         - name: mqsc-cmds
           configMap:
             name: {{ $.Release.Name }}-mq-config
-        - name: modified-cmds
-          emptyDir: {}
         {{- if $.Values.global.mq.tlsSecretName }}
         - name: service-certs
           secret:
             secretName: {{ $.Release.Name }}-{{ $.Values.global.mq.tlsSecretName }}
         {{- end}}
-      initContainers:
-        - name: set-mq-conname
-          image: ibmjava:8-sdk
-          command:
-            - /bin/sh
-            - -c
-            - >
-              \cp /mnt/mqsc/20-config.mqsc /mnt/mod-mqsc/ ;  sed -i "s/CONNAME('')/CONNAME('{{ $.Release.Name }}-mqserver-{{ $name }}')/" /mnt/mod-mqsc/20-config.mqsc
-          volumeMounts:
-          - name: mqsc-cmds
-            mountPath: /mnt/mqsc/20-config.mqsc
-            subPath: config.mqsc
-          - name: modified-cmds
-            mountPath: /mnt/mod-mqsc
       containers:
         - name: {{ $.Chart.Name }}-{{ $name }}
-          image: {{ include "mqserver.imageFullName" $.Values.global.images }}
+          image: ibmcom/mq:{{ $.Values.global.mq.version }}
           imagePullPolicy: {{ $.Values.global.pullPolicy }}
           env:
             - name: LICENSE
               value: {{ $.Values.global.license }}
             - name: MQ_QMGR_NAME
-              value: {{ $.Values.global.mq.queueManager.name | default "QM1" }}
+              value: {{ $.Values.global.mq.queueManager.name }}
             - name: LOG_FORMAT
               value: {{ $.Values.log.format | default "basic" }}
             - name: MQ_ENABLE_METRICS
@@ -87,11 +72,15 @@ spec:
             - name: MQ_DEV
               value: "false"
             - name: MQ_ADMIN_PASSWORD
-              value: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
-              # valueFrom:
-              #   secretKeyRef:
-              #     name: {{ $.Values.global.mq.queueManager.secret.name }}
-              #     key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
+            - name: MQ_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
           ports:
             - containerPort: 1414
             - containerPort: 9443
@@ -136,13 +125,17 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - name: modified-cmds
+            - name: mqsc-cmds
               mountPath: /etc/mqm/20-config.mqsc
-              subPath: 20-config.mqsc
+              subPath: config.mqsc
+            - name: mqsc-cmds
+              mountPath: /etc/mqm/30-channel.mqsc
+              subPath: channel_{{$name}}.mqsc
             {{- if $.Values.global.mq.tlsSecretName }}
             - name: service-certs
               mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
               readOnly: true
             {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

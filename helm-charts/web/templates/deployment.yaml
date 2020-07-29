@@ -1,0 +1,113 @@
+{{- include "sch.config.init" (list . "web.sch.chart.config.values") -}}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sch.names.fullName" (list .) }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sch.metadata.labels.standard" (list . "") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "sch.metadata.labels.standard" (list . "") | nindent 8 }}
+      annotations:
+    spec:
+      {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
+      affinity:
+        {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
+      {{- if .Values.global.imagePullSecret.username }}
+      imagePullSecrets:
+        - name: {{ .Release.Name }}-pull-secret
+      {{- end }}
+      restartPolicy: Always
+      serviceAccountName: {{ default (include "sch.names.fullName" (list .)) .Values.serviceAccountName }}
+      volumes:
+        - name: service-certs
+          secret:
+            secretName: {{ include "sch.names.fullName" (list .) }}
+        - name: conf-d
+          configMap:
+            name: {{ include "sch.names.fullCompName" (list . "conf") }}
+        - name: init-scripts
+          configMap:
+            name: {{ include "sch.names.fullCompName" (list . "scripts") }}
+        {{- if .Values.global.apps.common.persistence.enabled }}
+        - name: {{ .Release.Name }}-persistence-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-persistence-pvc
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ include "web.imageFullName" . }}
+          imagePullPolicy: {{ .Values.global.images.pullPolicy }}
+          ports:
+            - name: client
+              containerPort: 8443
+              protocol: TCP
+          {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
+          livenessProbe:
+            tcpSocket:
+              port: client
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          {{- if .Values.readinessProbe.path }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.readinessProbe.path }}
+              port: client
+              scheme: HTTPS
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: service-certs
+              mountPath: /opt/app-root/httpd-ssl/private/tls.pem
+              subPath: tls.key
+            - name: service-certs
+              mountPath: /opt/app-root/httpd-ssl/certs/tls.pem
+              subPath: tls.crt
+            {{- range $confFile := (list "70-logging.conf" "80-staticContent.conf" "90-tuning.conf") }}
+            - name: conf-d
+              mountPath: /etc/httpd/conf.d/{{ $confFile }}
+              subPath: {{ $confFile }}
+            {{- end }}
+            {{- range $shellFile := (list "10-logging.sh" "20-rewriteRules.sh" "20-rewriteRules.conf") }}
+            - name: init-scripts
+              mountPath: /opt/app-root/src/httpd-pre-init/{{ $shellFile }}
+              subPath: {{ $shellFile }}
+            {{- end }}
+            {{- if .Values.global.apps.common.persistence.enabled }}
+            - name: {{ .Release.Name }}-persistence-volume
+              mountPath: {{ include "persistence.mountPoint" . }}
+              subPath: {{ include "persistence.subDir" . }}
+            {{- end }}

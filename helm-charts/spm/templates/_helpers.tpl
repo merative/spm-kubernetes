@@ -16,48 +16,16 @@ limitations under the License.
 
 {{/* vim: set filetype=mustache: */}}
 {{/*
-Expand the name of the chart.
-*/}}
-{{- define "spm.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "spm.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "spm.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
 Create the image pull secret
 */}}
-{{- define "imagePullSecret" }}
+{{- define "spm.imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
 
 {{/*
 Create the persistence secret
 */}}
-{{- define "persistenceSecret" -}}
+{{- define "spm.persistenceSecret" -}}
 secret-key: {{ required "secretKey is required" .secretKey | b64enc | quote }}
 access-key: {{ required "accessKey is required" .accessKey | b64enc | quote}}
 service-instance-id: {{ required "instanceId is required" .instanceId | b64enc | quote }}
@@ -66,42 +34,29 @@ service-instance-id: {{ required "instanceId is required" .instanceId | b64enc |
 {{/*
 Build up ssl-services value
 */}}
-{{- define "sslServicesChain" }}
+{{- define "spm.sslServicesChain" }}
 {{- range $name, $app := .Values.global.apps.config -}}
 {{- if $app.enabled -}}
 ssl-service={{ $.Release.Name }}-apps-{{ $name }};
 {{- end -}}
 {{- end -}}
-{{- if .Values.global.ceApp.imageTag -}}
-ssl-service={{ $.Release.Name }}-ce-app;
+{{- if .Values.uawebapp.imageConfig.name -}}
+ssl-service={{ $.Release.Name }}-uawebapp;
 {{- end -}}
-ssl-service={{ $.Release.Name }}-ihs;
+ssl-service={{ $.Release.Name }}-web;
 {{- end }}
 
 {{/*
 Build up sticky-cookie-services value
 */}}
-{{- define "stickyCookieServicesChain" }}
+{{- define "spm.stickyCookieServicesChain" }}
 {{- range $name, $app := .Values.global.apps.config -}}
 {{- if $app.enabled -}}
 serviceName={{ $.Release.Name }}-apps-{{ $name }} name={{ $name }}Route hash=sha1 path=/;
 {{- end -}}
 {{- end -}}
-{{- if .Values.global.ceApp.imageTag -}}
-serviceName={{ $.Release.Name }}-ce-app name=ceRoute hash=sha1 path=/;
+{{- if .Values.uawebapp.imageConfig.name -}}
+serviceName={{ $.Release.Name }}-uawebapp name=uaRoute hash=sha1 path=/;
 {{- end -}}
-serviceName={{ $.Release.Name }}-ihs name=ihsRoute hash=sha1 path=/;
+serviceName={{ $.Release.Name }}-web name=webRoute hash=sha1 path=/;
 {{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "spm.labels" -}}
-app.kubernetes.io/name: {{ include "spm.name" . }}
-helm.sh/chart: {{ include "spm.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}

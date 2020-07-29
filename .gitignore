@@ -5,12 +5,11 @@ _book
 *.tgz
 refreshChartMuseum.sh
 override_global.yaml
-override-values.yaml
+helm-charts/*-values.yaml
 tls.crt
 tls.key
-batch-stage
-ear-stage
-res-stage
+*-stage
+.dockerignore
 dependencies
 staticcontent
 *!test.txt
@@ -23,6 +22,9 @@ StaticContent.zip
 .project
 .settings
 *.drawio
+/Release-*
+build/
+!/Jenkins/Pipelines/Build
 
 #GATSBY
 # Logs
@@ -91,4 +93,4 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
-package-lock.json
+!package-lock.json

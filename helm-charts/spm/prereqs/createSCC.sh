@@ -15,14 +15,14 @@
 # limitations under the License.
 ###############################################################################
 
-function usage() {
-  cat <<-USAGE #| fmt
-  Usage: $0 [OPTIONS] [arg]
-    OPTIONS:
-    =======
-    --namespace        [namespace]           - The name of an existing namespace for the SPM deployment.
-
-    USAGE
+usage() {
+  echo "Usage: $0 [OPTIONS] [arg]"
+  echo ""
+  echo "  OPTIONS:"
+  echo "  =============="
+  echo "  -n|--namespace        [namespace]           - The name of an existing namespace for the SPM deployment."
+  echo "  -h|--help                                   - Print this usage information."
+  echo ""
 }
 
 if [ "$#" -lt 1 ]; then
@@ -55,8 +55,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-# check to see if the scc already exists
+# Check if the user has permission to interact with SCCs
+oc auth can-i list scc -A &> /dev/null
+if [[ $? != 0 ]]; then
+  echo "ERROR: The user '$(oc whoami)' does not have permission to assign SecurityContextConstraints! Contact your cluster administrator."
+  exit 1
+fi
 
+# check to see if the SCC already exists
 oc get scc spm-dev-scc
 if [[ $? == 0 ]]; then
   echo "spm-dev-scc already exists"
@@ -68,9 +74,9 @@ if [[ $? == 0 ]]; then
   else
     # The serviceAccount: default  does not already exist for this namespace, it needs to be added to the spm-dev-scc SCC
     echo "ServiceAccount: default for namespace ${NAMESPACE} is not already bound to SCC spm-dev-scc, adding it now..."
-    oc adm policy add-scc-to-user spm-dev-scc -z default
+    oc adm policy add-scc-to-user spm-dev-scc system:serviceaccount:${NAMESPACE}:default
   fi
 else
   echo "SCC spm-dev-scc does not already exist, creating now...."
-  sed -e "s/%NAMESPACE%/${NAMESPACE}/g" scc.yaml | oc apply -f -
+  sed -e "s/%NAMESPACE%/${NAMESPACE}/g" $(dirname $0)/scc.yaml | oc apply -f -
 fi

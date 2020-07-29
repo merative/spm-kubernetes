@@ -1,0 +1,115 @@
+---
+title: Handling failed JMS messages on the MQ dead message queue
+description: Handling failed JMS messages on the MQ dead message queue
+---
+
+## Introduction
+
+It would be unusual for JMS processing to fail; but, if messages do fail that is why we define retry counts and error and dead message queues.
+There are broadly two contexts for JMS failures:
+
+* Message production: messages to MQ from Liberty.
+* Message consumption: message processing in Liberty for messages from MQ.
+
+## Message production failures
+
+If the production of a JMS message fails, a Java exception is thrown in Liberty (shown in the application server logs), the transaction fails, and the message is never processed by MQ.
+
+For example, if an MQ queue fills up you would see the exception below in the chain of stack. This points back to the issue in MQ and other related exceptions would identify the failing queue.
+
+```
+traces in the WebSphere Liberty log files:
+Caused by: com.ibm.mq.MQException: JMSCMQ0001:
+IBM MQ call failed with compcode '2' ('MQCC_FAILED') reason '2053' ('MQRC_Q_FULL').
+```
+
+## Message consumption failures
+
+The JMS configuration for Cúram specifies a hierarchy of queues, from the normal queue, to an error queue, and finally to the dead message queue. The following diagram illustrates this flow of JMS messages for the Cúram SPM application.
+
+![SPM on Kubernetes - Curam JMS queue message flow](../../images/curam_jmsqueue_message_flow.png)
+<Caption>
+
+*Figure 1:* Cúram JMS queue message flow
+
+</Caption>
+
+JMS messages are usually handled within one of the three queues: `DPEnactment`, `WorkflowEnactment`, or `WorkflowActivity`; and, if necessary, are given up to five retry attempts, which is a configurable value in MQ `(BOTHRESH(5))`.
+
+Should the message not succeed at that point it is routed to its associated error or exception queue as shown in the diagram: `DPEnactment` to `DPError`, and `WorkflowEnactment` and `WorkflowActivity` to `WorkflowError`.
+
+At this point, Cúram SPM or custom error processing can take over, depending on the message type and your configuration.  Similarly, the error queues are defined to retry up to five times.
+
+Should the error queue processing fail the message is finally routed to the `CuramDeadMessageQueue`, specified as the MQ dead letter queue.
+The message will stay until you either resend it to its originating queue or delete it, and how to do that is the subject of this document.
+
+Normally your only concern with respect to JMS message failures is what ends up in the dead message queue, since that represents work that should be processed but wasn’t.
+
+However, there are some error queue interventions that may be necessary, which are outside the scope of this document.
+For instance, Cúram Express Rules processing will transfer messages routed to the JMS error queue to batch as discussed in [Dependency Manager deferred processing](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/CERReference/c_CERREF_Dependency1DependencyManagerDeferredProcessing1.html).
+
+You should monitor the dead message queue in MQ, `QN.CURAMDEADMESSAGEQUEUE`, to ensure that messages are not failing to be processed, which should also be evidenced by Java exceptions in the Liberty logs and a non-zero queue depth in MQ.
+For instance, this MQSC command displays the current queue depth for the dead message queue:
+
+```
+DISPLAY QUEUE(QN.CURAMDEADMESSAGEQUEUE) CURDEPTH
+```
+
+There are a number of options for processing messages from `QN.CURAMDEADMESSAGEQUEUE`, provided by two MQ commands:
+
+* The queue load and unload command: [dmpmqmsg](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.ref.adm.doc/q117660_.htm)
+* The run dead-letter queue handler command: [runmqdlq](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.ref.adm.doc/q083420_.htm)
+
+Important points to remember:
+
+<InlineNotification kind="info">
+
+**Note:** When processing messages from `QN.CURAMDEADMESSAGEQUEUE` you need to be aware of the original queue that the message was targeted to.
+That is, messages from multiple queues can be routed to `QN.CURAMDEADMESSAGEQUEUE` and routing those messages incorrectly will result in additional errors. The dmpmqmsg command provides filtering options and runmqdlg provides a rules table.
+
+</InlineNotification>
+
+<InlineNotification kind="info">
+
+Messages are processed as they arrive, with the exception of the dead message queue.
+That is, if you load messages from `QN.CURAMDEADMESSAGEQUEUE` into another queue and they fail again you can end up with duplicate messages, which can be confusing and error-prone to resolve.
+Therefore, it is recommended that you clear the dead message queue before processing its contents.
+
+</InlineNotification>
+
+### Dead Letter Messages example
+
+This is a simple example illustrating the processing of dead letter messages:
+
+* Unload the messages from the queue; for example, from the `QN.CURAMDEADMESSAGEQUEUE` queue in Queue Manager QM1:
+
+    ```
+    $MQ_INSTALLATION_PATH/dmpmqmsg -m QM1 -i QN.CURAMDEADMESSAGEQUEUE -f dead_messages.mq
+    ```
+
+    This command would copy all the message on the queue into the specified file.
+
+    Replacing the `-i` option with `-I` would move the messages, leaving the queue empty.
+
+    To selectively process messages you can use the search option (-s) to selectively process messages; for instance
+
+    ```
+    $MQ_INSTALLATION_PATH/dmpmqmsg -m QM1 -I QN.CURAMDEADMESSAGEQUEUE -s QN.DPENACTMENT  -dA -f DPENACTMENT.mq
+    $MQ_INSTALLATION_PATH/dmpmqmsg -m QM1 -I QN.CURAMDEADMESSAGEQUEUE -s QN.WORKFLOWENACTMENT  -dA -f WORKFLOWENACTMENT.mq
+    ```
+
+    This would move the messages from the `QN.CURAMDEADMESSAGEQUEUE` into the specified files based on the filter.
+    You could then use the `DISPLAY QUEUE(QN.CURAMDEADMESSAGEQUEUE) CURDEPTH` command to confirm that all messages are accounted for.
+
+* If you didn’t use the `-I` option (or, optionally the `-p` option) when running the dmpmqmsg command to clear the dead message queue as its contents were processed you should do that now using the MQSC command; for instance:
+
+    ```
+    CLEAR QLOCAL (QN.CURAMDEADMESSAGEQUEUE)
+    ```
+
+* Once the original problem is resolved that caused the errors, reload the messages.  For instance, using the previous filtered example:
+
+    ```
+    $MQ_INSTALLATION_PATH/dmpmqmsg -m QM1 -o QN.DPENACTMENT -f DPENACTMENT.mq
+    $MQ_INSTALLATION_PATH/dmpmqmsg -m QM1 -I QN.WORKFLOWENACTMENT -f WORKFLOWENACTMENT.mq
+    ```

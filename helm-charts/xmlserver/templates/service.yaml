@@ -1,4 +1,4 @@
-{{- with .Values.global.xmlserver }}
+{{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -19,16 +19,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "xmlserver.fullname" $ }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ include "sch.names.fullName" (list .) }}
+  namespace: {{ .Release.Namespace }}
   labels:
-{{ include "xmlserver.labels" $ | indent 4 }}
+{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
 spec:
-  type: {{ .serviceType | default "ClusterIP" }}
+  type: "ClusterIP"
   ports:
-    - port: {{ .port | default 1800 }}
-      targetPort: {{ .port | default 1800 }}
+    - port: {{ .Values.serverPort | default 1800 }}
+      targetPort: {{ .Values.serverPort | default 1800 }}
   selector:
-    app.kubernetes.io/name: {{ include "xmlserver.fullname" $ }}
-    app.kubernetes.io/instance: {{ $.Release.Name }}
-{{ end }}
+    app.kubernetes.io/name: {{ include "sch.names.appName" (list .) | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}

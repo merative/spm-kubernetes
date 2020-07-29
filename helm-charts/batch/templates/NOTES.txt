@@ -1,0 +1,25 @@
+{{- include "sch.config.init" (list . "batch.sch.chart.config.values") }}
+
+The following batch programs have been scheduled:
+
+{{- range $progID, $prog := .Values.programs }}
+Program ID: {{ $progID }}
+Program Details:
+  {{- toYaml $prog | nindent 2 }}
+{{ end }}
+
+To schedule additional programs, add a key under 'programs' with the following structure:
+
+  programID:
+    schedule:     Cron expression when the batch program should run
+    className:    Java class for the Batch batch process (-Dbatch.program=)
+    parameters:   Parameters, if any, to be passed to the batch process (-Dbatch.parameters=)
+    username:     Username to use for the execution of the batch process (-Dbatch.username=)
+
+Any program may also override the following properties, by specifying a key with the same name and syntax:
+
+  javaOptions:                  Java options to be specified via ANT_OPTS
+  successfulJobsHistoryLimit:   Number of successful job executions to keep
+  backoffLimit:                 Number of attempts to run a batch job, in case of failure
+  concurrencyPolicy:            Specifies how to treat concurrent executions of a Job (Allow|Forbid|Replace)
+  resources:                    CPU and Memory requests and limits

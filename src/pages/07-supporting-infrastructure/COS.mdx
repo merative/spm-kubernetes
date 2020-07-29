@@ -14,11 +14,11 @@ For more information about Cloud Object Storage, see [IBM Cloud Object Storage](
 
 ### Usage
 
-In order to archive data persistently through COS, the following prerequisites need to be prepared in the Kubernetes cluster:
+To archive data persistently through COS, prepare the following prerequisites in the Kubernetes cluster:
 
 * Create a bucket in the COS service by following the [Getting Started guide](https://cloud.ibm.com/docs/services/cloud-object-storage?topic=cloud-object-storage-getting-started)
 * Take note of the `bucket-name`, `access-key`, `secret-key` and `service-private-endpoint` for the bucket
-* Install the COS Plugin into your cluster by following the [documentation](https://cloud.ibm.com/docs/containers?topic=containers-object_storage)
+* Install the COS Plugin into your cluster by following [Storing data on IBM Cloud Object Storage](https://cloud.ibm.com/docs/containers?topic=containers-object_storage)
 * Enable persistence by toggling the following properties in the override values file injected through Helm during deployment:
 
 <Tabs>
@@ -27,7 +27,7 @@ In order to archive data persistently through COS, the following prerequisites n
 <Row>
 <Column>
 
-```yaml path=iks-values.yaml src=/resources/iks-values.yaml
+```yaml path=iks-values.yaml
 ---
 global:
   apps:
@@ -36,8 +36,9 @@ global:
         # Persistence volume to store data (such as non-log files)
         enabled: true
         # If enabled, creates a PVC to connect to IBM Cloud Object Storage
-        # Properties secretKey, accessKey, instanceId, and bucketName are required
+        # Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
         # Values available in the WebUI where the bucket was pre-created
+        storageClassName: "storage-class-name"
         instanceId: "<instance-id>"
         bucketName: "<bucket-name>"
         accessKey: "<access-key>"

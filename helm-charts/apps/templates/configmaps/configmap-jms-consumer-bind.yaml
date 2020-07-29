@@ -1,0 +1,68 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-jms-consumer-bind
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+data:
+  application_CuramServerCode.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!-- Placed by Kubernetes Configmap. -->
+    <server>
+      <classloading useJarUrls="true" />
+      <library id="CuramServerCodeLib">
+        <fileset dir="${server.config.dir}/apps/CuramServerCode.ear" includes="*.jar" />
+      </library>
+      <enterpriseApplication id="CuramServerCode.ear" location="CuramServerCode.ear" name="CuramServerCode">
+        <classloader commonLibraryRef="customLoginLib" delegation="parentFirst" privateLibraryRef="CuramServerCodeLib" />
+        <application-bnd>
+          <security-role name="mdbuser">
+            <run-as userid="${env.SYSTEM_USER}" password="${env.SYSTEM_PASSWORD}" />
+          </security-role>
+          <security-role name="AllAuthenticated">
+            <special-subject type="ALL_AUTHENTICATED_USERS" />
+          </security-role>
+          <security-role name="everyone">
+            <special-subject type="ALL_AUTHENTICATED_USERS" />
+          </security-role>
+          <security-role name="mbeancreator">
+            <user name="superuser" />
+          </security-role>
+        </application-bnd>
+        <ejb-jar-bnd moduleName="coreinf-ejb">
+          <message-driven name="DPEnactmentMDB">
+            <jca-adapter activation-spec-binding-name="eis/DPEnactmentAS" />
+          </message-driven>
+          <message-driven name="WorkflowEnactmentMDB">
+            <jca-adapter activation-spec-binding-name="eis/WorkflowEnactmentAS" />
+          </message-driven>
+          <message-driven name="WorkflowErrorMDB">
+            <jca-adapter activation-spec-binding-name="eis/WorkflowErrorAS" />
+          </message-driven>
+          <message-driven name="WorkflowActivityMDB">
+            <jca-adapter activation-spec-binding-name="eis/WorkflowActivityAS" />
+          </message-driven>
+          <message-driven name="DPErrorMDB">
+            <jca-adapter activation-spec-binding-name="eis/DPErrorAS" />
+          </message-driven>
+        </ejb-jar-bnd>
+      </enterpriseApplication>
+    </server>

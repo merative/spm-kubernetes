@@ -1,6 +1,8 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+{{- $dbHostname := .Values.global.database.hostname -}}
 {{- range $name, $app := .Values.global.apps.config }}
 {{- if and $app.enabled (not $app.producerOnly) }}
-{{- $imageData := dict "ImageConfig" $.Values.global.images "ImageName" $name }}
+{{- $imageData := dict "ImageConfig" $.Values.global.images "ImageName" "servercode" }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -21,31 +23,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
+  name: {{ include "sch.names.fullCompName" (list $ (printf "%s-consumer" $name)) }}
   namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "apps.labels" $ | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ (printf "%s-consumer" $name)) | nindent 4 }}
 spec:
-  replicas: {{ $app.replicaCount | default 1 }}
+  replicas: {{ default $.Values.replicaCount $app.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
-      app.kubernetes.io/instance: {{ $.Release.Name }}
+      {{- include "sch.metadata.labels.standard" (list $ (printf "%s-consumer" $name)) | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-consumer
-        app.kubernetes.io/instance: {{ $.Release.Name }}
+        {{- include "sch.metadata.labels.standard" (list $ (printf "%s-consumer" $name)) | nindent 8 }}
+      annotations:
+        {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | indent 8 }}
     spec:
-      {{- with $.Values.global.apps.common.runAs }}
-      securityContext:
-        runAsUser: {{ . }}
-      {{- end }}
+      {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | indent 6 }}
+      affinity:
+        {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | indent 8 }}
       {{- if $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
         - name: {{ $.Release.Name }}-pull-secret
       {{- end }}
       restartPolicy: {{ $app.restartPolicy | default "Always" }}
+      serviceAccountName: {{ default (include "sch.names.fullName" (list $)) $.Values.serviceAccountName }}
       volumes:
         - name: server-cm
           configMap:
@@ -86,23 +88,15 @@ spec:
         - name: security-cm
           configMap:
             name: {{ $.Release.Name }}-jms-consumer-security
-        - name: ltpa-keys-cm
-          configMap:
-            name: {{ $.Release.Name }}-ltpa-keys-cm
-        {{- if eq $name "curam" }}
-        - name: customsql-files
-          configMap:
-            name: {{ $.Release.Name }}-customsql-cm
-        - name: bootstrap-file
-          configMap:
-            name: {{ $.Release.Name }}-bootstrap-cm
-        {{- end }}
+        - name: ltpa-secret
+          secret:
+            secretName: {{ default (printf "%s-ltpa-keys" $.Release.Name) $.Values.ltpaKeys.secretName }}
         - name: keystore-volume
           emptyDir: {}
         - name: service-certs
           secret:
             {{- if $.Capabilities.APIVersions.Has "route.openshift.io/v1" }}
-            secretName: {{ include "apps.fullname" $ }}-{{ $name }}
+            secretName: {{ include "sch.names.fullCompName" (list $ $name) }}
             {{- else }}
             secretName: {{ $.Release.Name }}-apps-tls
             {{- end }}
@@ -127,39 +121,35 @@ spec:
         {{- end }}
       initContainers:
         - name: wait-for-database
-          image: busybox:1.28
+          {{- include "utilities.definition" $ | indent 10 }}
           command:
             - /bin/sh
             - -c
             - >
-              until nslookup {{ include "apps.dbhostname" $ }}; do
-                echo waiting for {{ include "apps.dbhostname" $ }} to be available...;
+              until nc -z -w3 {{ $dbHostname }} {{ $.Values.global.database.port }}; do
+                echo waiting for {{ $dbHostname }}:{{ $.Values.global.database.port }} to be reachable;
                 sleep 2;
               done;
-              until nc -z -w3 {{ include "apps.dbhostname" $ }} {{ $.Values.global.database.port | default 50000 }}; do
-                echo waiting for {{ include "apps.dbhostname" $ }}:{{ $.Values.global.database.port | default 50000 }} to be reachable;
-                sleep 2;
-              done;
-              echo waiting {{ $.Values.global.database.initTime | default 120 }} additional seconds...;
-              sleep {{ $.Values.global.database.initTime | default 120 }};
+              echo waiting {{ $.Values.global.database.initTime }} additional seconds...;
+              sleep {{ $.Values.global.database.initTime }};
         {{- if not (hasKey $app "mqConnectionNameList") }}
         - name: wait-for-mq
-          image: busybox:1.28
+          {{- include "utilities.definition" $ | indent 10 }}
           command:
             - /bin/sh
             - -c
             - >
-              until nslookup {{ $.Release.Name }}-mqserver-{{ $name }}; do
-                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }} to be available...;
+              until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }} 1414; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}:1414 to be reachable;
                 sleep 2;
-              done
+              done;
         {{- end }}
         {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
         - name: import-db2-cert
-          image: ibmjava:8-sdk
+          {{- include "utilities.definition" $ | indent 10 }}
           env:
             - name: certfile
-              value: /mnt/certificates/{{ $.Values.global.database.ssl.certFile | default "db2admin.arm" }}
+              value: /mnt/certificates/{{ $.Values.global.database.ssl.secretKey }}
             - name: keystore_jks
               value: /mnt/keystores/db2TrustStore.jks
           command:
@@ -173,7 +163,7 @@ spec:
               mountPath: /mnt/certificates
         {{- end }}
         - name: import-tls-certs
-          image: ibmjava:8-sdk
+          {{- include "utilities.definition" $ | indent 10 }}
           env:
             - name: svcKeyFile
               value: /mnt/svcCertificates/tls.key
@@ -196,7 +186,7 @@ spec:
               mountPath: /mnt/svcCertificates
         {{- if $.Values.global.mq.tlsSecretName }}
         - name: import-certs-for-mq
-          image: ibmjava:8-sdk
+          {{- include "utilities.definition" $ | indent 10 }}
           env:
             - name: mqCrtFile
               value: /mnt/mqCertificates/tls.crt
@@ -221,26 +211,28 @@ spec:
               mountPath: /mnt/mqCertificates
         {{- end }}
         - name: wait-for-curam
-          image: busybox:1.28
+          {{- include "utilities.definition" $ | indent 10 }}
           command:
             - /bin/sh
             - -c
             - >
-              until nslookup {{ include "apps.fullname" $ }}-curam; do
-                echo waiting for {{ include "apps.fullname" $ }}-curam to be available...;
-                sleep 2;
-              done;
-              until nc -z -w3 {{ include "apps.fullname" $ }}-curam {{ $.Values.global.apps.common.port | default 8443 }}; do
-                echo waiting for {{ include "apps.fullname" $ }}-curam:{{ $.Values.global.apps.common.port | default 8443 }} to be reachable;
+              until nc -z -w3 {{ include "sch.names.fullCompName" (list $ "curam") }} {{ $.Values.httpsPort }}; do
+                echo waiting for {{ include "sch.names.fullCompName" (list $ "curam") }}:{{ $.Values.httpsPort }} to be reachable;
                 sleep 2;
               done;
       containers:
         - name: {{ $.Chart.Name }}-consumer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
-          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+          imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+          {{- include "sch.security.securityContext" (list . $.sch.chart.containerSecurityContext) | indent 10 }}
           ports:
             - name: client
-              containerPort: {{ $.Values.global.apps.common.port | default 8443 }}
+              containerPort: {{ $.Values.httpsPort }}
+          envFrom:
+            - secretRef:
+                name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
+            - secretRef:
+                name: {{ default (printf "%s-system-credentials" $.Release.Name) $.Values.systemUser.credsSecretName }}
           env:
             - name: LICENSE
               value: {{ $.Values.global.license }}
@@ -256,10 +248,11 @@ spec:
               {{- end }}
             - name: LOG_DIR
               value: {{ include "apps.logsDir" $ }}
-            - name: SYSTEM_USER
-              value: {{ $.Values.global.apps.common.security.username | default "SYSTEM" }}
-            - name: SYSTEM_PASSWORD
-              value: {{ $.Values.global.apps.common.security.password | default "{xor}LCYsLz4sLA==" | quote }}
+            - name: LTPA_KEYS_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-ltpa-keys" $.Release.Name) $.Values.ltpaKeys.secretName }}
+                  key: {{ $.Values.ltpaKeys.passwordKey }}
             {{- if $.Values.global.mq.useConnectionNameList }}
             - name: MQ_CONN_NAME_LIST
               value: {{ $app.mqConnectionNameList }}
@@ -270,8 +263,15 @@ spec:
             {{- else }}
             - name: MQ_HOST_NAME
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
+            - name: MQ_CONN_USER
+              value: app
+            - name: MQ_CONN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: enc_{{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
             - name: MQ_QMGR_NAME
-              value: QM1
+              value: {{ $.Values.global.mq.queueManager.name }}
             - name: MQ_CHANNEL_NAME
               value: MQ_CHN
             {{- end }}
@@ -287,17 +287,14 @@ spec:
                 - {{ include "apps.logsDir" $ }}/messages.log
             initialDelaySeconds: 90
             periodSeconds: 10
-          {{- if .resources }}
-          {{- with .resources }}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - /opt/ibm/helpers/runtime/liveness-probe.sh {{ include "apps.logsDir" $ }}/messages.log
           resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- else }}
-          {{- with $.Values.global.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- end }}
+            {{- toYaml (default $.Values.defaultResources $app.resources) | nindent 12 }}
           volumeMounts:
             - name: server-cm
               mountPath: /config/server.xml
@@ -337,9 +334,9 @@ spec:
             - name: security-cm
               mountPath: /config/adc_conf/server_security.xml
               subPath: server_security.xml
-            - name: ltpa-keys-cm
-              mountPath: /opt/ibm/wlp/output/defaultServer/resources/security/ltpa.keys
-              subPath: ltpa.keys
+            - name: ltpa-secret
+              mountPath: /opt/ibm/wlp/output/defaultServer/resources/security/{{ $.Values.ltpaKeys.secretKey }}
+              subPath: {{ $.Values.ltpaKeys.secretKey }}
             - name: keystore-volume
               mountPath: /output/resources/security
             {{- if $.Values.global.apps.common.persistence.enabled }}

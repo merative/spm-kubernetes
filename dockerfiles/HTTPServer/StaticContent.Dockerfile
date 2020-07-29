@@ -14,38 +14,22 @@
 # limitations under the License.
 ###############################################################################
 
-ARG DOCKER_REGISTRY="internal.docker.repository"
-ARG HTTP_VERSION=9.0.0.11
+ARG CONTENT_DIR=CuramStatic
 
-#Unzip static content in to temp
+# If set, must end with a forward slash, e.g. "registry.redhat.io/"
+ARG BASE_REGISTRY
+
+# Unzip static content in to temp
 FROM alpine AS ExplodedStaticzip
 COPY StaticContent.zip /tmp/
 RUN mkdir -p /work/staticcontent/ \
-    && unzip -o -q /tmp/StaticContent.zip -d /work/staticcontent/
+    && unzip -o -q /tmp/StaticContent.zip -d /work/staticcontent/ \
+    && chmod -R g=u /work/staticcontent
 
-#Final
-FROM ${DOCKER_REGISTRY}/ubi7/ibm-http-server:${HTTP_VERSION}
-ARG HTTP_VERSION
-LABEL IHS_VERSION=${HTTP_VERSION}
+# Final
+FROM ${BASE_REGISTRY}rhel8/httpd-24
+ARG CONTENT_DIR
 
-CMD ["/work/ihsstart.sh"]
+COPY --from=ExplodedStaticzip --chown=1001:0 /work/staticcontent/WebContent /var/www/html/$CONTENT_DIR
 
-USER root
-RUN echo "include conf.d/*.conf" >> /opt/IBM/HTTPServer/conf/httpd.conf \
-    && chmod g+w /opt/IBM/HTTPServer \
-    && chmod -Rc g+w /opt/IBM/HTTPServer/logs \
-    && chmod -Rc g+rw /opt/IBM/WebSphere/Plugins/config \
-    && chmod -Rc g+rw /opt/IBM/WebSphere/Plugins/logs
-
-# Provide authority to bind as non-root
-RUN setcap CAP_NET_BIND_SERVICE+ep /opt/IBM/HTTPServer/bin/httpd \
-    && echo /opt/IBM/HTTPServer/lib > /etc/ld.so.conf.d/httpd-lib.conf \
-    && echo /opt/IBM/HTTPServer/gsk8/lib64 >> /etc/ld.so.conf.d/httpd-lib.conf \
-    && rm -rf /etc/ld.so.cache \
-    && /sbin/ldconfig
-
-COPY --from=ExplodedStaticzip /work/staticcontent/WebContent /opt/IBM/HTTPServer/htdocs/CuramStatic
-COPY httpdconfig/custom_*.conf /opt/IBM/HTTPServer/conf.d/
-COPY ihsstart.sh /work/
-
-USER 1000
+USER 1001

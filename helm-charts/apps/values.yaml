@@ -18,51 +18,53 @@ global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
   images:
-    registry: &imageRegistry us.icr.io
+    registry: &imageRegistry minikube.local:5000
     imageLibrary: ''
     imagePrefix: ''
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
-    registry: *imageRegistry
+    username: ''
+  sch:
+    enabled: true
   database:
-    ## Database connection configuration
-    # The property wlp_psw: contains the XOR password injected in the Liberty configuration
-    # The property spm_psw: contains the encrypted password injected in Bootstrap.properties
-    type: db2
-    port: 50000
+    ## Database connection properties
+    type: DB2
     dbName: DATABASE
+    hostname: ''
+    port: 50000
     username: db2admin
+    # Name of pre-created secret containing database credentals
+    credsSecretName: ''
+    # The XOR-encrypted password injected into Liberty configuration
+    wlp_psw: "{xor}Oz1tPjsyNjE="
+    # The SPM-encrypted password injected into Bootstrap.properties
+    spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
+    # Oracle Service name, where applicable
+    serviceName: ''
     initTime: 120
-    ssl: {}
-  resources:
-    limits:
-      cpu: 2
-      memory: 6Gi
-    requests:
-      cpu: 2
-      memory: 6Gi
-  xmlserver:
-    port: 1800
+    ssl:
+      enabled: false
+      # Name of the secret containing the database TLS certificate
+      secretName: ''
+      # Key in the above secret with the certificate
+      secretKey: db2admin.arm
   apps:
     common:
-      runAs: 1001
-      port: 8443
-      initialDelaySeconds: 300
-      security: {}
       persistence:
         ## Persistence volume to store data (such as non-log files)
         enabled: false
         ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
-        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
         ## Values available in the WebUI where the bucket was pre-created
+        # storageClassName: ""
         # secretKey: ""
         # accessKey: ""
         # instanceId: ""
         # bucketName: ""
         # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
-        # mountPoint: "/tmp/persistence"
-        # subDir: "/folder/name"
+        mountPoint: ''
+        subDir: ''
         jmxstats:
           ## Parameters of the JMX Stats to be persisted on the PVC
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
@@ -75,7 +77,7 @@ global:
         readinessPath: /Curam/
         ingressPath: /Curam
         earName: Curam
-        jvm: 
+        jvm:
           - "-Xms2048m"
           - "-Xmx2048m"
         resources:
@@ -86,12 +88,12 @@ global:
             cpu: 1.5
             memory: 3Gi
       rest:
-        enabled: true
+        enabled: false
         replicaCount: 1
         ingressPath: /Rest
         earName: Rest
         warName: RestModule
-        jvm: 
+        jvm:
           - "-Xms1536m"
           - "-Xmx1536m"
         resources:
@@ -108,7 +110,7 @@ global:
         readinessPath: /CitizenPortal/
         ingressPath: /CitizenPortal
         earName: CitizenPortal
-        jvm: 
+        jvm:
           - "-Xms2048m"
           - "-Xmx2048m"
         resources:
@@ -126,16 +128,9 @@ global:
         earName: CuramWebServices
         warName: webservices2
         excludeJmxStats: true
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       curambirtviewer:
         enabled: false
         replicaCount: 1
@@ -144,7 +139,7 @@ global:
         earName: CuramBIRTViewer
         producerOnly: true
         excludeJmxStats: true
-        jvm: 
+        jvm:
           - "-Xms768m"
           - "-Xmx768m"
         resources:
@@ -160,106 +155,122 @@ global:
         readinessPath: /CPMExternalNS/
         ingressPath: /CPMExternalNS
         earName: CPMExternalNS
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       cpmexternals:
         enabled: false
         replicaCount: 1
         readinessPath: /CPMExternalS/
         ingressPath: /CPMExternalS
         earName: CPMExternalS
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       navigatorns:
         enabled: false
         replicaCount: 1
         readinessPath: /NavigatorNS/
         ingressPath: /NavigatorNS
         earName: NavigatorNS
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       navigators:
         enabled: false
         replicaCount: 1
         readinessPath: /NavigatorS/
         ingressPath: /NavigatorS
         earName: NavigatorS
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       mdtworkspace:
         enabled: false
         replicaCount: 1
         readinessPath: /MDTWorkspace/
         ingressPath: /MDTWorkspace
         earName: MDTWorkspace
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       samplepublicaccess:
         enabled: false
         replicaCount: 1
         readinessPath: /SamplePublicAccess/
         ingressPath: /SamplePublicAccess
         earName: SamplePublicAccess
-        jvm: 
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
   openldap:
     enabled: false
   isam:
     enabled: false
   mq:
+    # Set to True if running MQ in HA mode
     useConnectionNameList: false
     objectSuffix: minikube
     tlsSecretName: mq-secret
+    queueManager:
+      name: "QM1"
+      secret:
+        # name is the secret that contains the 'admin' user password and the 'app' user password to use for messaging
+        name: ''
+        # adminPasswordKey is the secret key that contains the 'admin' user password (used in the 'mqserver' Chart)
+        # adminPasswordKey: 'adminPasswordKey'
+        # appPasswordKey is the secret key that contains the 'admin' user password
+        appPasswordKey: 'appPasswordKey'
   ingress:
     hostname: minikube.local
 
-nameOverride: ""
-fullnameOverride: ""
+# Require Intel-based workers
+arch: "amd64"
+
+# Name of an existing ServiceAccount for the application runtime
+serviceAccountName: ""
+# Name of an existing ServiceAccount for use by the hooks
+hookServiceAccountName: ""
+
+# User for performing system operations like deferred processing and login lookup.
+systemUser:
+  credsSecretName: ''
+  username: SYSTEM
+  password: "{xor}LCYsLz4sLA=="
+
+# How long to wait before commencing readiness probes
+initialDelaySeconds: 150
+
+# LTPA keys created externally
+ltpaKeys:
+  secretName: ''
+  secretKey: 'ltpa.keys'
+  passwordKey: 'passwordKey'
+
+# Configure Login Module
+loginConfig:
+  trace: true
+  identityOnly: false
+
+# Configure Session and Transactions
+sessionConfig:
+  sessionTimeout: 30m
+  transactionTimeout: 3m
+  maxInMemorySessionCount: 1000
+  cookie:
+    httpOnly: true
+    secure: true
+
+# Number of replicas to deploy
+replicaCount: 1
+
+# HTTPS port for running the application(s)
+httpsPort: 8443
+
+defaultResources:
+  requests:
+    cpu: 0.5
+    memory: 768Mi
+  limits:
+    cpu: 0.75
+    memory: 1Gi

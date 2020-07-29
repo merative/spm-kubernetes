@@ -1,3 +1,4 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
 {{- if and .Values.global.ingress.enabled (not (.Capabilities.APIVersions.Has "route.openshift.io/v1")) }}
 ---
 ###############################################################################
@@ -22,10 +23,10 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "spm.labels" . | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
   annotations:
-    ingress.bluemix.net/ssl-services: {{ include "sslServicesChain" . }}
-    ingress.bluemix.net/sticky-cookie-services: {{ include "stickyCookieServicesChain" . }}
+    ingress.bluemix.net/ssl-services: {{ include "spm.sslServicesChain" . }}
+    ingress.bluemix.net/sticky-cookie-services: {{ include "spm.stickyCookieServicesChain" . }}
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     nginx.ingress.kubernetes.io/session-cookie-path: /
@@ -55,20 +56,20 @@ spec:
               servicePort: https
           {{- end }}
           {{- end }}
-          {{- if .Values.global.ceApp.imageName }}
-          - path: {{ .Values.global.ceApp.ingressPath | default "/universal" }}
+          {{- if .Values.uawebapp.imageConfig.name }}
+          - path: {{ .Values.uawebapp.ingressPath | default "/universal" }}
             backend:
-              serviceName: {{ $.Release.Name }}-ce-app
+              serviceName: {{ $.Release.Name }}-uawebapp
               servicePort: https
           {{- end }}
           {{- if .Values.global.isam.enabled }}
-          - path: "/ibm" 
+          - path: "/ibm"
             backend:
               serviceName: {{ $.Release.Name }}-apps-curam
               servicePort: https
           {{- end }}
-          - path: {{ .Values.global.ihs.ingressPath | default "/CuramStatic" }}
+          - path: {{ .Values.web.ingressPath | default "/CuramStatic" }}
             backend:
-              serviceName: {{ $.Release.Name }}-ihs
+              serviceName: {{ $.Release.Name }}-web
               servicePort: https
 {{- end }}

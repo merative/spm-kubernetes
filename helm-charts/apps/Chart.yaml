@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-apiVersion: v1
+apiVersion: v2
+kubeVersion: ">=1.16"
+appVersion: "7.0.10.0"
 name: apps
 description: Helm Chart for Deployment of Curam SPM Applications within a Kubernetes Cluster
-version: 2.1.0
+version: 3.0.0
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
@@ -30,5 +32,16 @@ keywords:
   - RHOS
   - Curam
   - SPM
+  - amd64
+  - deploy
+  - DevOps
+  - Commercial
+  - Limited
 home: https://www.ibm.com/watson-health/solutions/social-program-management
 icon: https://avatars2.githubusercontent.com/u/1459110
+dependencies:
+  - name: ibm-sch
+    repository: "@sch"
+    version: "^1.2.17"
+    alias: sch
+    condition: global.sch.enabled

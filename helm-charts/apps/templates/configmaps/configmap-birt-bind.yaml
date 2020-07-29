@@ -1,0 +1,48 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-birt-bind
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+data:
+  application_CuramBIRTViewer.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!-- Placed by Kubernetes Configmap. -->
+    <server>
+      <classloading useJarUrls="true" />
+      <library id="CuramBIRTViewerLib">
+        <fileset dir="${server.config.dir}/apps/CuramBIRTViewer.ear/ClientModule.war/WEB-INF/lib" includes="*.jar" />
+      </library>
+      <enterpriseApplication id="CuramBIRTViewer.ear" location="CuramBIRTViewer.ear" name="CuramBIRTViewer">
+        <classloader commonLibraryRef="customLoginLib" delegation="parentLast" privateLibraryRef="CuramBIRTViewerLib" />
+        <application-bnd>
+          <security-role name="AllAuthenticated">
+            <special-subject type="ALL_AUTHENTICATED_USERS" />
+          </security-role>
+          <security-role name="everyone">
+            <special-subject type="ALL_AUTHENTICATED_USERS" />
+          </security-role>
+          <security-role name="mbeancreator">
+            <user name="superuser" />
+          </security-role>
+        </application-bnd>
+      </enterpriseApplication>
+    </server>

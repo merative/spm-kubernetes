@@ -15,73 +15,69 @@
 ###############################################################################
 
 global:
-  batch:
-    javaMetrics:
-      heapSize: "-Xms512m -Xmx512m"
+  # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
+  license: ''
   images:
-    registry: &imageRegistry us.icr.io
+    registry: &imageRegistry minikube.local:5000
     imageLibrary: ''
     imagePrefix: ''
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
-    registry: *imageRegistry
-  ceApp:
-    replicaCount: 1
-    imageLibrary: ''
-    imageName: ''
-    imageTag: latest
-    ingressPath: /universal
-    resources: {}
-  ihs:
-    serviceType: NodePort
-    runAs: 1000
-    replicaCount: 1
-    readinessPath: /CuramStatic/
-    ingressPath: /CuramStatic
+    username: ''
+  sch:
+    enabled: false
   database:
-    ## Database connection configuration
-    # The property wlp_psw: contains the XOR password injected in the Liberty  configuration
-    # The property spm_psw: contains the encrypted password injected in Bootstrap.properties
-    type: db2
-    port: 50000
+    ## Database connection properties
+    type: DB2
     dbName: DATABASE
+    hostname: ''
+    port: 50000
     username: db2admin
+    # Name of pre-created secret containing database credentals
+    credsSecretName: ''
+    # The XOR-encrypted password injected into Liberty configuration
     wlp_psw: "{xor}Oz1tPjsyNjE="
+    # The SPM-encrypted password injected into Bootstrap.properties
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
-    ssl: {}
+    # Oracle Service name, where applicable
+    serviceName: ''
+    initTime: 120
+    ssl:
+      enabled: false
+      # Name of the secret containing the database TLS certificate
+      secretName: ''
+      # Key in the above secret with the certificate
+      secretKey: db2admin.arm
   apps:
     common:
-      port: 8443
       persistence:
         ## Persistence volume to store data (such as non-log files)
         enabled: false
         ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
-        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
         ## Values available in the WebUI where the bucket was pre-created
+        # storageClassName: ""
         # secretKey: ""
         # accessKey: ""
         # instanceId: ""
         # bucketName: ""
         # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
-        # mountPoint: "/tmp/persistence"
-        # subDir: "/folder/name"
+        mountPoint: ''
+        subDir: ''
         jmxstats:
           ## Parameters of the JMX Stats to be persisted on the PVC
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
           enabled: false
           timerPeriod: 60000
-      sessionTimeout: 30m
-      transactionTimeout: 3m
-      cookieHttpOnly: true
-      security: {}
-      loginTrace: true
     config:
       curam:
         enabled: true
+        replicaCount: 1
         readinessPath: /Curam/
         ingressPath: /Curam
-        jvm: 
+        earName: Curam
+        jvm:
           - "-Xms2048m"
           - "-Xmx2048m"
         resources:
@@ -92,9 +88,12 @@ global:
             cpu: 1.5
             memory: 3Gi
       rest:
-        enabled: true
+        enabled: false
+        replicaCount: 1
         ingressPath: /Rest
-        jvm: 
+        earName: Rest
+        warName: RestModule
+        jvm:
           - "-Xms1536m"
           - "-Xmx1536m"
         resources:
@@ -104,15 +103,14 @@ global:
           limits:
             cpu: 1.5
             memory: 2Gi
-        readinessExec:
-          - /bin/grep
-          - "application available .*/Rest"
-          - /logs/messages.log
+        readinessString: "application available .*/Rest"
       citizenportal:
         enabled: false
+        replicaCount: 1
         readinessPath: /CitizenPortal/
         ingressPath: /CitizenPortal
-        jvm: 
+        earName: CitizenPortal
+        jvm:
           - "-Xms2048m"
           - "-Xmx2048m"
         resources:
@@ -124,23 +122,24 @@ global:
             memory: 3Gi
       curamwebservices:
         enabled: false
+        replicaCount: 1
         readinessPath: /CuramWS2/SOAPMonitor
         ingressPath: /CuramWS2
-        jvm: 
+        earName: CuramWebServices
+        warName: webservices2
+        excludeJmxStats: true
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       curambirtviewer:
         enabled: false
+        replicaCount: 1
         readinessTCPProbe: true
-        ingressPath: /CuramBIRTViewer
-        jvm: 
+        ingressPath: /CuramBIRTViewer/
+        earName: CuramBIRTViewer
+        producerOnly: true
+        excludeJmxStats: true
+        jvm:
           - "-Xms768m"
           - "-Xmx768m"
         resources:
@@ -152,101 +151,118 @@ global:
             memory: 1.5Gi
       cpmexternalns:
         enabled: false
+        replicaCount: 1
         readinessPath: /CPMExternalNS/
         ingressPath: /CPMExternalNS
-        jvm: 
+        earName: CPMExternalNS
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       cpmexternals:
         enabled: false
+        replicaCount: 1
         readinessPath: /CPMExternalS/
         ingressPath: /CPMExternalS
-        jvm: 
+        earName: CPMExternalS
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       navigatorns:
         enabled: false
+        replicaCount: 1
         readinessPath: /NavigatorNS/
         ingressPath: /NavigatorNS
-        jvm: 
+        earName: NavigatorNS
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       navigators:
         enabled: false
+        replicaCount: 1
         readinessPath: /NavigatorS/
         ingressPath: /NavigatorS
-        jvm: 
+        earName: NavigatorS
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       mdtworkspace:
         enabled: false
+        replicaCount: 1
         readinessPath: /MDTWorkspace/
         ingressPath: /MDTWorkspace
-        jvm: 
+        earName: MDTWorkspace
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
       samplepublicaccess:
         enabled: false
+        replicaCount: 1
         readinessPath: /SamplePublicAccess/
         ingressPath: /SamplePublicAccess
-        jvm: 
+        earName: SamplePublicAccess
+        jvm:
           - "-Xms512m"
           - "-Xmx512m"
-        resources:
-          requests:
-            cpu: 0.5
-            memory: 768Mi
-          limits:
-            cpu: 0.75
-            memory: 1Gi
-  ihs:
-    serviceType: NodePort
-    config:
-      readinessPath: /CuramStatic/
-      ingressPath: /CuramStatic
   openldap:
     enabled: false
-    identityOnly: false
   ingress:
     enabled: false
-    #hostname: minikube.local
+    hostname: ''
   isam:
     enabled: false
-    
-nameOverride: ""
-fullnameOverride: ""
+
+# Override values in 'apps' Chart
+apps:
+  replicaCount: 1
+  systemUser:
+    credsSecretName: ''
+    username: SYSTEM
+    password: "{xor}LCYsLz4sLA=="
+  initialDelaySeconds: 150
+  loginConfig:
+    trace: true
+    identityOnly: false
+  sessionConfig:
+    sessionTimeout: 30m
+    transactionTimeout: 3m
+    maxInMemorySessionCount: 1000
+    cookie:
+      httpOnly: true
+      secure: true
+  defaultResources:
+    requests:
+      cpu: 0.5
+      memory: 768Mi
+    limits:
+      cpu: 0.75
+      memory: 1Gi
+
+# Override values in 'batch' Chart
+batch:
+  programs:
+    queued:
+      schedule: "*/30 * * * *"
+
+# Override values in 'uawebapp' Chart
+uawebapp:
+  replicaCount: 1
+  httpsPort: 8443
+  imageConfig:
+    library: ''
+    name: ''
+    tag: latest
+  readinessProbe:
+    path: /universal/
+  ingressPath: /universal
+
+# Override values in 'web' Chart
+web:
+  replicaCount: 1
+  readinessProbe:
+    path: /CuramStatic/
+  ingressPath: /CuramStatic
+
+# Override values in 'xmlserver' Chart
+xmlserver:
+  replicaCount: 1
+  serverPort: 1800

@@ -3,7 +3,7 @@ title: MustGather
 description: MustGather
 ---
 
-## Collecting MustGather data for Curam Social Program on Kubernetes
+## Collecting MustGather data for SPM on Kubernetes
 
 * [Introduction](#introduction)
 * [Collecting MustGather data](#collecting-mustgather-data)
@@ -11,7 +11,7 @@ description: MustGather
   * [Platform and version information](#platform-and-version-information)
     * [Build systems](#build-systems)
       * [Operating system and platform](#operating-system-and-platform)
-      * [Cúram and base third party software versions](#curam-and-base-third-party-software-versions)
+      * [SPM and base third party software versions](#spm-and-base-third-party-software-versions)
     * [Runtime systems](#runtime-systems)
       * [Operating systems and platforms](#operating-systems-and-platforms)
       * [Kubernetes and related software versions](#kubernetes-and-related-software-versions)
@@ -32,15 +32,15 @@ description: MustGather
     * [MQ logs and artifacts](#mq-logs-and-artifacts)
     * [Cúram XML Server logs and artifacts](#curam-xml-server-logs-and-artifacts)
     * [Cúram batch logs and artifacts](#curam-batch-logs-and-artifacts)
-    * [IBM HTTP Server logs and artifacts](#ibm-http-server-logs-and-artifacts)
+    * [HTTP Server logs and artifacts](#http-server-logs-and-artifacts)
     * [LDAP](#ldap)
 
 ## Introduction
 
-The information laid out in this section details the information needed when raising a support case. Please note that not all information detailed below is necessary when
+The information laid out in this section details the information needed when raising a support case. Note that not all information detailed is necessary when
 raising an issue on [GitHub](https://github.com/IBM/spm-kubernetes/issues).
 
-What information should I collect for issues with IBM Cúram Social Program Management in a Kubernetes environment in order to assist IBM Support with their investigations?
+What information should I collect for issues with IBM Cúram Social Program Management (SPM) in a Kubernetes environment to assist IBM Support with their investigations?
 
 First, a comprehensive description of the problem along with answers to the following questions:
 
@@ -51,15 +51,14 @@ First, a comprehensive description of the problem along with answers to the foll
 
 Beyond the above you will need to collect general third party software information (for example, versions) and more specific diagnostic, log, and other information for the areas where you are seeing the issue.
 This general information is described in the sections that follow.
-But, for issues with the following third party software you should consult their external MustGather links as appropriate:
+For issues with the following third party software you should consult their external MustGather links as appropriate:
 
-* [Cúram](https://www.ibm.com/support/pages/collecting-data-c%C3%BAram-social-program-management-issues)
+* [SPM](https://www.ibm.com/support/pages/collecting-data-c%C3%BAram-social-program-management-issues)
 * [Liberty](https://www.ibm.com/support/pages/mustgather-read-first-websphere-application-server)
 * [Db2](https://www.ibm.com/support/pages/collecting-data-read-first-db2-linux-unix-and-windows-products)
 * [MQ](https://www.ibm.com/support/pages/read-first-collect-ibm-mq-mustgather-data-linux-unix-windows-and-ibm-i)
-* [IHS](https://www.ibm.com/support/pages/mustgather-read-first-ibm-http-server)
 
-The following sections describe how to gather information specific to Cúram running on Kubernetes and will provide information relating to where logs and traces reside relating to the above MustGather.
+The following sections describe how to gather information specific to SPM running on Kubernetes and provide information relating to where logs and traces reside relating to the MustGather.
 
 ## Collecting MustGather data
 
@@ -89,19 +88,19 @@ Because there are many layers of software and interdependencies the following re
 
 ### Operating system and platform
 
-Include this information for the relevant platform where you build Curam.
+Include this information for the relevant platform where you build Curam SPM.
 
-On most systems this command will provide basic platform and operating system information:
+On most systems the following command provides basic platform and operating system information:
 
 ```
 uname -a
 ```
 
-### Cúram and base third party software versions
+### SPM and base third party software versions
 
-In a Cúram environment the Ant `configreport` target will include the following versions in its generated zip file:
+In a SPM environment the Ant `configreport` target includes the following versions in its generated zip file:
 
-* Cúram version -  available in the `Installerlogs/Installhistory.txt` file within the resulting `$SERVER_DIR/config_report.zip` file
+* SPM version -  available in the `Installerlogs/Installhistory.txt` file within the resulting `$SERVER_DIR/config_report.zip` file
 * Inside the ConfigReporter*.log file of the config folder within the resulting `$SERVER_DIR/config_report.zip` file you will find the:
   * Java version
   * Application server version
@@ -123,7 +122,7 @@ Please provide the `config_report.zip` file.
 
 Include this information for all relevant platforms used for deployment, where you run the IBM Cloud CLI or Minikube.
 
-On most systems this command will provide basic platform and operating system information:
+On most systems the following command provides basic platform and operating system information:
 
 ```
 uname -a
@@ -131,7 +130,7 @@ uname -a
 
 ### Kubernetes and related software versions
 
-The following commands will display the relevant versions for Docker, Helm, the IBM cloud CLI (IKS), and Kubernetes:
+The following commands display the relevant versions for Docker, Helm, the IBM Cloud CLI (IKS), and Kubernetes:
 
 ```
   docker version # Provides version information for the Docker client and server
@@ -142,24 +141,19 @@ The following commands will display the relevant versions for Docker, Helm, the 
   # Depending on your environment, obtain the appropriate Kubernetes version information:
   minikube version   # If applicable
   ibmcloud version   # If applicable (IKS)
-  kubectl version    # Applies to Minikube and IKS environments
+  oc version         # If applicable (CRC)
+  kubectl version    # Applies to Minikube, IKS, and CRC environments
 ```
 
 For Helm use the command appropriate to your Helm version to list the deployments in the environment, which provides the release and chart names needed in later Helm commands:
 
 ```
-helm list                          # Helm version 2
-helm list --namespace <name_space> # Helm version 3
+helm list -a --namespace <name_space>
 ```
 
 ## Kubernetes deployment information
 
-For deployments gather information as relevant or appropriate to your environment and issue faced.
-
-Helm command syntax differs between version 2 and version 3, mainly in the specification of the Kubernetes namespace, which wasn't specified in Helm version 2 commands.
-This difference is shown above for the `helm list` command and is assumed for the command examples below, but for more specific details consult the
-[Helm documentation](https://helm.sh/docs/)
-appropriate to your Helm version.
+For deployments, gather information relevant or appropriate to your environment and the issue faced.
 
 ### Verify Helm Chart correctness
 
@@ -179,15 +173,13 @@ Lint OK
 1 chart(s) linted, no failures
 ```
 
-If you do encounter any errors, correct these, and recreate your issue.
+If you encounter any errors, correct these, and recreate your issue.
 
 ### Helm Chart rendering
 
-Running the `helm template` command will process the chart and generate output similar to what would be generated during deployment;
+Running the `helm template` command processes the chart and generates output similar to what would be generated during deployment;
 however, the `helm install` command (see below) provides additional information; notably overrides provided via the install.
 So, where possible, the output from `helm install` is preferable to that of `helm template`.
-
-A notable difference between the format of the `helm template` command between Helm version 2 and version 3 is that when running the command for version 3 you include the release name, which you would not include for version 2; for example:
 
 ```
 helm template <release_name> <chart_name> ...
@@ -197,7 +189,7 @@ Check the output to verify that the expected values appear as intended.
 
 ### Helm Chart installation
 
-If you encounter errors when installing Helm Charts use the `helm install` command with these options to generate additional information
+If you encounter errors when installing Helm Charts use the `helm install` command with the following options to generate additional information
 
 * `--debug` - checks the generated manifests of a release without installing the chart
 * `--dry-run` - produces output similar to `helm template` but additionally executes the secrets and verifies the objects
@@ -205,7 +197,7 @@ If you encounter errors when installing Helm Charts use the `helm install` comma
 For example:
 
 ```
-helm install <chart_name> --debug --dry-run ...
+helm install <release_name> <chart_name> --debug --dry-run ...
 ```
 
 ### Verify Helm Chart installation
@@ -220,7 +212,7 @@ helm get all <release-name> ...
 
 ### Enquiring a Kubernetes environment
 
-If running in a Minikube environment use this command to confirm its status:
+If running in a Minikube environment use the following command to confirm its status:
 
 ```
 minikube status
@@ -272,13 +264,11 @@ kubectl cp <name_space>/<pod_name>:/logs /tmp/logs
 kubectl exec -n <name_space> <pod_name> -- tar cf - /logs | tar xf - -C /tmp
 ```
 
-**Note:** Both of the above command formats produce this spurious, benign error:
+**Note:** Both of the above command formats produce the following spurious, benign error which you can ignore:
 
 ```
 tar: Removing leading `/' from member names
 ```
-
-which can safely be ignored.
 
 ### Minikube logs
 
@@ -293,23 +283,24 @@ minikube start --alsologtostderr --v=3 2>&1 | tee /tmp/minikube-start.log
 
 Noting that the log output at startup differs from the output from the runtime log content via `minikube logs`.
 
-See the [Minikube documentation pages](https://minikube.sigs.k8s.io/docs/) for more information.
+See [Minikube documentation](https://minikube.sigs.k8s.io/docs/) for more information.
 
 ### stdout logs from pods
 
-The `kubectl logs` provides the stdout logs for a specified Kubernetes pod; thus the logs data provided is specific to the type of pod or software running within it.
-For instance, if a pod is running WebSphere Liberty this command will provide the equivalent of the contents of the WebSphere Liberty `console.log` file
+The `kubectl logs` provides the stdout logs for a specified Kubernetes pod; so the log data provided is specific to the type of pod or software running within it.
+For instance, if a pod is running WebSphere Liberty this command provides the equivalent of the contents of the WebSphere Liberty `console.log` file
 and for other pods will provide stdout log output specific to that pod's context; for instance MQ, Cúram XML Server, or Cúram batch.
 
-The command has various options, such as `--follow`, `--tail`, `--since`, etc., to control and display the log output.
+The command has various options, such as `--follow`, `--tail`, and `--since` to control and display the log output.
 See the `kubectl help logs` command for option details.
 
 ### Third party software logs and artifacts
 
 Beyond basic stdout logging from a pod there may be additional logging or artifacts needed for investigating an issue.
-These logs and artifacts will be available with in the pod's Docker file system or; additionally, in the case of IKS cloud object storage, in the persistent storage location you specified as per the
-[runbook specific section](/07-supporting-infrastructure/COS).
-Further, the specific logs, artifacts, and their locations will vary depending on the software running within the pod.
+These logs and artifacts will be available within the pod's Docker file system or; additionally, in the case of IKS cloud object storage, in the persistent storage location you specified in
+[Cloud Object Storage](/07-supporting-infrastructure/COS).
+
+Further, the specific logs, artifacts, and their locations vary depending on the software running within the pod.
 
 The following sections identify these various locations.
 
@@ -317,7 +308,7 @@ The following sections identify these various locations.
 
 ### WebSphere Liberty stdout logs
 
-WebSphere Liberty pods are identified by the pod naming pattern beginning with: `<helm_release_name>-apps-` or `<helm_release_name>-ce-app-`.
+WebSphere Liberty pods are identified by the pod naming pattern beginning with: `<helm_release_name>-apps-` or `<helm_release_name>-uawebapp-`.
 
 Thus, if your Helm release was named "purpleclown" you would find pod names like these from a `kubectl get pods` command:
 
@@ -325,11 +316,11 @@ Thus, if your Helm release was named "purpleclown" you would find pod names like
 * `purpleclown-apps-curam-producer-6794fc9b94-4srxr`
 * `purpleclown-apps-rest-producer-6858d55bd-x6z6s`
 * `purpleclown-apps-rest-consumer-5567ddc4cd-qpwp7`
-* `purpleclown-ce-app-54b56d5866-2mnk5`
+* `purpleclown-uawebapp-54b56d5866-2mnk5`
 
 where the number of pods may vary depending on the applications deployed and the number of replicas specified.
 
-The default log location for WebSphere Liberty is the `/logs` folder of the pod's file system and, for example, can be accessed with:
+The default log location for WebSphere Liberty is the `/logs` folder of the pod's file system and, for example, can be accessed with the following command
 
 ```
 kubectl exec --namespace <name_space> -it <pod_name> -- ls -l /logs
@@ -363,12 +354,12 @@ The WebSphere Liberty `server package` command can be used to zip up the server;
 
 MQ pods are identified by the pod naming pattern beginning with: `<helm_release_name>-mqserverapps-`.
 
-Thus, if your Helm release was named "purpleclown" you would find pod names like these from a `kubectl get pods` command:
+So, if your Helm release was named "purpleclown" you would find pod names like the following from a `kubectl get pods` command:
 
 * `purpleclown-mqserver-curam-557d64c76-7sm8r`
 * `purpleclown-mqserver-rest-dbb994dc8-4p5cv`
 
-where the number of pods may vary depending on the Cúram applications deployed.
+where the number of pods may vary depending on the Cúram SPM applications deployed.
 
 The location of MQ logs is inside the MQ pods is as documented in the [MQ Knowledge Center](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.tro.doc/q039570_.htm).
 You can interrogate the various log, error, and trace locations identified in the MQ Knowledge Center (and its MustGather) by accessing the MQ pod's shell; for example:
@@ -381,7 +372,7 @@ kubectl exec --namespace <name_space> -it <mq_pod_name> -- /bin/bash
 
 Cúram XML Server pods are identified by the pod naming pattern beginning with: `<helm_release_name>-xmlserver-`.
 
-Thus, if your Helm release was named "purpleclown" you would find pods named like this from a `kubectl get pods` command:
+So, if your Helm release was named "purpleclown" you would find pods named like the following from a `kubectl get pods` command:
 
 * `purpleclown-xmlserver-86b588c784-z76mz`
 
@@ -395,15 +386,15 @@ kubectl exec --namespace <name_space> -it <xmlserver_pod_name> -- /bin/bash
 
 The log file in `/opt/ibm/Curam/xmlserver/tmp/xmlserver.log` is the same as the stdout produced by the `kubectl logs` command.
 
-There are additional XML Server tracing and logging options as identified in the
-[Cúram Knowledge Center](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/XMLInfrastructure/c_XMLINF_Server1ConfiguringXmlServer1.html),
+There are additional XML Server tracing and logging options identified in
+[Configuring the XML server](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/XMLInfrastructure/c_XMLINF_Server1ConfiguringXmlServer1.html),
 but gathering this data is beyond the scope of this document.
 
 ### Cúram batch logs and artifacts
 
 Cúram batch pods are identified by the pod naming pattern beginning with: `<helm_release_name>-batch-`.
 
-Thus, if your Helm release was named "purpleclown" you would find pod named like this from a kubectl get pods command:
+So, if your Helm release was named "purpleclown" you would find pods named like the following from a kubectl get pods command:
 
 * `purpleclown-batch-1587036600-9rrnw`
 
@@ -411,37 +402,37 @@ where the number of pods may vary depending on the number of replicas specified.
 
 Use the `kubctl logs` command to view the batch pod's stdout.
 
-### IBM HTTP Server logs and artifacts
+### HTTP Server logs and artifacts
 
-Since IBM HTTP Server (IHS) is only used for hosting Cúram static content this information would only be of interest for issues relating specifically to static content.
+The Apache HTTP Server is only used for hosting SPM static content this information would only be of interest for issues relating specifically to static content.
 
-IHS pods are identified by the pod naming pattern beginning with: `<helm_release_name>-ihs-`.
+HTTP Server pods are identified by the pod naming pattern beginning with: `<helm_release_name>-web-`.
 
-Thus, if your Helm release was named "purpleclown" you would find pods named like this from a `kubectl get pods` command:
+So, if your Helm release was named "purpleclown" you would find pods named like the following from a `kubectl get pods` command:
 
-* `purpleclown-ihs-5c9cf5d868-ncdqk`
+* `purpleclown-web-5c9cf5d868-ncdqk`
 
 where the number of pods may vary depending on the number of replicas specified.
 
-For these pods the relevant log files can be found within the `/opt/IBM/HTTPServer/logs` folder of the pod's file system.
+For these pods the relevant log files can be found within the `/var/log/httpd` folder of the pod's file system.
 For instance:
 
 ```
-kubectl exec --namespace <name_space> -it <pod_name> -- ls -l /opt/IBM/HTTPServer/logs/error_log /opt/IBM/HTTPServer/logs/access_log
+kubectl exec --namespace <name_space> -it <pod_name> -- ls -l /var/log/httpd/error_log /var/log/httpd/access_log
 ```
 
 would show the relevant logs:
 
 ```
--rw-r--r-- 1 default root 3271826 Apr 16 07:28 /opt/IBM/HTTPServer/logs/access_log
--rw-r--r-- 1 default root    3297 Apr 15 08:42 /opt/IBM/HTTPServer/logs/error_log
+-rw-r--r-- 1 default root    7826 Jul 28 09:32 /var/log/httpd/access_log
+-rw-r--r-- 1 default root    3297 Jul 28 09:25 /var/log/httpd/error_log
 ```
 
 ### LDAP
 
 LDAP pods are identified by the pod naming pattern beginning with: `<helm_release_name>-openldap-`.
 
-Thus, if your Helm release was named "purpleclown" you would find pods named like this from a `kubectl get pods` command:
+So, if your Helm release was named "purpleclown" you would find pods named like the following from a `kubectl get pods` command:
 
 * `purpleclown-openldap-7b4b5855cc-b9j5z`
 

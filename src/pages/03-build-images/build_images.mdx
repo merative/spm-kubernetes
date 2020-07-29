@@ -3,6 +3,25 @@ title: Building the Docker® images
 description: Building the Docker images
 ---
 
+Some of the base images require [authentication](https://access.redhat.com/terms-based-registry) with the RedHat Container Registry.
+You must be logged in to the following registries:
+
+* `registry.redhat.io`
+  * For accessing `registry.redhat.io/rhel8/httpd-24`
+  * Login using `docker login registry.redhat.io`
+* `registry.connect.redhat.com`
+  * For accessing `registry.connect.redhat.com/ibm/ibmjava8`
+  * Login using `docker login registry.connect.redhat.com`
+
+<InlineNotification>
+
+If you do not have an active RedHat subscription, or prefer to build these images from source, see the [building Base images](../base_images) page.
+
+Should you opt to build your own base images, the `BASE_REGISTRY` argument in the below commands may be omitted, if the base images are built in the same environment.
+If the images are stored in a private registry, set `BASE_REGISTRY` to the registry's hostname.
+
+</InlineNotification>
+
 Now that all the elements are in place, build the images as follows:
 
 * We will use a `$DOCKER_REGISTRY` for the commands below. Please select based on the container environment you are deploying.
@@ -12,15 +31,81 @@ Now that all the elements are in place, build the images as follows:
 
 * To build the XML server image, run the following commands:
 
+<Tabs>
+
+<Tab label="Using RedHat Registry">
+<Row>
+<Column>
+
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
-echo -e 'content/release-stage/*\n!content/release-stage/CuramSDEJ/xmlserver' > .dockerignore
+docker build \
+     --tag $DOCKER_REGISTRY/xmlserver:latest \
+     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
+     --file XMLServer.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
      --tag $DOCKER_REGISTRY/xmlserver:latest \
      --file XMLServer.Dockerfile .
 ```
 
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+* To build the utilities image, run the following commands:
+  * This image is used at various stages of the deployment to check the state of the deployment.
+
+<Tabs>
+
+<Tab label="Using RedHat Registry">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+docker build \
+     --tag $DOCKER_REGISTRY/utilities:latest \
+     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
+     --file Utilities.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+docker build \
+     --tag $DOCKER_REGISTRY/utilities:latest \
+     --file Utilities.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 * To build the batch image, run the following commands:
+  * A `.dockerignore` file is used to omit the EAR files from the build context for batch
 
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
@@ -28,21 +113,44 @@ echo -e 'content/release-stage/ear' > .dockerignore
 docker build \
      --tag $DOCKER_REGISTRY/batch:latest \
      --file Batch.Dockerfile .
+rm -f .dockerignore
 ```
 
-* To build the application image, run the following commands for each of the applications (EAR files) needed:
+* To build the Server Code image, run the following commands:
 
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
-echo -e 'content/release-stage/*\n!content/release-stage/build\n!content/release-stage/ear\n!content/release-stage/CuramSDEJ' > .dockerignore
 docker build \
-     --tag $DOCKER_REGISTRY/curam:latest \
-     --file EAR.Dockerfile \
-     --build-arg MQ_RA_LICENSE=--acceptLicense \
-     --build-arg EAR_NAME=Curam .
+     --tag $DOCKER_REGISTRY/servercode:latest \
+     --file ServerEAR.Dockerfile \
+     --build-arg "MQ_RA_LICENSE=--acceptLicense" .
 ```
 
-<InlineNotification>
+* To build the application image, run the following commands for each of the applications (EAR files) needed:
+  * Take note of the `SERVERCODE_IMAGE` build argument which references the server code image above - this gives the images a common base
+
+<Tabs>
+
+<Tab label="Curam EAR">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/
+docker build \
+     --tag $DOCKER_REGISTRY/curam:latest \
+     --file ClientEAR.Dockerfile \
+     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/servercode:latest" \
+     --build-arg "EAR_NAME=Curam" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Other EARs">
+<Row>
+<Column>
 
 For additional SPM applications (e.g. Rest, CitizenPortal), make the following changes to the command:
 
@@ -51,31 +159,62 @@ For additional SPM applications (e.g. Rest, CitizenPortal), make the following c
 
 ```shell
 docker build \
-     --tag $DOCKER_REGISTRY/citizenportal:latest \
-     --file EAR.Dockerfile \
-     --build-arg MQ_RA_LICENSE=--acceptLicense \
-     --build-arg EAR_NAME=CitizenPortal .
+     --tag $DOCKER_REGISTRY/rest:latest \
+     --file ClientEAR.Dockerfile \
+     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/servercode:latest" \
+     --build-arg "EAR_NAME=Rest" .
 ```
 
-</InlineNotification>
+</Column>
+</Row>
+</Tab>
 
-* To build the IBM MQ server image, run the following commands:
-
-```shell
-cd $SPM_HOME/dockerfiles/MQ/
-docker build \
-     --tag $DOCKER_REGISTRY/mqserver:latest \
-     --file Dockerfile .
-```
+</Tabs>
 
 * To build the static content image, run the following commands:
+
+<Tabs>
+
+<Tab label="Using RedHat Registry">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/ihs:latest \
-     --file StaticContent.Dockerfile .
+     --tag $DOCKER_REGISTRY/httpd:latest \
+     --file StaticContent.Dockerfile \
+     --build-arg "BASE_REGISTRY=registry.redhat.io/" \
+     --build-arg "CONTENT_DIR=/CuramStatic" .
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/HTTPServer/
+docker build \
+     --tag $DOCKER_REGISTRY/httpd:latest \
+     --file StaticContent.Dockerfile \
+     --build-arg "CONTENT_DIR=/CuramStatic" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+<InlineNotification>
+
+**Note:** The `CONTENT_DIR` build argument must correspond to the value set in `curam-config.xml` when the webclient was build.
+
+</InlineNotification>
 
 * To build an SPM Docker image for your *built* Universal Access application:
   * Copy the `build` directory from the React application to `$SPM_HOME/dockerfiles/HTTPServer`
@@ -85,14 +224,46 @@ docker build \
 
 This is applicable only if you are licensed for [Universal Access](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.universalaccess.doc/CitizenEngagement/ctr_CitizenEngagementApplication.html)
 
+**Note:** The `CONTENT_DIR` build argument must correspond to the value of the `PUBLIC_URL` variable set when creating the production build of the React app (`npm run build`).
+
 </InlineNotification>
+
+<Tabs>
+
+<Tab label="Using RedHat Registry">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/ce-app:latest \
-     --file CE.Dockerfile .
+     --tag $DOCKER_REGISTRY/uawebapp:latest \
+     --file UAWebApp.Dockerfile \
+     --build-arg "BASE_REGISTRY=registry.redhat.io/" \
+     --build-arg "CONTENT_DIR=/universal" .
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image">
+<Row>
+<Column>
+
+```shell
+cd $SPM_HOME/dockerfiles/HTTPServer/
+docker build \
+     --tag $DOCKER_REGISTRY/uawebapp:latest \
+     --file UAWebApp.Dockerfile \
+     --build-arg "CONTENT_DIR=/universal" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ## Pushing the images to the registry
 
@@ -101,10 +272,11 @@ To push the new images that you created to the registry, run the following shell
 
 ```shell
 docker push $DOCKER_REGISTRY/xmlserver:latest
+docker push $DOCKER_REGISTRY/utilities:latest
 docker push $DOCKER_REGISTRY/batch:latest
+docker push $DOCKER_REGISTRY/servercode:latest
 docker push $DOCKER_REGISTRY/curam:latest
-docker push $DOCKER_REGISTRY/mqserver:latest
-docker push $DOCKER_REGISTRY/ihs:latest
+docker push $DOCKER_REGISTRY/httpd:latest
 ```
 
 <InlineNotification>
@@ -112,8 +284,8 @@ docker push $DOCKER_REGISTRY/ihs:latest
 If any additional images were built (for other SPM applications or for the React application), do not forget to push the images too. For example:
 
 ```shell
-docker push $DOCKER_REGISTRY/citizenportal:latest
-docker push $DOCKER_REGISTRY/ce-app:latest
+docker push $DOCKER_REGISTRY/rest:latest
+docker push $DOCKER_REGISTRY/uawebapp:latest
 ```
 
 </InlineNotification>
@@ -121,18 +293,18 @@ docker push $DOCKER_REGISTRY/ce-app:latest
 ## Pushing the images to the IBM Cloud Container Registry
 
 IBM Cloud Container Registry is the service to distribute the containers across Kubernetes clusters. In order to configure it, some preparation steps are
-required to obtain the credentials and a namespace, globally unique between all the tenants of IBM Cloud. Please refer to the IBM Cloud Container Registry
-documentation [here](https://cloud.ibm.com/docs/Registry?topic=Registry-getting-started) for more information on configuring the registry and obtaining the required credentials.
+required to obtain the credentials and a namespace, globally unique between all the tenants of IBM Cloud.
+Refer to [Getting started with IBM Cloud Container Registry](https://cloud.ibm.com/docs/Registry?topic=Registry-getting-started) for more information on configuring the registry and obtaining the required credentials.
 
 ```shell
 ibmcloud login -c <ICR_ENDPOINT> --apikey <ICR_API_KEY> -r <ICR_DC_REGION>
 ibmcloud cr login
 
 docker push us.icr.io/<ICR_NAMESPACE>/xmlserver:latest
+docker push us.icr.io/<ICR_NAMESPACE>/utilities:latest
 docker push us.icr.io/<ICR_NAMESPACE>/batch:latest
 docker push us.icr.io/<ICR_NAMESPACE>/curam:latest
-docker push us.icr.io/<ICR_NAMESPACE>/mqserver:latest
-docker push us.icr.io/<ICR_NAMESPACE>/ihs:latest
+docker push us.icr.io/<ICR_NAMESPACE>/httpd:latest
 ```
 
 ## View the artifacts in the repository
@@ -140,13 +312,13 @@ docker push us.icr.io/<ICR_NAMESPACE>/ihs:latest
 Confirm that the pushes to the Docker registry succeeded. Run the following command:
 
 ```shell
-curl http://minikube.local:5000/v2/_catalog
+curl http://$DOCKER_REGISTRY/v2/_catalog
 ```
 
 The command returns the following result:
 
 ```json
-{"repositories":["batch","curam","mqserver","xmlserver","ihs"]}
+{"repositories":["batch","curam","xmlserver","httpd","utilities"]}
 ```
 
 <InlineNotification>

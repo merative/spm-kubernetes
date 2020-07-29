@@ -1,3 +1,4 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
 {{- if and .Values.global.ingress.enabled (.Capabilities.APIVersions.Has "route.openshift.io/v1") }}
 {{- range $name, $app := .Values.global.apps.config }}
 {{- if and $app.enabled $app.ingressPath }}
@@ -24,7 +25,7 @@ metadata:
   name: {{ $.Release.Name }}-apps-{{ $name }}
   namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "spm.labels" $ | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
   annotations:
     haproxy.router.openshift.io/timeout: 1m
 spec:

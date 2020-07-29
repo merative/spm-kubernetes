@@ -17,6 +17,19 @@ set -e
 ###############################################################################
 XMLSERVER_PATH=/opt/ibm/Curam/xmlserver
 
+if [ `id -u` -ge 10000 ]; then
+  echo "xmlserver:x:`id -u`:`id -g`:,,,:$XMLSERVER_PATH:/bin/bash" >> /etc/passwd
+fi
+
+stopServer() {
+  echo "Stopping XML Server "
+  ant -f $XMLSERVER_PATH/xmlserver.xml stop 2>&1 | tee -a tmp/xmlserver.log
+  if [ $? = 0 ]
+  then
+      echo "XML Server stopped successfully"
+  fi
+}
+
 # Creates directories for persistence on the PV volume (if set by Helm)
 if [ -n "$MOUNT_POINT" ]; then
   # Persistence volume can be slow to mount
@@ -32,6 +45,8 @@ if [ -n "$MOUNT_POINT" ]; then
   ln -s $MOUNT_POINT/$HOSTNAME/stats $XMLSERVER_PATH/stats
 fi
 
+trap "stopServer" SIGTERM
+
 # Starts XML Server
 cd $XMLSERVER_PATH
-ant -f xmlserver.xml 2>&1 | tee tmp/xmlserver.log
+ant -f xmlserver.xml 2>&1 | tee -a tmp/xmlserver.log

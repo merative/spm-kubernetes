@@ -1,4 +1,4 @@
-{{- with .Values.global.xmlserver }}
+{{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -19,66 +19,53 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "xmlserver.fullname" $ }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ include "sch.names.fullName" (list .) }}
+  namespace: {{ .Release.Namespace }}
   labels:
-{{ include "xmlserver.labels" $ | indent 4 }}
+{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
 spec:
-  replicas: {{ .replicaCount | default 1 }}
+  replicas: {{ .Values.replicaCount | default 1 }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "xmlserver.fullname" $ }}
-      app.kubernetes.io/instance: {{ $.Release.Name }}
+      app.kubernetes.io/name: {{ include "sch.names.appName" (list .) | quote }}
+      app.kubernetes.io/instance: {{ .Release.Name | quote }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "xmlserver.fullname" $ }}
-        app.kubernetes.io/instance: {{ $.Release.Name }}
+{{ include "sch.metadata.labels.standard" (list . "") | indent 8 }}
     spec:
+{{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | indent 6 }}
+      affinity:
+{{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | indent 8 }}
       restartPolicy: {{ .restartPolicy | default "Always" }}
-      {{- if .runAs }}
-      securityContext:
-        runAsUser: {{ .runAs }}
-        fsGroup: {{ .runAs }}
-      {{- end }}
-      {{- if $.Values.global.imagePullSecret.username }}
+      {{- if .Values.global.imagePullSecret.username }}
       imagePullSecrets:
-        - name: {{ $.Release.Name }}-pull-secret
+        - name: {{ .Release.Name }}-pull-secret
       {{- end }}
-      {{- if $.Values.global.apps.common.persistence.enabled }}
+      serviceAccountName: {{ default (include "sch.names.fullName" (list .)) .Values.serviceAccountName }}
+      {{- if .Values.global.apps.common.persistence.enabled }}
       volumes:
-        - name: {{ $.Release.Name }}-persistence-volume
+        - name: {{ .Release.Name }}-persistence-volume
           persistentVolumeClaim:
-            claimName: {{ $.Release.Name }}-persistence-pvc
+            claimName: {{ .Release.Name }}-persistence-pvc
       {{- end }}
-      initContainers:
-        - name: wait-db2
-          image: busybox:1.28
-          command:
-            - /bin/sh
-            - -c
-            - >
-              until nslookup {{ include "xmlserver.dbhostname" $ }}; do
-                echo waiting for {{ include "xmlserver.dbhostname" $ }} to be available...;
-                sleep 2;
-              done
       containers:
-        - name: {{ $.Chart.Name }}
-          image: {{ include "xmlserver.imageFullName" $.Values.global.images }}
-          imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+        - name: {{ .Chart.Name }}
+          image: {{ include "xmlserver.imageFullName" .Values.global.images }}
+          imagePullPolicy: {{ .Values.global.images.pullPolicy }}
           ports:
-            - containerPort: {{ .port | default 1800 }}
-          {{- with .resources }}
+            - containerPort: {{ .Values.serverPort | default 1800 }}
+          {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if $.Values.global.apps.common.persistence.enabled }}
+{{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | indent 10 }}
+          {{- if .Values.global.apps.common.persistence.enabled }}
           env:
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
           volumeMounts:
-            - name: {{ $.Release.Name }}-persistence-volume
+            - name: {{ .Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
               subPath: {{ include "persistence.subDir" $ }}
           {{- end }}
-{{ end }}

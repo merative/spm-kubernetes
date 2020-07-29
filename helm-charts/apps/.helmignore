@@ -22,3 +22,5 @@
 .vscode/
 # Convenience file for testing
 euswg.yaml
+# IBMDev
+cv-tests/
