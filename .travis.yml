@@ -1,99 +1,29 @@
-language: generic
+language: node_js
+node_js:
+  - "12"
 
+group: bluezone
 dist: xenial
 
-services:
-  - docker
-
-env:
-  global:
-    - ARTIFACTORY_URL=https://eu.artifactory.swg-devops.com/artifactory
-    - CHARTS_REPO=wh-spmdevops-helm-virtual
-    - JFROG_CLI_OFFER_CONFIG=false
-  matrix:
-    - CHART_BASENAME=db2
-    - CHART_BASENAME=dbbuild
-    - CHART_BASENAME=xmlserver
-    - CHART_BASENAME=uawebapp
-    - CHART_BASENAME=apps
-    - CHART_BASENAME=batch
-    - CHART_BASENAME=mqserver
-    - CHART_BASENAME=web
-    - CHART_BASENAME=openldap
-
-stage: Charts
-
 install:
-  # Install Helm v3
-  - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
-  - chmod 700 get_helm.sh
-  - ./get_helm.sh
-  - helm version
-  # Install JFrog CLI
-  - curl -fL https://getcli.jfrog.io | sh
-  - sudo mv -v jfrog /usr/local/bin/
-  - helm plugin install https://github.com/chartmuseum/helm-push
-  # Starts local Chart Museum instance
-  - docker run -d -e DEBUG=true -p 8080:8080 -e STORAGE=local -e STORAGE_LOCAL_ROOTDIR=/tmp chartmuseum/chartmuseum:v0.12.0
-  - helm repo add sch https://raw.githubusercontent.com/IBM/charts/master/repo/samples
-  - helm repo update
+  - npm install -g markdownlint-cli
+  - npm ci
+  - pip install --user linkchecker
+  - sed -i "s/TRAVIS_HOST/$(hostname -f)/" linkcheckerrc
 
 script:
-  # Validate and package chart
-  - cd helm-charts/
-  - helm dependencies update $CHART_BASENAME
-  - helm lint $CHART_BASENAME
-  - helm template $CHART_BASENAME
-  - |
-    if [ ! "$TRAVIS_BRANCH" == "master" ]; then
-      perl -i -p -e "s/^version\: (.*)/version\: \1-$TRAVIS_BUILD_NUMBER/" $CHART_BASENAME/Chart.yaml
-    fi
-  - helm package $CHART_BASENAME
-
-jobs:
-  include:
-    # Build Umbrella Chart
-    - stage: Umbrella
-      env:
-        - CHART_BASENAME=spm
-      before_script:
-        # Fake connection to 'local-development' via Chart Museum
-        - helm repo add local-development http://localhost:8080
-        - helm repo update
-        - find helm-charts/ -maxdepth 1 -type d ! -name . ! -name .git ! -name config ! -name jenkinsfiles -exec helm push {} local-development \;
-    # Build Documentation
-    - stage: Documentation
-      language: node_js
-      node_js:
-        - "12"
-      install:
-        - npm install -g markdownlint-cli
-        - npm ci
-        - pip install --user linkchecker
-        - sed -i "s/TRAVIS_HOST/$(hostname -f)/" linkcheckerrc
-      script:
-        - markdownlint **/*.mdx
-        - npm run build
-        - docker run --rm -d --name gatsby -p 8888:80 -v $(pwd)/public:/usr/local/apache2/htdocs$SITE_PREFIX httpd:2.4
-        - linkchecker http://$(hostname -f):8888$SITE_PREFIX --config=./linkcheckerrc
-      deploy:
-        provider: pages
-        skip_cleanup: true
-        local_dir: public
-        github_token: $GITHUB_TOKEN
-        github_url: github.ibm.com
-        committer_from_gh: true
-        target_branch: gh-pages
-        on:
-          branch: master
-      after_deploy: skip
+  - markdownlint **/*.mdx
+  - npm run build
+  - docker run --rm -d --name gatsby -p 8888:80 -v $(pwd)/public:/usr/local/apache2/htdocs$SITE_PREFIX httpd:2.4
+  - linkchecker http://$(hostname -f):8888$SITE_PREFIX --config=./linkcheckerrc
 
 deploy:
-  provider: script
-  skip_cleanup: true
-  script: jfrog rt u --url $ARTIFACTORY_URL --apikey $ARTIFACTORY_TOKEN --build-name $TRAVIS_REPO_SLUG --build-number $TRAVIS_JOB_ID ./${CHART_BASENAME}-*.tgz $CHARTS_REPO/
-  on:
-    all_branches: true
-
-after_deploy:
-  - jfrog rt bp --url $ARTIFACTORY_URL --apikey $ARTIFACTORY_TOKEN --build-url https://travis.ibm.com/${TRAVIS_REPO_SLUG}/jobs/${TRAVIS_JOB_ID} $TRAVIS_REPO_SLUG $TRAVIS_JOB_ID
+  - provider: pages
+    skip_cleanup: true
+    local_dir: public
+    github_token: $GITHUB_TOKEN
+    github_url: github.com
+    committer_from_gh: true
+    target_branch: gh-pages
+    on:
+      branch: master
