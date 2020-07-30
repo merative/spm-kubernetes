@@ -17,13 +17,15 @@ global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
   images:
-    registry: &imageRegistry us.icr.io
+    registry: &imageRegistry minikube.local:5000
     imageLibrary: ''
     imagePrefix: ''
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
     registry: *imageRegistry
+  sch:
+    enabled: true
   apps:
     common:
       persistence:
@@ -60,14 +62,29 @@ global:
     queueManager:
       name: "QM1"
       secret:
-        # name is the secret that contains the 'admin' user password and optionally the 'app' user password to use for messaging
-        name: 'qmsecret'
+        # name is the secret that contains the 'admin' user password and the 'app' user password to use for messaging
+        name: ''
         # adminPasswordKey is the secret key that contains the 'admin' user password
         adminPasswordKey: 'adminPasswordKey'
+        # appPasswordKey is the secret key that contains the 'admin' user password
+        appPasswordKey: 'appPasswordKey'
     metrics:
       enabled: false
     resources: {}
+    multiInstance:
+      cephEnabled: false
+      storageClassName: ''
+      nfsEnabled: false
+      nfsIP: ''
+      nfsFolder: ''
 
+# Require Intel-based workers
+arch: "amd64"
+
+# Name of an existing ServiceAccount for the application runtime
+serviceAccountName: ""
+# Name of an existing ServiceAccount for use by the hooks
+hookServiceAccountName: ""
 
 # livenessProbe section specifies setting for the MQ liveness probe, which checks for a running Queue Manager
 livenessProbe:
@@ -79,7 +96,7 @@ livenessProbe:
 
 # readinessProbe section specifies setting for the MQ readiness probe, which checks when the MQ listener is running
 readinessProbe:
-  initialDelaySeconds: 10
+  initialDelaySeconds: 60
   periodSeconds: 5
   timeoutSeconds: 3
   failureThreshold: 1

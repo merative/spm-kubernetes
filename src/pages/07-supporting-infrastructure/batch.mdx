@@ -1,17 +1,17 @@
 ---
-title: SPM batch processing on Kubernetes
-description: SPM batch processing on Kubernetes
+title: SPM batch processing on IKS
+description: SPM batch processing on IKS
 ---
 
 ## How batch streaming is deployed in IBM® Cloud™ Kubernetes Services (IKS)
 
-SPM on Kubernetes supports a different model for batch processing in IKS, where, as outlined earlier in this runbook, SPM batch processing can be built and deployed into its own pod.
+SPM on Kubernetes supports a different model for batch processing in IKS, where, as outlined earlier, SPM batch processing can be built and deployed into its own pod.
 By running SPM batch processing in its own pod, the pod can leverage the benefits of flexibility, elasticity, efficiency and the strategic value offered by cloud native architecture.
 
-### What is batch streaming
+### What is batch streaming?
 
 The batch streaming infrastructure provides a straightforward mechanism to implement a batch process so that it can be run in parallel (streams) across multiple pods.
-For example, if we wanted to issue payments, the chunker identifies all the cases to be paid and the stream would process a case and issue the the payment(s) that are due.
+For example, if we wanted to issue payments, the chunker identifies all the cases to be paid and the stream would process a case and issue the payments that are due.
 
 <InlineNotification>
 
@@ -22,7 +22,7 @@ For example, if we wanted to issue payments, the chunker identifies all the case
 ### Setting up Batch Streaming yaml files
 
 Outlined below is an example for the steps required to set up Batch Streaming.
-For this example we are going to use the bulk reassessment of food assistance case types.
+This example uses the bulk reassessment of food assistance case types.
 
 The first stage is to set up a new yaml file for the streaming and chunking batch processing.
 
@@ -45,14 +45,18 @@ kubectl create job --from=cronjob/$releasename-batch -n $NAMESPACE -o yaml --dry
 * NAMESPACE is the namespace where you want to run the batch processing
 * releaseName is the name of the release you are using
 * yaml_chart_name is the name of the chart you are creating
-  * It is recommended that a new chart is created for each process, e.g. stream_foodassistance, chunker_foodassistance
+ You should create a new chart for each process, for example stream_foodassistance, and chunker_foodassistance.
 
 </InlineNotification>
 
-A coresponding `yaml` file is created.
-Open the yaml file in an editor e.g  vi `chunker_foodassistance.yaml`
+A corresponding `yaml` file is created.
+Open the yaml file in an editor e.g
 
-In the yaml file, add the following lines after the `containers` section:
+```shell
+vi `chunker_foodassistance.yaml`
+```
+
+Add the following lines to the yaml file after the `containers` section:
 
 <Tabs>
 
@@ -121,11 +125,11 @@ spec:
 
 </Tabs>
 
-At this point you should now have a yaml file for a chunker and streamer for bulk reassessment of food assistance case types.
+You should now have a yaml file for a chunker and streamer for bulk reassessment of food assistance case types.
 
 ### Running batch streaming yaml files
 
-To orchestrate the batch process, run the following command and repeat for the chunker and streamer(s).
+To orchestrate the batch process, run the following command and repeat for the chunker and streamer.
 
 ```shell
 kubectl create -f yaml_chart_name.yaml -n $NAMESPACE
@@ -134,7 +138,7 @@ kubectl create -f yaml_chart_name.yaml -n $NAMESPACE
 ![spm batch on kubernetes](../../images/spm_batch_processing_on_kubernetes.png)
 <Caption>
 
-*Figure 1:* SPM batch processing on Kuberbetes
+*Figure 1:* SPM batch processing on kubernetes
 
 </Caption>
 
@@ -142,13 +146,14 @@ kubectl create -f yaml_chart_name.yaml -n $NAMESPACE
 
 **Note:** where
 
-* NAMESPACE is the namespace where you want to run the batch processing
-* yaml_chart_name is the name of the chart you are creating
+* NAMESPACE is the namespace where you want to run the batch processing.
+* yaml_chart_name is the name of the chart you are creating.
 
 </InlineNotification>
 
 ### Post batch processing
 
-When the batch processes complete, the pods remain behind and are not shut down.
+The batch pods that are created for batch streaming are on demand.
 
-The batch pods that are created for batch streaming are on demand. After the batch process finishes, the related pods should be destroyed to free resources in the IKS cluster.
+When the batch processes finish, the pods remain and are not shut down.
+Therefore you should destroy the related pods to free resources in the IKS cluster

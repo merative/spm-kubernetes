@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-apiVersion: v1
+apiVersion: v2
+kubeVersion: ">=1.16"
+appVersion: "7.0.10.0"
 name: xmlserver
 description: Helm Chart for XMLServer Container Deployment of SPM within a Kubernetes Cluster
-version: 1.2.0
+version: 2.0.0
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
@@ -27,8 +29,19 @@ keywords:
   - Minikube
   - IKS
   - OpenShift
-  - RHOS
+  - RHOCP
   - Curam
   - SPM
+  - amd64
+  - deploy
+  - DevOps
+  - Commercial
+  - Limited
 home: https://www.ibm.com/watson-health/solutions/social-program-management
 icon: https://avatars2.githubusercontent.com/u/1459110
+dependencies:
+  - name: ibm-sch
+    repository: "@sch"
+    version: "^1.2.17"
+    alias: sch
+    condition: global.sch.enabled

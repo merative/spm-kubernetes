@@ -9,7 +9,7 @@ The following sections are not a substitute for the official documentation but t
 
 <InlineNotification>
 
-**Note:** Minikube version used to verify this runbook: 1.7.3
+**Note:** Minikube version used to verify this runbook: 1.12
 
 </InlineNotification>
 
@@ -31,13 +31,13 @@ Minikube installation steps are described in the official documentation for your
 Minikube can be started with a command as simple as `minikube start` without any additional parameters. However, the resulting VM will be too small to deploy an instance of SPM, so several other parameters are required:
 
 ```shell
-minikube start --vm-driver=virtualbox --cpus 4 --memory 8G --insecure-registry "192.168.0.0/16" --disk-size='30G' --kubernetes-version v1.16.7
+minikube start --vm-driver=virtualbox --cpus 4 --memory 8G --insecure-registry "192.168.0.0/16" --disk-size='30G' --kubernetes-version v1.18.6
 ```
 
 Where `192.168.0.0/16` is the subnet that contains the IP address that is assigned to the Minikube VM. You can verify the IP address by using the `minikube ip` command.
 
 The IP address might vary depending on your development environment. Therefore, start a Minikube instance to get the IP address and then delete it
-and restart it with the start command. See the note in "Specifying the insecure registry".
+and restart it with the start command. See the note in [Specifying the insecure registry](#specifying-the-insecure-registry).
 
 ### Specifying the resource allocation
 
@@ -159,37 +159,6 @@ The Minikube IP address might change when you run `minikube delete`. If it chang
 
 Therefore, reconfirm the Minikube IP and its setting in the `hosts` file every time you start Minikube, or after you run `minikube delete`.
 
-## Enabling Helm version 2 to run on Minikube
-
-<InlineNotification>
-
-**Note:** This section is only applicable to Helm v2. If you have installed Helm v3, proceed to the next section.
-
-</InlineNotification>
-
-To use Helm commands on Minikube, initialize Tiller, which is the Helm server pod within Kubernetes, by running the following commands:
-
-```shell
-# Enable Tiller on Minikube to allow executing Helm commands
-kubectl create serviceaccount -n kube-system tiller
-kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-
-# Initialise Helm
-helm init --service-account tiller
-```
-
-To verify whether Tiller is properly initialized, run the following command and look for the Tiller pod:
-
-```shell
-kubectl get pods -n kube-system | grep tiller
-```
-
-This command gives you the list of the pods in the system namespace, which is filtered for Tiller. The command returns one line that looks like the following example:
-
-```shell
-tiller-deploy-79c578486f-vnrhd              1/1     Running   1          18h
-```
-
 ## Minikube Ingress
 
 Ingress is a reverse proxy, which sits in front of the application that is deployed in Kubernetes. It facilitates use of a custom domain name to access a deployed application, instead of using service ports.
@@ -225,4 +194,4 @@ minikube delete       # Delete the Minikube VM
 minikube ip           # Show the Minikube IP
 ```
 
-For a full list of commands, see [Kubernetes.io's Minikube](https://kubernetes.io/docs/setup/minikube/).
+For a full list of commands, see [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/minikube/).

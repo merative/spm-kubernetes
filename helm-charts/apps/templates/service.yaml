@@ -1,3 +1,4 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
 {{- range $name, $app := .Values.global.apps.config }}
 {{- if $app.enabled }}
 ---
@@ -20,22 +21,21 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "apps.fullname" $ }}-{{ $name }}
+  name: {{ include "sch.names.fullCompName" (list $ $name) }}
   namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "apps.labels" $ | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name)) | nindent 4 }}
 {{- if $.Capabilities.APIVersions.Has "route.openshift.io/v1" }}
   annotations:
-    service.beta.openshift.io/serving-cert-secret-name: {{ include "apps.fullname" $ }}-{{ $name }}
+    service.beta.openshift.io/serving-cert-secret-name: {{ include "sch.names.fullCompName" (list $ $name) }}
 {{- end }}
 spec:
-  type: {{ $.Values.global.apps.common.serviceType | default "ClusterIP" }}
+  type: ClusterIP
   ports:
-    - port: {{ $.Values.global.apps.common.port | default 8443 }}
+    - port: {{ $.Values.httpsPort }}
       targetPort: client
       name: https
   selector:
-    app.kubernetes.io/name: {{ include "apps.fullname" $ }}-{{ $name }}-producer
-    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name)) | nindent 4 }}
 {{- end }}
 {{- end }}

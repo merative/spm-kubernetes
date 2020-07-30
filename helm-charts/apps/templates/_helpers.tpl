@@ -16,44 +16,9 @@ limitations under the License.
 
 {{/* vim: set filetype=mustache: */}}
 {{/*
-Expand the name of the chart.
-
-Accepted Values:
-    Curam,CuramWebServices,Rest,CuramBIRTViewer,CitizenPortal,MDTWorkspace,NavigatorS,NavigatorNS,CPMExternalS,CPMExternalNS
-*/}}
-{{- define "apps.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "apps.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "apps.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
 Create the image pull secret
 */}}
-{{- define "imagePullSecret" }}
+{{- define "apps.imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
 
@@ -69,17 +34,6 @@ Build up full image path
 {{- .ImageConfig.imagePrefix -}}
 {{- end -}}
 {{- .ImageName -}}:{{- .ImageConfig.imageTag -}}
-{{- end -}}
-
-{{/*
-Define DB2 hostname
-*/}}
-{{- define "apps.dbhostname" -}}
-{{- if .Values.global.database.hostname -}}
-{{- .Values.global.database.hostname -}}
-{{- else -}}
-{{- .Release.Name -}}-db2
-{{- end -}}
 {{- end -}}
 
 {{/*
@@ -125,14 +79,75 @@ JMX Stats Persistence enablement options
 {{- end -}}
 
 {{/*
-Common labels
+InitContainer resources
 */}}
-{{- define "apps.labels" -}}
-app.kubernetes.io/name: {{ include "apps.name" . }}
-helm.sh/chart: {{ include "apps.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- define "initContainer.resources" }}
+resources:
+  limits:
+    memory: 256Mi
+    cpu: 250m
+  requests:
+    memory: 128Mi
+    cpu: 250m
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}
+
+{{/*
+InitContainer resources for applying custom SQL
+*/}}
+{{- define "customSQL.definition" }}
+image: {{ include "apps.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "batch") }}
+{{- include "initContainer.resources" $ }}
+{{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) }}
+{{- end }}
+
+{{/*
+ibmjava image
+*/}}
+{{- define "utilities.definition" }}
+image: {{ include "apps.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
+{{- include "initContainer.resources" $ }}
+{{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) }}
+{{- end }}
+
+{{/*
+JMS Connection Factory properties
+*/}}
+{{- define "jms.connectionFactory" }}
+<properties.wmqJms
+  {{- if .Values.global.mq.useConnectionNameList }}
+  connectionNameList="${connectionNameList}"
+  {{- else }}
+  hostName="${mqHostName}"
+  port="${listenerPort}"
+  {{- end }}
+  queueManager="${mqName}"
+  channel="${channel}"
+  userName="${userName}"
+  sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+/>
+{{- end }}
+
+{{/*
+JMS Activation Spec properties
+*/}}
+{{- define "jms.activationSpec" }}
+{{- $params := . -}}
+{{- $root := first $params -}}
+{{- $type := (include "sch.utils.getItem" (list $params 1 "")) -}}
+{{- $refName := (include "sch.utils.getItem" (list $params 2 "")) -}}
+<properties.wmqJms
+  destinationRef="{{ $refName }}"
+  destinationType="javax.jms.{{ $type }}"
+  {{- if $root.Values.global.mq.useConnectionNameList }}
+  connectionNameList="${connectionNameList}"
+  {{- else }}
+  hostName="${mqHostName}"
+  port="${listenerPort}"
+  {{- end }}
+  queueManager="${mqName}"
+  channel="${channel}"
+  userName="${userName}"
+  sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+  subscriptionDurability="Durable"
+/>
+{{- end }}

@@ -20,37 +20,90 @@
 
 global:
   images:
-    registry: &imageRegistry us.icr.io
+    registry: &imageRegistry minikube.local:5000
     imageLibrary: ''
     imagePrefix: ''
     imageTag: latest
-    pullPolicy: IfNotPresent
-  database:
-    type: db2
-    ssl: {}
+    pullPolicy: Always
   imagePullSecret:
-    registry: *imageRegistry
+    username: ''
+  sch:
+    enabled: true
+  database:
+    ## Database connection properties
+    type: DB2
+    dbName: DATABASE
+    hostname: ''
+    port: 50000
+    username: db2admin
+    # Name of pre-created secret containing database credentals
+    credsSecretName: ''
+    # The XOR-encrypted password injected into Liberty configuration
+    wlp_psw: "{xor}Oz1tPjsyNjE="
+    # The SPM-encrypted password injected into Bootstrap.properties
+    spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
+    # Oracle Service name, where applicable
+    serviceName: ''
+    ssl:
+      enabled: false
+      # Name of the secret containing the database TLS certificate
+      secretName: ''
+      # Key in the above secret with the certificate
+      secretKey: db2admin.arm
   apps:
     common:
       persistence:
         ## Persistence volume to store data (such as non-log files)
         enabled: false
-        # JMX Stats
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        mountPoint: ''
+        subDir: ''
         jmxstats:
           enabled: false
-          timerPeriod: 60000
-  batch:
+
+# Require Intel-based workers
+arch: "amd64"
+
+# Name of an existing ServiceAccount for running the Batch programs
+serviceAccountName: ""
+
+# Default Java Options for batch jobs
+javaOptions: '-Xms1g -Xmx1g'
+
+# Resource limits for Batch jobs (can be overridden per job)
+resources:
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+  requests:
+    cpu: "0.5"
+    memory: "1Gi"
+
+# Number of successful job executions to keep (can be overridden per job)
+successfulJobsHistoryLimit: 3
+
+# Number of attempts to run a batch job, in case of failure (can be overridden per job)
+backoffLimit: 5
+
+# Specifies how to treat concurrent executions of a Job (can be overridden per job)
+# Valid values are:
+# - "Allow": allows CronJobs to run concurrently
+# - "Forbid": forbids concurrent runs, skipping next run if previous run hasn't finished yet
+# - "Replace": cancels currently running job and replaces it with a new one
+concurrencyPolicy: Forbid
+
+programs:
+  queued:
     schedule: "*/30 * * * *"
-    runAs: 1001
-    successfulJobsHistoryLimit: 3
-    ttlSecondsAfterFinished: 60
-    backoffLimit: 5
-    # programName could be used to call a specific batch program, example:
-    # programName: curam.healthcare.sl.intf.BulkICReassessment.process
-    # programParameters can be used to include additional parameters, example:
-    # programParameters: '"evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"'
-    programName: ""
-    programParameters: ""
-    # javaMetrics:
-    #   antOpts: "-Xgcpolicy:gencon -Xverbosegclog:/tmp/GCLogs_chunker.log"
-    #   heapSize: "-Xms512m -Xmx512m"
+  # Call specific batch programs with specific parameters, where relevant
+  # reassessment:
+  #   schedule: "0 2 * * 6"
+  #   className: curam.healthcare.sl.intf.BulkICReassessment.process
+  #   parameters: "evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"
+  #   username: superuser

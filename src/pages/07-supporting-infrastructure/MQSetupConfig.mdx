@@ -1,15 +1,15 @@
 ---
-title: Configure MQ on a VM
-description: Configure MQ on a VM
+title: Configuring MQ on a VM
+description: Configuring MQ on a VM
 
 ---
 
 To support Kubernetes, changes to SPM were required.
-For more information on these changes, refer to the
+For more information on these changes, see
 [Kubernetes Architecture](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.wlp.doc/Kubernetes/c_KubArchitecture.html) section in
 the Knowledge Center.
 
-When SPM is containerized on Kubernetes, it uses IBM® MQ to manage JMS messages for Cúram Deferred Processes and Cúram Workflows. IBM MQ is a queue managing service from the IBM stack. For more information about MQ, see [here](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
+When SPM is containerized on Kubernetes, it uses IBM® MQ to manage JMS messages for Cúram Deferred Processes and Cúram Workflows. IBM MQ is a queue managing service from the IBM stack. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
 
 If MQ fails, certain functionality will be unusable. This includes and is not limited to, creation of a case and creation of an application.
 
@@ -63,7 +63,7 @@ export PATH=/opt/mqm/inst1/bin:$PATH
 
 **Important!**
 
-* The above command is to be run on both MQ nodes and will be used throughout further commands in the runbook.
+Run the export PATH command on both MQ nodes, this command will be used in further commands in the runbook.
 
 </InlineNotification>
 
@@ -73,11 +73,11 @@ Create the shared storage for our nodes.
 
 <InlineNotification>
 
-**Note:** Commands to be run as root.
+**Note:** Run the commands as root.
 
 </InlineNotification>
 
-On the shared node run the following command:
+On the shared node run the following commands:
 
 ```shell
 mkdir -p /MQHA/logs
@@ -87,13 +87,13 @@ useradd mqha -s /sbin/nologin
 chown -R mqha:mqha /MQHA/*
 ```
 
-Verify that the UID and GUID match the owner ID
+Verify that the UID and GUID match the owner ID by running the following command:
 
 ```shell
 echo "/MQHA  MQ.FQDN(rw,sync,no_wdelay,fsid=0,anonuid=1001,anongid=1001)" >> /etc/exports
 ```
 
-Start and enable both the nfs service and rpcbind service by running the following command:
+Start and enable both the nfs service and rpcbind service by running the following commands:
 
 ```shell
 systemctl start nfs-server.service
@@ -102,7 +102,7 @@ systemctl start rpcbind
 systemctl enable rpcbind
 ```
 
-On MQ nodes run the following command:
+On MQ nodes run the following commands:
 
 <InlineNotification>
 
@@ -123,7 +123,7 @@ mount /MQHA
 
 When creating the queue, start on the secondary node first then move to the primary node.
 
-On the secondary MQ node, run the following command:
+On the secondary MQ node, run the following commands:
 
 ```shell
 crtmqm -ld /MQHA/logs -md /MQHA/qmgrs QM_minikube_curam
@@ -138,7 +138,7 @@ addmqinf -s QueueManager -v Name=QM_minikube_curam -v Directory=QM_minikube_cura
 
 Wait for /MQHA/qmgrs/QM_minikube_curam/qm.ini to appear on other node
 
-On the primary MQ node run the following command:
+On the primary MQ node run the following commands:
 
 ```shell
 addmqinf -s QueueManager -v Name=QM_minikube_curam -v Directory=QM_minikube_curam -v Prefix=/var/mqm -v DataPath=/MQHA/qmgrs/QM_minikube_curam
@@ -153,7 +153,7 @@ strmqm -x QM_minikube_curam
 
 ### Create queues
 
-On the primary MQ node run the following command:
+On the primary MQ node run the following commands:
 
 ```shell
 runmqsc QM_minikube_curam <<-EOS
@@ -170,7 +170,7 @@ EOS
 
 ### Create listeners
 
-On the primary MQ node run the following command:
+On the primary MQ node run the following commands:
 
 ```shell
 runmqsc QM_minikube_curam <<-EOS
@@ -213,7 +213,7 @@ EOS
 
 ### Configure security
 
-The configuration of the security works in four parts
+The configuration of security is in four parts
 
 * Setting the object type.
 * Creating the keystore and certs.
@@ -232,7 +232,7 @@ On the secondary MQ node run the following command:
 useradd -g 0 -M default && usermod -L default
 ```
 
-On the primary MQ node run the following command:
+On the primary MQ node run the following commands:
 
 ```shell
 useradd -g 0 -M default && usermod -L default
@@ -277,9 +277,9 @@ After these stages have been run MQ should be configured.
 
 ### Clean up QMs/channels/listeners
 
-These steps are to be used if reconfiguring MQ or cleanup of MQ.
+Used these steps if you are reconfiguring MQ or cleaning up MQ.
 
-On both MQ nodes run the following command:
+On both MQ nodes run the following commands:
 
 ```shell
 endmqm -w QM_minikube_curam
@@ -287,7 +287,7 @@ dltmqm QM_minikube_curam
 rmvmqinf QM_minikube_curam
 ```
 
-On either MQ node run the following command::
+On either MQ node run the following commands:
 
 ```shell
 rm -rf /MQHA/qmgrs/**

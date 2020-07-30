@@ -15,37 +15,6 @@ limitations under the License.
 */}}
 
 {{/* vim: set filetype=mustache: */}}
-{{/*
-Expand the name of the chart.
-*/}}
-{{- define "batch.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "batch.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
-{{- define "batch.chart" -}}
-{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
 
 {{/*
 Build up full image path
@@ -62,29 +31,19 @@ batch:{{- .imageTag -}}
 {{- end -}}
 
 {{/*
-Build up Ant Options for general and JMS Stats configuration
+Build up Ant Options for general and JMX Stats configuration
 */}}
-{{- define "antOpts" }}
-{{- if ($.Values.global.batch.javaMetrics) ($.Values.global.batch.javaMetrics.antOpts) -}}
-{{- $.Values.global.batch.javaMetrics.antOpts -}}
-{{- end }}
-{{- if ($.Values.global.batch.javaMetrics) ($.Values.global.batch.javaMetrics.heapSize) -}}
-{{- $.Values.global.batch.javaMetrics.heapSize -}}
-{{- end }}
-{{- if ($.Values.global.apps.common.persistence) ($.Values.global.apps.common.persistence.enabled) ($.Values.global.apps.common.persistence.jmxstats.enabled) -}}
-{{- printf " -Dcuram.jmx.output_statistics_timer_enabled=true -Dcuram.jmx.output_statistics_timer_folder=/tmp/jmx/ -Dcuram.jmx.output_statistics_timer_period=%d" (default 60000 $.Values.global.apps.common.persistence.jmxstats.timerPeriod | int) -}}
+{{- define "batch.antOpts" }}
+{{- printf "-Djava.extra.jvmargs=\"-Dcuram.db.username=$SPM_DB_USR -Dcuram.db.password=$SPM_DB_PSW\" " -}}
+{{- default .DefaultOptions .ProgramOptions -}}
+{{- if and .PersistenceConfig.enabled .PersistenceConfig.jmxstats.enabled -}}
+{{- printf " -Dcuram.jmx.output_statistics_timer_enabled=true -Dcuram.jmx.output_statistics_timer_folder=/tmp/jmx/ -Dcuram.jmx.output_statistics_timer_period=%d" (default 60000 .PersistenceConfig.jmxstats.timerPeriod | int) -}}
 {{- end }}
 {{- end }}
 
 {{/*
-Common labels
+Create the image pull secret
 */}}
-{{- define "batch.labels" -}}
-app.kubernetes.io/name: {{ include "batch.name" . }}
-helm.sh/chart: {{ include "batch.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- define "batch.imagePullSecret" }}
+{{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end -}}

@@ -1,6 +1,6 @@
 ---
-title: Docker®, Kubernetes, Minikube, and Helm
-description: Docker, Kubernetes, Minikube, and Helm
+title: Docker®, Kubernetes, and Helm
+description: Docker, Kubernetes, and Helm
 ---
 
 ## Docker
@@ -12,13 +12,19 @@ Install Docker by following the instructions in [docker.com](https://docs.docker
 
 **Note:** The following Docker versions were used to verify this runbook:
 
-* Docker Engine: 19.03.5
+* Docker Engine: 19.03
 * Docker Desktop for Windows: 2.1.0.5
 * Docker Desktop for Mac: 2.2.0.3
 
 </InlineNotification>
 
 ## Kubernetes and Minikube
+
+<InlineNotification>
+
+As of Release 20.7.0, the Kubernetes version used to verify this runbook is 1.18.
+
+</InlineNotification>
 
 Kubernetes (which is also referred to as "K8s" and is described at a high-level on the [Kubernetes home page](https://kubernetes.io/)) is an open source system for automating deployment, scaling, and management of containerized applications.
 You will use the command-line tool, `kubectl`, extensively when you follow the steps that are described in this runbook. The `kubectl` download and installation steps are described on [kubernetes.io](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
@@ -29,17 +35,17 @@ Minikube is a variant of Kubernetes that runs a single-node cluster inside a vir
 
 **Note:** The following versions were used to verify this runbook:
 
-* kubectl: 1.16.7
-  * **Important**: Take note of the version used. This will be required when creating a new Minikube environment.
-* Minikube: 1.7.3
+* kubectl: 1.18
+  **Important**: Take note of the version used. This will be required when creating a new Minikube environment.
+* Minikube: 1.12
 
 </InlineNotification>
 
-## Helm V2
+## Helm V3
 
 <InlineNotification>
 
-**Note:** The Helm version used to verify this runbook is 2.16.1. All the Helm commands that are used in this runbook are based on Helm version 2.
+**Note:** As of Release 20.7.0, the Helm version used to verify this runbook is 3.2. All the Helm commands that are used in this runbook are based on Helm v3.
 
 </InlineNotification>
 
@@ -51,8 +57,5 @@ A single chart might be used to deploy something simple, like a memcached pod, o
 Charts are created as files laid out in a particular directory tree, then they can be packaged into versioned archives for deployment. For more information, see the [Helm documentation](https://helm.sh/docs/).
 
 This runbook uses Helm Charts and describes how to package and deploy them. For more information, see [Preparing Helm Charts](/04-deployment/hc_preparation).
-
-The server portion of Helm, named Tiller, runs inside your Kubernetes cluster.
-Tiller interacts directly with the Kubernetes API server to install, upgrade, query, and remove Kubernetes resources. It also stores the objects that represent releases.
 
 Install Helm by following the steps described in [Helm install](https://github.com/helm/helm#install).

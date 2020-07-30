@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-apiVersion: v1
+
+apiVersion: v2
+kubeVersion: ">=1.16"
+appVersion: "7.0.10.0"
 name: spm
 description: Umbrella Helm Chart for Full Curam Deployment of SPM within a Kubernetes Cluster
-version: 1.4.0
+version: 2.0.0
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
@@ -26,7 +29,42 @@ keywords:
   - Liberty
   - Minikube
   - IKS
+  - OpenShift
+  - RHOCP
   - Curam
   - SPM
+  - amd64
+  - deploy
+  - DevOps
+  - Commercial
+  - Limited
 home: https://www.ibm.com/watson-health/solutions/social-program-management
 icon: https://avatars2.githubusercontent.com/u/1459110
+
+dependencies:
+  - name: apps
+    version: "~3.0.0"
+    repository: "@local-development"
+  - name: batch
+    version: "~2.0.0"
+    repository: "@local-development"
+  - name: uawebapp
+    version: "~3.0.0"
+    repository: "@local-development"
+  - name: web
+    version: "~3.0.0"
+    repository: "@local-development"
+  - name: mqserver
+    version: "~1.5.0"
+    repository: "@local-development"
+  - name: xmlserver
+    version: "~2.0.0"
+    repository: "@local-development"
+  - name: openldap
+    version: "~1.2.0"
+    repository: "@local-development"
+    condition: global.openldap.enabled
+  - name: ibm-sch
+    repository: "@sch"
+    version: "^1.2.17"
+    alias: sch

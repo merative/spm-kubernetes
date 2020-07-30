@@ -1,0 +1,95 @@
+{{- include "sch.config.init" (list . "uawebapp.sch.chart.config.values") -}}
+{{- if .Values.imageConfig.name }}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sch.names.fullCompName" (list . "conf") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
+data:
+  70-logging.conf: |
+    ServerName {{ include "sch.names.fullName" (list .) }}.{{ .Release.Namespace }}.svc
+
+    SetEnvIf User-agent .*kube-probe.* probe
+    {{- if .Values.global.apps.common.persistence.enabled }}
+    ErrorLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -e -D {{ include "persistence.mountPoint" . }}/${HOSTNAME}/logs/error_log {{ .Values.logging.maxSize }}"
+    CustomLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -e -D {{ include "persistence.mountPoint" . }}/${HOSTNAME}/logs/access_log {{ .Values.logging.maxSize }}" {{ .Values.logging.formatLabel }} env=!probe
+    CustomLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -D {{ include "persistence.mountPoint" . }}/${HOSTNAME}/logs/access_probe.log {{ .Values.logging.maxSize }}" {{ .Values.logging.formatLabel }} env=probe
+    {{- else }}
+    ErrorLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -e -D /var/log/httpd/error_log {{ .Values.logging.maxSize }}"
+    CustomLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -e -D /var/log/httpd/access_log {{ .Values.logging.maxSize }}" {{ .Values.logging.formatLabel }} env=!probe
+    CustomLog "|/usr/sbin/rotatelogs -n {{ .Values.logging.maxFiles }} -D /var/log/httpd/access_probe.log {{ .Values.logging.maxSize }}" {{ .Values.logging.formatLabel }} env=probe
+    {{- end }}
+
+  80-staticContent.conf: |
+    <Directory "/var/www/html{{ .Values.readinessProbe.path | default "/universal/" }}">
+        AllowOverride All
+    </Directory>
+
+  90-tuning.conf: |
+    KeepAlive On
+    MaxKeepAliveRequests 1000
+    KeepAliveTimeOut 2
+    ServerTokens Prod
+
+    <IfModule !mod_headers.c>
+        LoadModule headers_module modules/mod_headers.so
+    </IfModule>
+    <IfModule !mod_expires.c>
+        LoadModule expires_module modules/mod_expires.so
+    </IfModule>
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresByType text/css "access plus 1 month"
+        ExpiresByType text/javascript "access plus 1 month"
+        ExpiresByType text/plain "access plus 1 month"
+        ExpiresByType image/gif "access plus 1 month"
+        ExpiresByType image/jpg "access plus 1 month"
+        ExpiresByType image/png "access plus 1 month"
+        ExpiresByType application/x-shockwave-flash "access plus 1 month"
+        ExpiresByType application/x-javascript "access plus 1 month"
+        Header unset Last-Modified
+    </IfModule>
+
+    # mod_filter needed for "AddOutputFilterByType" in Apache 2.4
+    <IfModule !mod_filter.c>
+        LoadModule filter_module modules/mod_filter.so
+    </IfModule>
+    <IfModule !mod_deflate.c>
+        LoadModule deflate_module modules/mod_deflate.so
+    </IfModule>
+    <IfModule mod_deflate.c>
+        AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/x-javascript
+        # Netscape 4.x has some problems...
+        BrowserMatch ^Mozilla/4 gzip-only-text/html
+        # Netscape 4.06-4.08 have some more problems
+        BrowserMatch ^Mozilla/4\.0[678] no-gzip
+        # MSIE masquerades as Netscape, but it is fine
+        BrowserMatch \bMSI[E] !no-gzip !gzip-only-text/html
+        # Make sure proxies don't deliver the wrong content
+        Header append Vary User-Agent env=!dont-vary
+    </IfModule>
+
+    <IfModule !mod_rewrite.c>
+        LoadModule rewrite_module modules/mod_rewrite.so
+    </IfModule>
+
+{{- end }}

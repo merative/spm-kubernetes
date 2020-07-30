@@ -1,0 +1,78 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+{{- if not .Values.ltpaKeys.secretName }}
+---
+###############################################################################
+# Copyright 2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "sch.names.fullCompName" (list . "create-ltpa-keys") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "create-hook") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "sch.metadata.labels.standard" (list . "create-hook") | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
+      affinity:
+        {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
+      serviceAccountName: {{ default (include "sch.names.fullCompName" (list . "secret-manager")) .Values.hookServiceAccountName }}
+      volumes:
+        - name: ltpa-keys
+          emptyDir: {}
+      initContainers:
+        - name: create-ltpa-keys
+          image: ibmcom/websphere-liberty:kernel-java8-ibmjava-ubi
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              openssl rand -hex 15 > /ltpa/password;
+              securityUtility encode $(cat /ltpa/password) > /ltpa/xor_pass;
+              securityUtility createLTPAKeys --password=$(cat /ltpa/password) --file=/ltpa/ltpa.keys
+          {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
+          {{- include "initContainer.resources" . | nindent 10 }}
+          volumeMounts:
+            - name: ltpa-keys
+              mountPath: /ltpa
+      containers:
+        - name: patch-secret
+          image: bitnami/kubectl:{{ .Capabilities.KubeVersion.Major }}.{{ trunc 2 .Capabilities.KubeVersion.Minor }}
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              export PATH=$PATH:/opt/bitnami/kubectl/bin;
+              kubectl patch secret {{ .Release.Name }}-ltpa-keys --type=merge -p "{\"data\": {\"{{ .Values.ltpaKeys.secretKey }}\": \"$(cat /ltpa/ltpa.keys | base64 -w0)\"}}";
+              kubectl patch secret {{ .Release.Name }}-ltpa-keys --type=merge -p "{\"data\": {\"{{ .Values.ltpaKeys.passwordKey }}\": \"$(cat /ltpa/xor_pass | base64 -w0)\"}}";
+          {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
+          {{- include "initContainer.resources" . | nindent 10 }}
+          volumeMounts:
+            - name: ltpa-keys
+              mountPath: /ltpa
+{{- end }}

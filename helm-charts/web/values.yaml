@@ -1,0 +1,85 @@
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+global:
+  images:
+    registry: &imageRegistry minikube.local:5000
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
+    pullPolicy: Always
+  imagePullSecret:
+    username: ''
+  sch:
+    enabled: true
+  apps:
+    common:
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
+        ## Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
+        ## Values available in the WebUI where the bucket was pre-created
+        # storageClassName: ""
+        # secretKey: ""
+        # accessKey: ""
+        # instanceId: ""
+        # bucketName: ""
+        mountPoint: ''
+        subDir: ''
+
+# Override the global image tag for the web server only
+imageTagOverride: ''
+
+# Require Intel-based workers
+arch: "amd64"
+
+logging:
+  level: warn
+  formatLabel: common
+  maxFiles: 10
+  maxSize: 5M
+
+# Number of web server replicas to run
+replicaCount: 1
+
+# Resource limits for the web server
+resources:
+  limits:
+    cpu: "0.5"
+    memory: "1Gi"
+  requests:
+    cpu: "0.25"
+    memory: "0.5Gi"
+
+# Name of an existing ServiceAccount for running the web server
+serviceAccountName: ""
+
+# livenessProbe section specifies setting for the web server liveness probe, which checks for a running HTTP server
+livenessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 1
+
+# readinessProbe section specifies setting for the web server readiness probe, which checks when the Static Content is available
+readinessProbe:
+  # Path to check for readiness
+  path: /CuramStatic/
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 3
+  failureThreshold: 1

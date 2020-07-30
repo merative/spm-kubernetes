@@ -1,0 +1,81 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-bootstrap-cm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+data:
+  Bootstrap.properties: |
+    # Placed by Kubernetes Configmap.
+    curam.environment.bindings.location=/tmp
+    curam.dmx.locale=en_US
+
+    curam.db.type={{ .Values.global.database.type | upper }}
+    curam.db.servername={{ .Values.global.database.hostname }}
+    curam.db.serverport={{ required "Database server port is required (global.database.port)." .Values.global.database.port }}
+    curam.db.username=${sysenv.SPM_DB_USR}
+    curam.db.password=${sysenv.SPM_DB_PSW}
+    curam.db.name={{ .Values.global.database.dbName }}
+    {{- if eq (.Values.global.database.type | upper) "ORA" }}
+    {{- if .Values.global.database.serviceName }}
+    curam.db.oracle.servicename={{ .Values.global.database.serviceName }}
+    {{- end }}
+    {{- end }}
+
+    {{- if eq (.Values.global.database.type | upper) "DB2" }}
+    {{ if .Values.global.database.ssl.enabled }}
+    curam.db2.ssl=true
+    {{- if .Values.global.database.ssl.secretName }}
+    # Import must be handled by an initContainer
+    curam.db2.ssl.truststore.location=/mnt/keystores/db2TrustStore.jks
+    curam.db2.ssl.truststore.password=changeit
+    {{- end }}
+    {{- end }}
+    db2.is.remote=true
+    {{- end }}
+
+    curam.db.override.bindings=
+    curam.environment.default.dateformat=dd MM yyyy
+    curam.environment.default.dateseparator=/
+    curam.database.shortnames=
+    curam.test.override.date=
+
+    curam.disable.dynamic.properties=
+    curam.db.disable.bindings.generation=
+    curam.environment.tnameserv.port=1221
+    curam.custom.workflow.webservicebpo=
+    curam.searchserver.server.index.persistence.enable=true
+
+    # Oracle Database
+    curam.db.oracle.cachesize=
+    curam.db.oracle.connectioncache.enabled=
+    curam.db.oracle.connectioncache.minlimit=
+    curam.db.oracle.connectioncache.maxlimit=
+    curam.db.oracle.connectioncache.initiallimit=
+    curam.db.oracle.connectioncache.name=
+
+    # DB2 on z/OS
+    curam.db.zos.32ktablespace=
+    curam.db.zos.encoding=EBCDIC
+    curam.db.zos.dbname=
+    curam.db.zos.asciidatabase=
+    curam.db.zos.enableforeignkeys=

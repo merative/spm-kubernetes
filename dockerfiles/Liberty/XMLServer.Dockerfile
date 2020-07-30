@@ -16,14 +16,22 @@
 
 ARG ANT_VERSION=1.10.6
 
+# If set, must end with a forward slash, e.g. "registry.connect.redhat.com/"
+ARG BASE_REGISTRY
+
 # Intermediate image: extract Ant
-FROM alpine AS AntStage
+FROM alpine AS ExtractAndMod
 ARG ANT_VERSION
 COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
-RUN unzip -qo /tmp/apache-ant.zip -d /opt/
+COPY content/release-stage/CuramSDEJ/xmlserver /opt/ibm/Curam/xmlserver
+COPY content/start-xmlserver.sh /opt/ibm/Curam/xmlserver/start-xmlserver.sh
+RUN unzip -qo /tmp/apache-ant.zip -d /opt/ \
+    && chgrp -Rc 0 /opt/ibm/Curam \
+    && chmod -Rc g=u /opt/ibm/Curam \
+    && chmod -c +x /opt/ibm/Curam/xmlserver/*.sh
 
 # Final image
-FROM registry.connect.redhat.com/ibm/ibmjava8
+FROM ${BASE_REGISTRY}ibm/ibmjava8:latest
 
 EXPOSE 1800
 WORKDIR /opt/ibm/Curam/xmlserver
@@ -37,9 +45,9 @@ ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
 
 USER root
 RUN mkdir -p /opt/ibm/Curam/xmlserver \
-    && chown -Rc 1001:0 /opt/ibm/Curam
-USER 1001
+    && chmod -c g+w /etc/passwd
 
-COPY --from=AntStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
-COPY --chown=1001:0 content/release-stage/CuramSDEJ/xmlserver /opt/ibm/Curam/xmlserver
-COPY --chown=1001:0 content/start-xmlserver.sh /opt/ibm/Curam/xmlserver/start-xmlserver.sh
+COPY --from=ExtractAndMod --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
+COPY --from=ExtractAndMod --chown=1001:0 /opt/ibm/Curam /opt/ibm/Curam
+
+USER 1001

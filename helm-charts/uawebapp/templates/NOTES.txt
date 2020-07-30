@@ -1,0 +1,11 @@
+{{- include "sch.config.init" (list . "uawebapp.sch.chart.config.values") -}}
+{{- if .Values.imageConfig.name }}
+The web server is not exposed by default.
+
+A Route/Ingress resource must be created to expose the web server pod(s).
+
+Service name: {{ include "sch.names.fullName" (list .) }}.{{ .Release.Namespace }}.svc
+Service port: 8443 (https)
+
+Content path to be mapped: {{ .Values.readinessProbe.path }}
+{{- end }}

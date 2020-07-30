@@ -1,0 +1,7 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+The Liberty instances are not exposed by default.
+
+A Route/Ingress resource must be created to expose the Liberty pod(s).
+
+Service name: {{ include "sch.names.fullName" (list .) }}.{{ .Release.Namespace }}.svc
+Service port: {{ .Values.httpsPort }}

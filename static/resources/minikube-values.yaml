@@ -2,20 +2,34 @@
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
   images:
-    registry: minikube.local
+    registry: minikube.local:5000
     imageLibrary: ''
     imagePrefix: ''
     imageTag: latest
     pullPolicy: Always
-  ceApp:
-    imageLibrary: ''
-    imageName: ce-app
-    imageTag: latest
+  database:
+    ## Database connection properties
+    type: DB2
+    dbName: DATABASE
+    hostname: ''
+    port: 50000
+    username: db2admin
+    # Name of pre-created secret containing database credentals
+    credsSecretName: ''
+    # The XOR-encrypted password injected into Liberty configuration
+    wlp_psw: "{xor}Oz1tPjsyNjE="
+    # The SPM-encrypted password injected into Bootstrap.properties
+    spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
+    # Oracle Service name, where applicable
+    serviceName: ''
+    initTime: 120
+    ssl:
+      enabled: false
+      # Name of the secret containing the database TLS certificate
+      secretName: ''
+      # Key in the above secret with the certificate
+      secretKey: db2admin.arm
   apps:
-    common:
-      initialDelaySeconds: 60
-      security:
-        username: SYSTEM
     config:
       curam:
         enabled: true
@@ -34,8 +48,53 @@ global:
         enabled: false
       curambirtviewer:
         enabled: false
-ingress:
-  enabled: true
-  tlsSecretName: testkube-tls
-  generateCert: true
-  hostname: minikube.local
+  ingress:
+    enabled: true
+    tlsSecretName: testkube-tls
+    generateCert: true
+    hostname: minikube.local
+
+# Override values in 'apps' Chart
+apps:
+  replicaCount: 1
+  initialDelaySeconds: 60
+  loginConfig:
+    trace: true
+  sessionConfig:
+    sessionTimeout: 30m
+    transactionTimeout: 3m
+  defaultResources:
+    requests:
+      cpu: 0.5
+      memory: 768Mi
+    limits:
+      cpu: 0.75
+      memory: 1Gi
+
+# Override values in 'batch' Chart
+batch:
+  programs:
+    queued:
+      schedule: "*/30 * * * *"
+
+# Override values in 'uawebapp' Chart
+uawebapp:
+  replicaCount: 1
+  imageConfig:
+    library: ''
+    name: ''
+    tag: latest
+  readinessProbe:
+    path: /universal/
+  ingressPath: /universal
+
+# Override values in 'web' Chart
+web:
+  replicaCount: 1
+  readinessProbe:
+    path: /CuramStatic/
+  ingressPath: /CuramStatic
+
+# Override values in 'xmlserver' Chart
+xmlserver:
+  replicaCount: 1

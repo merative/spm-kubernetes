@@ -1,0 +1,49 @@
+{{- include "sch.config.init" (list . "web.sch.chart.config.values") -}}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sch.names.fullCompName" (list . "scripts") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
+data:
+  10-logging.sh: |
+    #!/bin/sh
+
+    echo "---> Updating LogLevel to '{{ .Values.logging.level }}' ..."
+    sed -i 's!LogLevel warn!LogLevel {{ .Values.logging.level }}!g' /etc/httpd/conf.d/ssl.conf
+    sed -i 's!LogLevel warn!LogLevel {{ .Values.logging.level }}!g' /etc/httpd/conf/httpd.conf
+
+    echo "---> Disabling default logging directives in favor of ConfigMap directives ..."
+    sed -ri 's!^(\s*)CustomLog!\1#CustomLog!g; s!^ErrorLog!#ErrorLog!g; s!^TransferLog!#TransferLog!g;' /etc/httpd/conf/httpd.conf
+    perl -pi -e 's!^CustomLog\s*(.*)\s+\\\n!#CustomLog \1!g; s!^ErrorLog!#ErrorLog!g; s!^TransferLog!#TransferLog!g;' /etc/httpd/conf.d/ssl.conf
+
+  20-rewriteRules.sh: |
+    #!/bin/sh
+
+    echo "---> Fixing port in HTTPS redirects ..."
+    sed -i $'/<\/VirtualHost>/{e cat /opt/app-root/src/httpd-pre-init/20-rewriteRules.conf\n}' /etc/httpd/conf.d/ssl.conf
+
+  20-rewriteRules.conf: |
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !(.+)/$
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f
+    RewriteCond %{HTTP_HOST}:%{SERVER_PORT} ^(.+):8443$ [NC]
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}$1/ [L,R=301]

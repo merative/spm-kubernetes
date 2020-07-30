@@ -7,8 +7,8 @@ Some issues might require product changes to resolve them.
 
 ### **`minikube dashboard` command on Red Hat**
 
-When you follow the steps "Kubernetes dashboard" in [Monitoring the application in Minikube](/08-runtime/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
-For more information, see [Minikube issue](https://github.com/kubernetes/minikube/issues/5815).
+When you follow the steps "Kubernetes dashboard" in [Monitoring the application](/08-runtime/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
+For more information, see [Minikube issue 5815](https://github.com/kubernetes/minikube/issues/5815).
 
 ### **Using Helm on Red Hat**
 
@@ -35,6 +35,7 @@ However, after a redeployment or an upgrade, the application does not recognize 
 
 ### **Limitations when using the Minikube `none` driver**
 
-There are a number of limitations associated with the Minikube none driver that are documented on the [Minikube site](https://minikube.sigs.k8s.io/docs/reference/drivers/none/). You must evaluate the impacts of these limitations for your implementation.
+There are a number of limitations associated with the Minikube none driver that are documented in [Minikube documentation](https://minikube.sigs.k8s.io/docs/reference/drivers/none/).
+You must evaluate the impacts of these limitations for your implementation.
 
 However, the unavailability of the `minikube ssh` command might make it difficult to analyze and resolve problems and issues. For example, switching to the kvm2 driver enables the use of `minikube ssh` and resolves issues with the Docker Registry.

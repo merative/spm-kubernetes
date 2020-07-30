@@ -33,5 +33,7 @@ allowedCapabilities:
   - SETUID
   - SYS_NICE
   - SYS_RESOURCE
+  - FOWNER
+  - SYS_ADMIN
 users:
   - system:serviceaccount:%NAMESPACE%:default

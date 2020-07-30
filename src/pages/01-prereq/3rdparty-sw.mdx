@@ -20,7 +20,7 @@ The following sections show you how to download and install WebSphere Liberty.
 
 ### IBM Installation Manager
 
-To install the WebSphere Liberty fix pack by using Installation Manager, download and install Installation Manager 1.9 or later from the [IBM Installation Manager download website](https://www.ibm.com/support/pages/installation-manager-and-packaging-utility-download-documents).
+To install the WebSphere Liberty fix pack by using Installation Manager, download and install Installation Manager 1.9 or later from [IBM Installation Manager and Packaging Utility](https://www.ibm.com/support/pages/installation-manager-and-packaging-utility-download-documents).
 
 ### IBM WebSphere Liberty licensing
 
@@ -29,19 +29,25 @@ If you are not an existing WebSphere customer, you can download a 60-day trial o
 
 ### Install IBM WebSphere Liberty
 
-WebSphere Liberty 19.0.0.12 is the only application server that supports SPM on Kubernetes and is therefore required. Download and install WebSphere Liberty 19.0.0.12.
+WebSphere Liberty 19.0.0.12 is the only application server that supports SPM on Kubernetes and is therefore required. Download and install WebSphere Liberty.
 
-* Browse to [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html), then search for and download one of the following packages:
+<InlineNotification>
 
-1. IBM WebSphere Application Server Liberty Network Deployment (part number **CND1NML**)
-1. IBM WebSphere Application Server Liberty Base (part number **CNXH7ML**)
+As of Release 20.7.0, this asset introduced WebSphere Liberty 20.0.0.6 as a beta.
+
+</InlineNotification>
+
+Browse to [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html), then search for and download one of the following packages:
+
+* IBM WebSphere Application Server Liberty Network Deployment (part number **CND1NML**)
+* IBM WebSphere Application Server Liberty Base (part number **CNXH7ML**)
 
 If you are unsure of what installer to use, contact your IBM Account Executive.
 
 Also, download and install the following packages:
 
-* [19.0.0.12 Fix Pack](https://www-945.ibm.com/support/fixcentral/swg/downloadFixes?parent=ibm%2FWebSphere&product=ibm/WebSphere/WebSphere+Liberty&release=All&platform=All&function=fixId&fixids=19.0.0.12-WS-LIBERTY-*-FP&includeRequisites=1&includeSupersedes=0&downloadMethod=http)
-* [8.0.5.41 IBM Java SDK](https://www-945.ibm.com/support/fixcentral/swg/downloadFixes?parent=ibm%2FWebSphere&product=ibm/WebSphere/WebSphere+Liberty&release=All&platform=All&function=fixId&fixids=8.0.5.41-JavaSE-SDK-*x64*-repo&includeRequisites=1&includeSupersedes=0&downloadMethod=http)
+* [20.0.0.6 Fix Pack](https://www.ibm.com/support/pages/node/6217900)
+* [8.0.6.11 IBM SDK Java Technology Edition](https://www.ibm.com/support/pages/node/587245#80611)
 
 Install WebSphere Liberty as described in [Installing Liberty](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_inst_top.html).
 
@@ -70,9 +76,9 @@ Add `$JAVA_HOME/bin` to the `PATH` environment variable.
 A supported relational database is required, either IBM Db2 version 11.1 or Oracle Database 12cR2. You need either a Passport Advantage, or an Oracle account to download the relevant database software.
 
 * Download Db2 from [Passport Advantage](https://www.ibm.com/software/passportadvantage/index.html).
-  * See the [Db2 IBM Knowledge Center](https://www.ibm.com/support/knowledgecenter/en/SSEPGG_11.1.0/com.ibm.db2.luw.qb.server.doc/doc/c0060076.html) for detailed installation information.
+ See the [Db2 IBM Knowledge Center](https://www.ibm.com/support/knowledgecenter/en/SSEPGG_11.1.0/com.ibm.db2.luw.qb.server.doc/doc/c0060076.html) for detailed installation information.
 * Download Oracle Database from [Oracle Software Delivery Cloud](https://edelivery.oracle.com/osdc/faces/SoftwareDelivery).
-  * See the [Oracle Database Help Center](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/index.html) for detailed installation information.
+ See the [Oracle Database Help Center](https://docs.oracle.com/en/database/oracle/oracle-database/12.2/index.html) for detailed installation information.
 
 ## Apache Ant
 

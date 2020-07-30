@@ -1,0 +1,25 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
+Thank you for choosing IBM Curam Social Program Management (SPM) Platform!
+
+{{- if .Values.global.ingress.enabled }}
+Your deployment of SPM will be available shortly at https://{{ .Values.global.ingress.hostname }}
+
+The following endpoints have been mapped:
+
+  {{- range $name, $app := .Values.global.apps.config }}
+  {{- if and $app.enabled $app.ingressPath }}
+  - {{ $app.ingressPath }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.uawebapp.imageConfig.name }}
+  - {{ .Values.uawebapp.ingressPath }}
+  {{- end }}
+  - {{ .Values.web.ingressPath }}
+{{- else }}
+Due to the nature of the SPM topology in Kubernetes, the application should not be accessed using NodePort services.
+
+Please provide a hostname using the "global.ingress.hostname" property, and an appropriate Ingress/Route resource will be generated for you.
+{{- end }}
+
+
+> Deployed using SPM chart version {{ .Chart.Version }}.

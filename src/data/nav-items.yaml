@@ -1,12 +1,12 @@
 - title: Introduction
   pages:
-    - title: Overview
+    - title: Architecture
       path: /00-intro/arch-overview
-    - title: Deployment Architecture
+    - title: Deployment architecture
       path: /00-intro/deploy-arch
-    - title: SPM Architecture on IKS
+    - title: SPM architecture on IKS
       path: /00-intro/referenceArchSPM
-    - title: Static Content Deployment Architecture
+    - title: Static content deployment architecture
       path: /00-intro/IHSStaticContent
 - title: Prerequisites
   pages:
@@ -30,7 +30,7 @@
   pages:
     - title: Installing SPM software
       path: /02-deploy-spm/SPM-sw
-    - title: Create SPM Database
+    - title: Creating the SPM database
       path: /02-deploy-spm/create_spm_db
     - title: Building the SPM application
       path: /02-deploy-spm/spm-build
@@ -38,9 +38,11 @@
   pages:
     - title: Setting up the Docker context
       path: /03-build-images/setup_docker_context
+    - title: Building base images
+      path: /03-build-images/base_images
     - title: Building the Docker images
       path: /03-build-images/build_images
-- title: Deploying with Helm Charts
+- title: Deploying with Helm charts
   pages:
     - title: Preparing Helm charts
       path: /04-deployment/hc_preparation
@@ -48,13 +50,13 @@
       path: /04-deployment/hc_deployment
 - title: Operations
   pages:
-    - title: Updating Tools
+    - title: Updating tools
       path: /06-operations/updating_tools
-    - title: Updating SPM Deployment
+    - title: Updating SPM deployment
       path: /06-operations/updating_curam
-- title: Supporting Infrustructure
+- title: Supporting infrastructure
   pages:
-    - title: MQ Configuration
+    - title: Configuring MQ on a VM
       path: /07-supporting-infrastructure/MQSetupConfig
     - title: Cloud Object Storage
       path: /07-supporting-infrastructure/COS
@@ -62,25 +64,32 @@
       path: /07-supporting-infrastructure/LDAP
     - title: LogDNA
       path: /07-supporting-infrastructure/LogDNA
-    - title: SPM Batch Processing on IKS
+    - title: SPM batch processing on IKS
       path: /07-supporting-infrastructure/batch
+    - title: Enabling ISAM
+      path: /07-supporting-infrastructure/ISAM
 - title: Monitoring and troubleshooting
   pages:
-    - title: Monitor the application
+    - title: Monitoring the application
       path: /08-runtime/interrogate_runtime
     - title: Batch processing
       path: /08-runtime/batch
-    - title: XML Server
+    - title: XML server
       path: /08-runtime/xmlserver
     - title: Troubleshooting problems
       path: /08-runtime/troubleshoot
-    - title: Remote Debugging
+    - title: Handling failed JMS messages on the MQ dead message queue
+      path: /08-runtime/failed_jms_messages
+    - title: Remote debugging
       path: /08-runtime/Remote-Debugging
     - title: MustGather
       path: /08-runtime/must_gather
-- title: Known Issues
+- title: Known issues
   pages:
     - path: /known_issues
+- title: Frequently Asked Questions
+  pages:
+    - path: /FAQ
 - title: Feedback
   pages:
     - title: Contact Us

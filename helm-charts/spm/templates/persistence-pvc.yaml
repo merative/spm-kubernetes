@@ -1,3 +1,4 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
 {{- if $.Values.global.apps.common.persistence.enabled }}
 ---
 ###############################################################################
@@ -27,12 +28,12 @@ metadata:
     ibm.io/endpoint: {{ required "bucketEndpoint is required" $.Values.global.apps.common.persistence.bucketEndpoint | quote }}
     ibm.io/secret-name: "{{ $.Release.Namespace }}-persistence-secret"
   labels:
-{{ include "apps.labels" $ | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
 spec:
   accessModes:
     - "ReadWriteMany"
   resources:
     requests:
       storage: 10Gi # Enter a fictitious value
-  storageClassName: ibmc-s3fs-standard-regional
+  storageClassName: {{ required "storageClassName is required" $.Values.global.apps.common.persistence.storageClassName | quote }}
 {{- end }}

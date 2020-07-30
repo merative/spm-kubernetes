@@ -1,3 +1,6 @@
+{{- include "sch.config.init" (list . "batch.sch.chart.config.values") -}}
+{{- range $name, $program := .Values.programs }}
+{{- $javaOptions := dict "DefaultOptions" $.Values.javaOptions "ProgramOptions" $program.javaOptions "PersistenceConfig" $.Values.global.apps.common.persistence }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -18,33 +21,34 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ .Release.Name }}-batch
-  namespace: {{ .Release.Namespace }}
+  name: {{ include "sch.names.fullCompName" (list $ $name) }}
+  namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "batch.labels" . | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ "") | nindent 4 }}
 spec:
-  schedule: "{{ .Values.global.batch.schedule }}"
-  successfulJobsHistoryLimit: {{ .Values.global.batch.successfulJobsHistoryLimit }}
+  schedule: {{ required (printf "'schedule' key cannot be omitted for Batch program '%s'" $name) ($program.schedule | quote) }}
+  successfulJobsHistoryLimit: {{ default $.Values.successfulJobsHistoryLimit $program.successfulJobsHistoryLimit }}
+  concurrencyPolicy: {{ default $.Values.concurrencyPolicy $program.concurrencyPolicy }}
   jobTemplate:
     spec:
-      backoffLimit: {{ .Values.global.batch.backoffLimit }}
-      # Disabled until TTLAfterFinished feature graduates from 'alpha' status
-      # ttlSecondsAfterFinished: {{ .Values.global.batch.ttlSecondsAfterFinished }}
+      backoffLimit: {{ default $.Values.backoffLimit $program.backoffLimit }}
       template:
         spec:
-          {{- if .Values.global.imagePullSecret.username }}
+          {{- if $.Values.global.imagePullSecret.username }}
           imagePullSecrets:
-            - name: {{ .Release.Name }}-pull-secret
+            - name: {{ $.Release.Name }}-pull-secret
           {{- end }}
-          {{- if .Values.global.batch.runAs }}
-          securityContext:
-            runAsUser: {{ .Values.global.batch.runAs }}
-            fsGroup: {{ .Values.global.batch.runAs }}
-          {{- end }}
+          {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 10 }}
+          affinity:
+            {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | nindent 12 }}
+          serviceAccountName: {{ default (include "sch.names.fullName" (list $)) $.Values.serviceAccountName }}
           volumes:
             - name: bootstrap-file
               configMap:
-                name: {{ .Release.Name }}-bootstrap-cm
+                name: {{ $.Release.Name }}-bootstrap-cm
+            - name: debug-file
+              configMap:
+                name: {{ $.Release.Name }}-debug
           {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
             - name: keystore-volume
               emptyDir: {}
@@ -56,7 +60,7 @@ spec:
             image: ibmjava:8-sdk
             env:
               - name: certfile
-                value: /mnt/certificates/{{ $.Values.global.database.ssl.certFile | default "db2admin.arm" }}
+                value: /mnt/certificates/{{ $.Values.global.database.ssl.secretKey }}
               - name: keystore_jks
                 value: /mnt/keystores/db2TrustStore.jks
             command:
@@ -70,24 +74,35 @@ spec:
               mountPath: /mnt/certificates
           {{- end }}
           containers:
-          - name: running-batch
+          - name: runbatch-{{ $name | lower }}
             image: {{ include "batch.imageFullName" $.Values.global.images }}
-            imagePullPolicy: {{ .Values.global.images.pullPolicy }}
+            imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+            envFrom:
+              - secretRef:
+                  name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
+            env:
+              - name: ANT_OPTS
+                value: {{ include "batch.antOpts" $javaOptions | quote }}
             command:
               - build.sh
               - runbatch
-            {{- if or $.Values.global.batch.programName $.Values.global.batch.javaMetrics}}
+            {{- if or $program.className $program.parameters $program.username }}
             args:
+            {{- if $program.className }}
+              - -Dbatch.program={{ $program.className }}
             {{- end }}
-            {{- with $.Values.global.batch.programName }}
-              - -Dbatch.program={{ . }}
-            {{- with $.Values.global.batch.programParameters}}
-              - -Dbatch.parameters={{ . }}
+            {{- if $program.parameters }}
+              - -Dbatch.parameters={{ $program.parameters | quote }}
+            {{- end }}
+            {{- if $program.username }}
+              - -Dbatch.username={{ $program.username }}
             {{- end }}
             {{- end }}
-            env:
-              - name: ANT_OPTS
-                value: {{ include "antOpts" . | quote }} 
+            {{- if or $.Values.resources $program.resources }}
+            resources:
+              {{- toYaml (default $.Values.resources $program.resources) | nindent 14 }}
+            {{- end }}
+            {{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) | nindent 12 }}
             volumeMounts:
               - name: bootstrap-file
                 mountPath: /opt/ibm/Curam/release/project/properties/Bootstrap.properties
@@ -97,3 +112,4 @@ spec:
                 mountPath: /mnt/keystores
               {{- end }}
           restartPolicy: Never
+{{- end }}

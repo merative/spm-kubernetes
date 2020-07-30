@@ -1,0 +1,76 @@
+---
+title: Building base images
+description: Building base images from source
+---
+
+In some circumstances you may need to build your own base images, which can be accomplished using the steps below.
+
+## IBM® SDK, Java™ Technology Edition
+
+* Clone repository and change into the working directory:
+
+  ```shell
+  git clone https://github.com/ibmruntimes/ci.docker.git
+  cd ci.docker/ibmjava/tests
+  ```
+
+* Build image:
+
+  ```shell
+  ./build.sh ibm/ibmjava8:latest ../8/sdk/ubi-min
+  ```
+
+* (optional) Tag and Push the image to a private Docker registry:
+
+  ```shell
+  docker tag ibm/ibmjava8:latest $DOCKER_REGISTRY/my-library/ibm/ibmjava8:latest
+  docker push $DOCKER_REGISTRY/my-library/ibm/ibmjava8:latest
+  ```
+
+## S2I Core (required for Apache HTTP Server)
+
+* Install pre-requisite packages:
+  * Ubuntu/Debian: `sudo apt-get install go-md2man make`
+  * CentOS/RHEL: `sudo yum install go-md2man make`
+  * MacOS: `brew install bash coreutils go-md2man`
+    * Reopen the terminal after installing these packages
+    * Update the `PATH` variable to use the GNU version of commands that also exist on MacOS:
+
+      ```shell
+      export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+      ```
+
+* Clone repository and change into the working directory:
+
+  ```shell
+  git clone --recursive https://github.com/sclorg/s2i-base-container.git
+  cd s2i-base-container
+  ```
+
+* Build image:
+
+  ```shell
+  make build TARGET=rhel8 VERSIONS=core
+  ```
+
+## Apache HTTP Server
+
+* Clone repository and change into the working directory:
+
+  ```shell
+  git clone --recursive https://github.com/sclorg/httpd-container.git
+  cd httpd-container
+  ```
+
+* Build image:
+
+  ```shell
+  make tag TARGET=rhel8 VERSIONS=2.4
+  ```
+
+* (optional) Tag and Push the image to a private Docker registry:
+
+  ```shell
+  docker tag rhel8/httpd-24:latest $DOCKER_REGISTRY/my-library/rhel8/httpd-24:latest
+  docker push $DOCKER_REGISTRY/my-library/rhel8/httpd-24:latest
+  ```

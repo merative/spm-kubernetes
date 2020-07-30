@@ -3,13 +3,18 @@ title: Preparing Helm charts
 description: Preparing Helm charts
 ---
 
+<InlineNotification>
+
+**Note:** As of Release 20.7.0, the Helm version used to verify this runbook is 3.2. All the Helm commands that are used in this runbook are based on Helm v3.
+
+</InlineNotification>
+
 The [spm-kubernetes](https://github.com/IBM/spm-kubernetes) repository provides nine Helm charts:
 
 * *apps:* defines how to deploy the IBM® WebSphere® Liberty images with the SPM application.
 * *batch:* defines the batch image configuration.
-* *ce-app:* defines how to deploy the Universal Access (React) application.
-* *configmaps:* contains a group of common configurations across multiple images.
-* *ihs:* defines how to deploy the static content image for SPM (`Curam` image only).
+* *uawebapp:* defines how to deploy the Universal Access (React) application.
+* *web:* defines how to deploy the static content image for SPM (`Curam` image only).
 * *mqserver:* defines the IBM WebSphere MQ image configuration.
 * *openldap:* defines the OpenLDAP image configuration (used for session failover).
 * *xmlserver:* defines the xmlserver container configuration.
@@ -24,6 +29,16 @@ YAML is a human-readable structured data format. It provides powerful configurat
 ## Preparing to run the Helm charts
 
 Before you run the charts, you must configure the database, configure IBM MQ, and test the charts.
+You may also optionally integrate your deployment with an ISAM server for SSO enablement,
+to do so please complete the steps on the [Enabling ISAM](/07-supporting-infrastructure/ISAM) page under Supporting Infrastructure before returning here.
+Before you run the charts, you must configure the database, configure IBM MQ, and resolve all chart dependencies.
+
+Many of the Helm charts that make up a deployment of SPM depend on the [IBM Shared Configuration Helpers](https://github.com/IBM/charts/tree/master/samples/ibm-sch) chart, so an extra Helm repository must be added using the command below:
+
+```shell
+helm repo add sch https://raw.githubusercontent.com/IBM/charts/master/repo/samples
+helm repo update
+```
 
 ### Configuring the database
 
@@ -65,9 +80,9 @@ The YAML file will be used by the `helm install` command that is described in [D
 
 <InlineNotification>
 
-SPM's Helm charts follow the parent chart/subcharts model, and therefore the values must be within the `global:` mapping to be applied globally.
+You can find the full list of values available to override in `$SPM_HOME/helm-charts/spm/values.yaml`.
 
-You can find the full list of values available to override in `$SPM_HOME/helm-charts/spm/values.yaml`
+Sample override files for Minikube, IKS, and CRC are also available in the `$SPM_HOME/static/resources` folder.
 
 </InlineNotification>
 
@@ -75,47 +90,20 @@ You can find the full list of values available to override in `$SPM_HOME/helm-ch
 
 IBM MQ is already configured to work out of the box with a secure connection with IBM WebSphere Liberty.
 The commands that create all the objects that are needed on the queue manager are defined in a config map, in the `configmap-mqsc.yaml` file.
-However, there is a default password that you must change, as in the case of the database.
-The password is in the `$SPM_HOME/helm-charts/mqserver/values.yaml` file under the name `adminPasswordKey`. The password allows access to the IBM MQ web console.
 
-Passwords can also be stored in secrets, as for the certificates. However, for the scope of this runbook, passwords can be configured in values files or, preferably, overwritten at runtime.
-
-### Linting the Helm charts
-
-Use the following command during development to verify the syntax and correctness of the generated YAML files. Run the command inside a Chart folder:
+The password for the IBM MQ web console can be retrieved from the created Secret resource using the command below **after** it has been deployed:
 
 ```shell
-cd $SPM_HOME/helm-charts/spm
-helm lint .
+kubectl get secret <releaseName>-mq-credentials -o go-template='{{.data.adminPasswordKey | base64decode}}{{"\n"}}'
 ```
 
 ### Configuring Batch heap size
 
-The heap size of the batch processing can be adjusted by specifying the `heapSize` property within the values override file. The defaults are currently:
+The heap size of the batch processing can be adjusted by specifying the `batch.javaOptions` property within the values override file. The defaults are currently:
 
 ```
 batch:
- javaMetrics:
-     heapSize: "-Xms512m -Xmx512m"
-```
-
-## Packaging the Helm charts
-
-To use the Helm Charts to install SPM, package the charts and load them into a repository. For more information, see [ChartMuseum](/01-prereq/chartmuseum).
-
-To publish the individual charts to the Chart museum repository, run the following commands from the helm-charts folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](/01-prereq/git):
-
-```shell
-cd $SPM_HOME/helm-charts
-helm push apps local-development
-helm push mqserver local-development
-helm push configmaps local-development
-helm push xmlserver local-development
-helm push batch local-development
-helm push ihs local-development
-helm push ce-app local-development
-helm push openldap local-development
-helm repo update
+ javaOptions: "-Xms1g -Xmx1g"
 ```
 
 <InlineNotification>
@@ -129,11 +117,55 @@ The resource values can be changed. However, for troubleshooting, we will reques
 
 </InlineNotification>
 
+## Packaging the Helm charts
+
+To use the Helm Charts to install SPM, package the charts and load them into a repository. For more information, see [ChartMuseum](/01-prereq/chartmuseum).
+
+For each chart, its dependencies must be resolved before it can be loaded into a Helm repository like Chart museum.
+
+```shell
+cd $SPM_HOME/helm-charts
+
+helm dependency update apps
+helm dependency update mqserver
+helm dependency update xmlserver
+helm dependency update batch
+helm dependency update web
+helm dependency update uawebapp
+```
+
+If you made any changes to any of the charts, these can now be verified using the `helm lint` and `helm template` commands, for example:
+
+```shell
+cd $SPM_HOME/helm-charts
+
+helm lint apps
+helm template apps
+```
+
+To publish the individual charts to the Chart museum repository, run the following commands from the `helm-charts` folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](/01-prereq/git):
+
+```shell
+cd $SPM_HOME/helm-charts
+
+helm push apps local-development
+helm push mqserver local-development
+helm push xmlserver local-development
+helm push batch local-development
+helm push web local-development
+helm push uawebapp local-development
+helm push openldap local-development
+
+helm repo update
+```
+
 To generate the umbrella chart that is used for the deployment, run the following commands:
 
 ```shell
 cd $SPM_HOME/helm-charts
-helm dep up spm/
+
+helm dependency update spm
 helm push spm local-development
+
 helm repo update
 ```

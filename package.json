@@ -1,23 +1,24 @@
 {
-  "name": "example",
+  "name": "spm-kubernetes",
   "private": true,
-  "version": "1.20.0",
+  "version": "20.7.0",
   "license": "Apache 2.0",
   "scripts": {
     "dev": "gatsby develop -H 0.0.0.0",
-    "dev:clean": "yarn clean && yarn develop",
-    "build": "gatsby build",
-    "build:clean": "yarn clean && gatsby build",
+    "dev:clean": "gatsby clean && gatsby develop -H 0.0.0.0",
+    "build": "gatsby build --prefix-paths",
+    "build:clean": "gatsby clean && gatsby build --prefix-paths",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "build:prefix": "gatsby build --prefix-paths",
     "serve:prefix": "gatsby serve --prefix-paths",
-    "test:prefix": "yarn build:prefix && yarn serve:prefix"
+    "test:prefix": "gatsby build:prefix && gatsby serve:prefix"
   },
   "dependencies": {
     "carbon-icons": "^7.0.7",
-    "gatsby": "2.22.20",
-    "gatsby-theme-carbon": "^1.20.0",
+    "gatsby": "^2.24.1",
+    "gatsby-cli": "^2.12.60",
+    "gatsby-theme-carbon": "^1.25.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

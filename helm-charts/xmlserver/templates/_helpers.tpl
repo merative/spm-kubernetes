@@ -23,36 +23,11 @@ Expand the name of the chart.
 {{- end -}}
 
 {{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
-{{- define "xmlserver.fullname" -}}
-{{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "xmlserver.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
-{{/*
-Create the image pull secret
-*/}}
-{{- define "imagePullSecret" }}
-{{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
-{{- end }}
 
 {{/*
 Build up full image path
@@ -69,37 +44,11 @@ xmlserver:{{- .imageTag -}}
 {{- end -}}
 
 {{/*
-Define Database hostname
+Create the image pull secret
 */}}
-{{- define "xmlserver.dbhostname" -}}
-{{- if .Values.global.database.hostname -}}
-{{- .Values.global.database.hostname -}}
-{{- else -}}
-{{- .Release.Name -}}-db2
-{{- end -}}
-{{- end -}}
-
-{{/*
-Define Database username (or use default)
-*/}}
-{{- define "xmlserver.db2username" -}}
-{{- if .Values.global.database.username -}}
-{{- .Values.global.database.username -}}
-{{- else -}}
-{{- printf "db2admin" -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Define Database password (or use default)
-*/}}
-{{- define "xmlserver.db2password" -}}
-{{- if .Values.global.database.password -}}
-{{- .Values.global.database.password -}}
-{{- else -}}
-{{- printf "%s" "ZGIyYWRtaW4=" | b64dec -}}
-{{- end -}}
-{{- end -}}
+{{- define "xmlserver.imagePullSecret" }}
+{{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
+{{- end }}
 
 {{/*
 Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
@@ -121,17 +70,4 @@ Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/re
 {{- else -}}
 {{- printf "%s" $.Release.Name -}}
 {{- end -}}
-{{- end -}}
-
-{{/*
-Common labels
-*/}}
-{{- define "xmlserver.labels" -}}
-app.kubernetes.io/name: {{ include "xmlserver.name" . }}
-helm.sh/chart: {{ include "xmlserver.chart" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
