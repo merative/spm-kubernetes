@@ -34,9 +34,9 @@ spec:
       backoffLimit: {{ default $.Values.backoffLimit $program.backoffLimit }}
       template:
         spec:
-          {{- if $.Values.global.imagePullSecret.username }}
+          {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
           imagePullSecrets:
-            - name: {{ $.Release.Name }}-pull-secret
+            - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}
           {{- end }}
           {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 10 }}
           affinity:
@@ -46,9 +46,6 @@ spec:
             - name: bootstrap-file
               configMap:
                 name: {{ $.Release.Name }}-bootstrap-cm
-            - name: debug-file
-              configMap:
-                name: {{ $.Release.Name }}-debug
           {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
             - name: keystore-volume
               emptyDir: {}
@@ -57,7 +54,7 @@ spec:
                 secretName: {{ $.Values.global.database.ssl.secretName }}
           initContainers:
           - name: import-db2-cert
-            image: ibmjava:8-sdk
+            image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
             env:
               - name: certfile
                 value: /mnt/certificates/{{ $.Values.global.database.ssl.secretKey }}
@@ -75,7 +72,7 @@ spec:
           {{- end }}
           containers:
           - name: runbatch-{{ $name | lower }}
-            image: {{ include "batch.imageFullName" $.Values.global.images }}
+            image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "batch") }}
             imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
             envFrom:
               - secretRef:

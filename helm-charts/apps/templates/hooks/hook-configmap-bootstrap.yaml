@@ -1,5 +1,4 @@
 {{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
-{{- if .Values.global.sch.enabled -}}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -20,10 +19,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-bootstrap-cm
+  name: {{ include "sch.names.fullCompName" (list . "hook-bootstrap") }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "bootstrap") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
 data:
   Bootstrap.properties: |
     # Placed by Kubernetes Configmap.
@@ -31,7 +34,7 @@ data:
     curam.dmx.locale=en_US
 
     curam.db.type={{ .Values.global.database.type | upper }}
-    curam.db.servername={{ .Values.global.database.hostname }} 
+    curam.db.servername={{ .Values.global.database.hostname }}
     curam.db.serverport={{ required "Database server port is required (global.database.port)." .Values.global.database.port }}
     curam.db.username=${sysenv.SPM_DB_USR}
     curam.db.password=${sysenv.SPM_DB_PSW}
@@ -80,4 +83,3 @@ data:
     curam.db.zos.dbname=
     curam.db.zos.asciidatabase=
     curam.db.zos.enableforeignkeys=
-{{- end }}

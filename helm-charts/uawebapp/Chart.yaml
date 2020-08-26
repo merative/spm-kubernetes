@@ -19,7 +19,7 @@ kubeVersion: ">=1.16"
 appVersion: "7.0.10.0"
 name: uawebapp
 description: Helm Chart for deploying the Universal Access React application
-version: 3.0.0
+version: 3.0.1
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

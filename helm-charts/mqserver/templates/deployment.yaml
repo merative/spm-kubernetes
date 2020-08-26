@@ -39,10 +39,6 @@ spec:
         app.kubernetes.io/instance: {{ $.Release.Name }}
     spec:
       restartPolicy: {{ .restartPolicy | default "Always" }}
-      {{- if $.Values.global.imagePullSecret.username }}
-      imagePullSecrets:
-        - name: {{ $.Release.Name }}-pull-secret
-      {{- end }}
       volumes:
         - name: mqsc-cmds
           configMap:
@@ -104,20 +100,11 @@ spec:
             timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
             failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
           securityContext:
-            seLinuxOptions:
-              type: spc_t
-            allowPrivilegeEscalation: true
+            allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
             runAsNonRoot: true
-            runAsUser: 888
             privileged: false
             capabilities:
-              add:
-                - CHOWN
-                - SETGID
-                - SETUID
-                - AUDIT_WRITE
-                - DAC_OVERRIDE
               drop:
                 - ALL
           {{- with $.Values.global.mq.resources }}

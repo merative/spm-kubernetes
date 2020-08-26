@@ -1,5 +1,5 @@
-{{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
-{{- if not .Values.global.mq.queueManager.secret.name }}
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+{{- if not .Values.wlpAdmin.secretName }}
 ---
 ###############################################################################
 # Copyright 2020 IBM Corporation
@@ -20,35 +20,61 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sch.names.fullCompName" (list . "delete-mq-creds") }}
+  name: {{ include "sch.names.fullCompName" (list . "create-wlpadm") }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sch.metadata.labels.standard" (list . "delete-hook") | nindent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "create-wlpadm-hook") | nindent 4 }}
   annotations:
-    "helm.sh/hook": post-delete
-    "helm.sh/hook-weight": "5"
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "4"
     "helm.sh/hook-delete-policy": hook-succeeded,hook-failed,before-hook-creation
 spec:
   backoffLimit: 1
   template:
     metadata:
       labels:
-        {{- include "sch.metadata.labels.standard" (list . "delete-hook") | nindent 8 }}
+        {{- include "sch.metadata.labels.standard" (list . "create-wlpadm-hook") | nindent 8 }}
     spec:
       restartPolicy: Never
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
       serviceAccountName: {{ default (include "sch.names.fullCompName" (list . "secret-manager")) .Values.hookServiceAccountName }}
+      volumes:
+        - name: xor-vol
+          emptyDir: {}
+      initContainers:
+        - name: encode-wlpadm
+          image: ibmcom/websphere-liberty:kernel-java8-ibmjava-ubi
+          envFrom:
+            - secretRef:
+                name: {{ .Release.Name }}-wlpadm
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              securityUtility encode $KeystorePassword > /xor/keystorePass;
+              securityUtility encode $WebSpherePassword > /xor/webspherePass
+          {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
+          {{- include "initContainer.resources" . | nindent 10 }}
+          volumeMounts:
+            - name: xor-vol
+              mountPath: /xor
       containers:
-        - name: delete-secret
+        - name: patch-secret
           image: bitnami/kubectl:{{ .Capabilities.KubeVersion.Major }}.{{ trunc 2 .Capabilities.KubeVersion.Minor }}
           command:
             - /bin/sh
             - -c
           args:
             - |
-              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-mq-credentials --ignore-not-found
+              export PATH=$PATH:/opt/bitnami/kubectl/bin;
+              kubectl patch secret {{ .Release.Name }}-wlpadm --type=merge -p "{\"data\": {\"XORKeystorePassword\": \"$(cat /xor/keystorePass | base64 -w0)\"}}";
+              kubectl patch secret {{ .Release.Name }}-wlpadm --type=merge -p "{\"data\": {\"XORWebSpherePassword\": \"$(cat /xor/webspherePass | base64 -w0)\"}}";
           {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
           {{- include "initContainer.resources" . | nindent 10 }}
+          volumeMounts:
+            - name: xor-vol
+              mountPath: /xor
 {{- end }}

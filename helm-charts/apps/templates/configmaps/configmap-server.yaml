@@ -36,7 +36,9 @@ data:
         <feature>javaee-7.0</feature>
         <feature>localConnector-1.0</feature>
         <feature>jaxb-2.2</feature>
+        {{- if .Values.wlpAdmin.enableAdminCenter }}
         <feature>adminCenter-1.0</feature>
+        {{- end }}
         <feature>jndi-1.0</feature>
       </featureManager>
 

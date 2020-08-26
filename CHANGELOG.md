@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.8.0
+
+### Removed
+
+* Removed initContainers from statefulset.yaml in MQ chart
+
+### Added
+
+* Add option to provide pull secret name created outside the Helm release
+* Add `proxy-read-timeout` for NGinx-based Ingress controllers
+* Add option to provide the `ibm.io/region` annotation to PVC
+* Add supplementGroup value to MQ chart that may be required depending on the persistent volume
+* Add troubleshooting section to cover IBM Cloud Object storage connection issue
+* Add Note explaining Universal Base Images (UBI)
+
+
+### Changed
+
+* Remove hardcoded WebSphere Liberty credentials
+* Disable Admin Center by default
+* Move custom SQL execution to pre-install hook
+* Upgraded MQ image from 9.1.3 to 9.1.5
+
+### Fixed
+
+* InitContainer for Batch does not meet pod security policy requirements
+* Missing Batch debug-file configmap ([#29](https://github.com/IBM/spm-kubernetes/issues/29))
+* Fixed Helm Chart syntax for enabling JMX Stats
+
 ## v20.7.0
 
 ### Removed
@@ -18,10 +47,10 @@ All notable changes to this project will be documented in this file.
 * Chart hooks for managing LTPA keys and MQ client user
 * Liberty runtime liveness probe (checks log for specific error messages)
 * Instructions for handling failed JMS messages on the MQ dead message queue
-* In the MQ chart, a check before creating deployment to see if multi-instance MQ is desired.
-* Values for use in multi-instance MQ, with both static and dynamic storage.
-* A stateful set YAML file for use in multi-instance MQ.
-* PV and PVC YAML files for use in multi-instance MQ.
+* In the MQ chart, a check before creating deployment to see if multi-instance MQ is desired
+* Values for use in multi-instance MQ, with both static and dynamic storage
+* A stateful set YAML file for use in multi-instance MQ
+* PV and PVC YAML files for use in multi-instance MQ
 
 ### Changed
 
@@ -68,7 +97,7 @@ All notable changes to this project will be documented in this file.
 * Change SSL keystore type from JKS to PKCS#12
 * Changed IHS image to run as non-root user
 * Changed IHS image to mount in SSL certificates provided by Kubernetes secrets
-* Updated Architecture Diagram to clearly demark producers, consumers and types of worker nodes.
+* Updated Architecture Diagram to clearly demark producers, consumers and types of worker nodes
 * Changed EAR readiness pathes to avoid multiple redirections in the logs
 
 ### Fixed

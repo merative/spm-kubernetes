@@ -42,9 +42,9 @@ spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | nindent 8 }}
-      {{- if $.Values.global.imagePullSecret.username }}
+      {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
-        - name: {{ $.Release.Name }}-pull-secret
+        - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}
       {{- end }}
       restartPolicy: {{ $app.restartPolicy | default "Always" }}
       serviceAccountName: {{ default (include "sch.names.fullName" (list $)) $.Values.serviceAccountName }}
@@ -91,14 +91,6 @@ spec:
         - name: ltpa-secret
           secret:
             secretName: {{ default (printf "%s-ltpa-keys" $.Release.Name) $.Values.ltpaKeys.secretName }}
-        {{- if eq $name "curam" }}
-        - name: customsql-files
-          configMap:
-            name: {{ $.Release.Name }}-customsql-cm
-        - name: bootstrap-file
-          configMap:
-            name: {{ $.Release.Name }}-bootstrap-cm
-        {{- end }}
         {{- if eq $name "curambirtviewer" }}
         - name: birt-bind
           configMap:
@@ -198,7 +190,10 @@ spec:
             - name: keystore
               value: /mnt/keystores/key.p12
             - name: password
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
           command:
             - /bin/sh
             - -c
@@ -219,7 +214,10 @@ spec:
             - name: truststore
               value: /mnt/keystores/key.p12
             - name: password
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
           command:
             - /bin/sh
             - -c
@@ -236,43 +234,6 @@ spec:
             - name: mq-certs
               mountPath: /mnt/mqCertificates
         {{- end }}
-        {{- if eq $name "curam" }}
-        - name: apply-customsql
-          {{- include "customSQL.definition" $ | indent 10 }}
-          imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
-          envFrom:
-            - secretRef:
-                name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
-          env:
-            - name: ANT_OPTS
-              value: "-Djava.extra.jvmargs=\"-Dcuram.db.username=$SPM_DB_USR -Dcuram.db.password=$SPM_DB_PSW\""
-          args:
-            - -f
-            - /opt/ibm/Curam/release/CuramSDEJ/util/loadsql.xml
-            - -Dsql.resource=/mnt/customsql/
-          volumeMounts:
-            - name: customsql-files
-              mountPath: /mnt/customsql
-            - name: bootstrap-file
-              mountPath: /opt/ibm/Curam/release/project/properties/Bootstrap.properties
-              subPath: Bootstrap.properties
-            {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
-            - name: keystore-volume
-              mountPath: /mnt/keystores
-            {{- end }}
-        {{- end }}
-        {{- if ne $name "curam" }}
-        - name: wait-for-curam
-          {{- include "utilities.definition" $ | indent 10 }}
-          command:
-            - /bin/sh
-            - -c
-            - >
-              until nc -z -w3 {{ include "sch.names.fullCompName" (list $ "curam") }} {{ $.Values.httpsPort }}; do
-                echo waiting for {{ include "sch.names.fullCompName" (list $ "curam") }}:{{ $.Values.httpsPort }} to be reachable;
-                sleep 2;
-              done;
-        {{- end }}
       containers:
         - name: {{ $.Chart.Name }}-producer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
@@ -286,6 +247,8 @@ spec:
                 name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
             - secretRef:
                 name: {{ default (printf "%s-system-credentials" $.Release.Name) $.Values.systemUser.credsSecretName }}
+            - secretRef:
+                name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
           env:
             - name: LICENSE
               value: {{ $.Values.global.license }}

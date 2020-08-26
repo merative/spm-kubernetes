@@ -1,0 +1,21 @@
+# mqserver
+
+## Introduction
+
+* The MQ Server chart is a component of IBM Curam Social Program Management (SPM) Platform responsible for providing an MQ instance for JMS processing. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
+
+## Chart Details
+
+* Deployment of a single MQ instance (if desired).
+* Deployment of a multi-instance MQ via NFS or Ceph (if desired).
+
+## Prerequisites
+
+* Kubernetes 1.16 or later
+* Helm 3.0.0 or later
+* A configured NFS server (for use with NFS)
+* A populated OpenShift Cluster (for use with Ceph)
+
+## Configuration
+
+See [README.md](../spm/README.md) in the `spm` umbrella chart.

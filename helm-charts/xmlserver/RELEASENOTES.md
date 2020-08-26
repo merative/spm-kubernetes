@@ -1,14 +1,18 @@
 # What's new
 
-* OpenShift support introduced.
+* Red Hat OpenShift support introduced.
 
 ### Fixes
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v2.0.1
+
+* Add option to provide pull secret name created outside the release
 
 ## v2.0.0
 

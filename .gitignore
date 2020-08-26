@@ -1,6 +1,7 @@
 _book
 *.html
 
+/ci.*
 *.lock
 *.tgz
 refreshChartMuseum.sh
@@ -23,6 +24,7 @@ StaticContent.zip
 .settings
 *.drawio
 /Release-*
+~$*
 build/
 !/Jenkins/Pipelines/Build
 

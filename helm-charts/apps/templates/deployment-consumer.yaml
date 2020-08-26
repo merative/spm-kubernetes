@@ -42,9 +42,9 @@ spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | indent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | indent 8 }}
-      {{- if $.Values.global.imagePullSecret.username }}
+      {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
-        - name: {{ $.Release.Name }}-pull-secret
+        - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}
       {{- end }}
       restartPolicy: {{ $app.restartPolicy | default "Always" }}
       serviceAccountName: {{ default (include "sch.names.fullName" (list $)) $.Values.serviceAccountName }}
@@ -172,7 +172,10 @@ spec:
             - name: keystore
               value: /mnt/keystores/key.p12
             - name: password
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
           command:
             - /bin/sh
             - -c
@@ -193,7 +196,10 @@ spec:
             - name: truststore
               value: /mnt/keystores/key.p12
             - name: password
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
           command:
             - /bin/sh
             - -c
@@ -210,16 +216,6 @@ spec:
             - name: mq-certs
               mountPath: /mnt/mqCertificates
         {{- end }}
-        - name: wait-for-curam
-          {{- include "utilities.definition" $ | indent 10 }}
-          command:
-            - /bin/sh
-            - -c
-            - >
-              until nc -z -w3 {{ include "sch.names.fullCompName" (list $ "curam") }} {{ $.Values.httpsPort }}; do
-                echo waiting for {{ include "sch.names.fullCompName" (list $ "curam") }}:{{ $.Values.httpsPort }} to be reachable;
-                sleep 2;
-              done;
       containers:
         - name: {{ $.Chart.Name }}-consumer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
@@ -233,6 +229,8 @@ spec:
                 name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
             - secretRef:
                 name: {{ default (printf "%s-system-credentials" $.Release.Name) $.Values.systemUser.credsSecretName }}
+            - secretRef:
+                name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
           env:
             - name: LICENSE
               value: {{ $.Values.global.license }}

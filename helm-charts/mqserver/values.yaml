@@ -16,14 +16,6 @@
 global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
-  images:
-    registry: &imageRegistry minikube.local:5000
-    imageLibrary: ''
-    imagePrefix: ''
-    imageTag: latest
-    pullPolicy: Always
-  imagePullSecret:
-    registry: *imageRegistry
   sch:
     enabled: true
   apps:
@@ -55,7 +47,7 @@ global:
       samplepublicaccess:
         enabled: false
   mq:
-    version: 9.1.3.0
+    version: 9.1.5.0-r2
     # Set to True if running MQ in HA mode
     useConnectionNameList: false
     tlsSecretName: mq-secret
@@ -77,6 +69,10 @@ global:
       nfsEnabled: false
       nfsIP: ''
       nfsFolder: ''
+    security:
+      context:
+        fsGroup:
+        supplementalGroups: []
 
 # Require Intel-based workers
 arch: "amd64"
@@ -104,6 +100,3 @@ readinessProbe:
 log:
   format: basic
   debug: false
-
-imagePullSecret:
-  registry: *imageRegistry

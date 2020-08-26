@@ -26,6 +26,7 @@ global:
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
+    secretName: ''
     username: ''
   sch:
     enabled: true

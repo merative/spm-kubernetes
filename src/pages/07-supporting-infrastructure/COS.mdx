@@ -21,13 +21,7 @@ To archive data persistently through COS, prepare the following prerequisites in
 * Install the COS Plugin into your cluster by following [Storing data on IBM Cloud Object Storage](https://cloud.ibm.com/docs/containers?topic=containers-object_storage)
 * Enable persistence by toggling the following properties in the override values file injected through Helm during deployment:
 
-<Tabs>
-
-<Tab label="IBM Kubernetes Service">
-<Row>
-<Column>
-
-```yaml path=iks-values.yaml
+```yaml path=override-values.yaml
 ---
 global:
   apps:
@@ -47,9 +41,3 @@ global:
         mountPoint: "/tmp/persistence"
         subDir: "/folder/name"
 ```
-
-</Column>
-</Row>
-</Tab>
-
-</Tabs>

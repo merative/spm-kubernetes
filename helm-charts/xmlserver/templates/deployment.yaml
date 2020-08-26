@@ -38,9 +38,9 @@ spec:
       affinity:
 {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | indent 8 }}
       restartPolicy: {{ .restartPolicy | default "Always" }}
-      {{- if .Values.global.imagePullSecret.username }}
+      {{- if or .Values.global.imagePullSecret.secretName .Values.global.imagePullSecret.username }}
       imagePullSecrets:
-        - name: {{ .Release.Name }}-pull-secret
+        - name: {{ default (printf "%s-pull-secret" .Release.Name) .Values.global.imagePullSecret.secretName }}
       {{- end }}
       serviceAccountName: {{ default (include "sch.names.fullName" (list .)) .Values.serviceAccountName }}
       {{- if .Values.global.apps.common.persistence.enabled }}

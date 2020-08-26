@@ -24,6 +24,7 @@ global:
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
+    secretName: ''
     username: ''
   sch:
     enabled: true
@@ -246,6 +247,17 @@ ltpaKeys:
   secretName: ''
   secretKey: 'ltpa.keys'
   passwordKey: 'passwordKey'
+
+# Liberty keystore and administrative settings
+wlpAdmin:
+  # Must have the following keys defined:
+  # - KeystorePassword: plain password for default keystore
+  # - XORKeystorePassword: "securityUtility encode $KeystorePassword"
+  # - WebSphereUsername
+  # - WebSpherePassword: plain password for $WebSphereUsername
+  # - XORWebSpherePassword: "securityUtility encode $WebSpherePassword"
+  secretName: ''
+  enableAdminCenter: false
 
 # Configure Login Module
 loginConfig:

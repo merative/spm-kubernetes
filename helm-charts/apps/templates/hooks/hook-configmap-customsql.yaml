@@ -24,18 +24,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-customsql-cm
+  name: {{ include "sch.names.fullCompName" (list . "hook-customsql") }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "customsql") | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
 data:
   xmlserver.sql: |
-    UPDATE PROPERTIES SET VALUE='{{ $.Release.Name }}-xmlserver' WHERE NAME='curam.xmlserver.host';
-  {{- if $.Values.global.apps.common.persistence.enabled }}
-  {{- if $.Values.global.apps.common.persistence.jmxstats.enabled }}
+    UPDATE PROPERTIES SET VALUE='{{ .Release.Name }}-xmlserver' WHERE NAME='curam.xmlserver.host';
+  {{- if .Values.global.apps.common.persistence.enabled }}
+  {{- if .Values.global.apps.common.persistence.jmxstats.enabled }}
   jmxstats.sql: |
     UPDATE PROPERTIES SET VALUE = '/tmp/jmx' WHERE NAME = 'curam.jmx.output_statistics_timer_folder';
-    UPDATE PROPERTIES SET VALUE = '{{ $.Values.global.apps.common.persistence.jmxstats.timerPeriod }}' WHERE NAME = 'curam.jmx.output_statistics_timer_period';
+    UPDATE PROPERTIES SET VALUE = '{{ .Values.global.apps.common.persistence.jmxstats.timerPeriod }}' WHERE NAME = 'curam.jmx.output_statistics_timer_period';
     UPDATE PROPERTIES SET VALUE = 'true'  WHERE NAME = 'curam.jmx.output_statistics_timer_enabled';
   {{- end }}
   {{- end }}

@@ -32,4 +32,4 @@ Not required as the underlying IHS server runs with the default restricted polic
 
 ## Configuration
 
-See [README.md](../spm) in the `spm` umbrella chart.
+See [README.md](../spm/README.md) in the `spm` umbrella chart.
