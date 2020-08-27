@@ -24,6 +24,7 @@ global:
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
+    secretName: ''
     username: ''
   sch:
     enabled: false
@@ -63,6 +64,7 @@ global:
         # instanceId: ""
         # bucketName: ""
         # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
+        # bucketRegion: ""
         mountPoint: ''
         subDir: ''
         jmxstats:
@@ -236,6 +238,15 @@ apps:
     limits:
       cpu: 0.75
       memory: 1Gi
+  wlpAdmin:
+    # Must have the following keys defined:
+    # - KeystorePassword: plain password for default keystore
+    # - XORKeystorePassword: "securityUtility encode $KeystorePassword"
+    # - WebSphereUsername
+    # - WebSpherePassword: plain password for $WebSphereUsername
+    # - XORWebSpherePassword: "securityUtility encode $WebSpherePassword"
+    secretName: ''
+    enableAdminCenter: false
 
 # Override values in 'batch' Chart
 batch:

@@ -6,9 +6,21 @@
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v1.6.0
+
+* Chart changed to use IBM MQ 9.1.5.0-r2 development image.
+* Removed initContainers from Statefulset; IBM MQ volume not required to be initialized as root.
+* Changed SCC for both Deployment.yaml and Statefulset.yaml required by IBM MQ 9.1.5.0-r2 development image.
+* Added dynamically generatation to TLS certificates.
+
+## v1.5.1
+
+* Ignore missing hook secrets on deletion.
+* Remove unused pull secret definition.
 
 ## v1.5.0
 * Added a check before creating deployment to see if multi-instance MQ is desired.
@@ -19,21 +31,21 @@
 ## v1.4.0
 
 * Moved Liberty configuration fragment to `apps` Chart.
-* Added pre-install hook to encrypt the password for use in Liberty
-* Added support for a multi-instance topology
+* Added pre-install hook to encrypt the password for use in Liberty.
+* Added support for a multi-instance topology.
 
 ## v1.3.0
 
-* Revert to pre-created certificates
+* Revert to pre-created certificates.
 
 ## v1.2.0
 
-* Add support for running with multi-instance IBM MQ hosted outside Kubernetes
+* Add support for running with multi-instance IBM MQ hosted outside Kubernetes.
 
 ## v1.1.0
 
-* Initial release
+* Initial release.
 
 ## v1.0.0
 
-* Limited availability preview
+* Limited availability preview.

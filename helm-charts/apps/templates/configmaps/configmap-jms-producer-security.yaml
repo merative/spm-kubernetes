@@ -30,11 +30,11 @@ data:
 
       <ssl clientAuthentication="false" clientAuthenticationSupported="false" id="defaultSSLConfig" keyStoreRef="defaultKeyStore"
           securityLevel="HIGH" sslProtocol="TLSv1.2" />
-      <keyStore id="defaultKeyStore" location="key.p12" password="{xor}Lz4sLCgwLTs=" />
+      <keyStore id="defaultKeyStore" location="key.p12" password="${env.XORKeystorePassword}" />
       <ltpa keysPassword="${env.LTPA_KEYS_PASS}" keysFileName="${server.output.dir}/resources/security/{{ .Values.ltpaKeys.secretKey }}" />
 
       <basicRegistry id="basic" realm="BasicRegistry">
-        <user name="websphere" password="{xor}KDo9LC83Oi06" />
+        <user name="${env.WebSphereUsername}" password="${env.XORWebSpherePassword}" />
         {{- if not .Values.global.openldap.enabled }}
         <user name="${env.SYSTEM_USER}" password="${env.SYSTEM_PASSWORD}" />
         {{- end }}
@@ -43,7 +43,7 @@ data:
       </basicRegistry>
 
       <administrator-role>
-        <user>websphere</user>
+        <user>${env.WebSphereUsername}</user>
       </administrator-role>
 
       <authentication id="Basic" cacheEnabled="true"/>
@@ -55,7 +55,7 @@ data:
       <jaasLoginContextEntry id="system.WEB_INBOUND" loginModuleRef="myCustomWebInbound,hashtable,userNameAndPassword,certificate,token" name="system.WEB_INBOUND"/>
       <jaasLoginModule className="curam.util.security.CuramLoginModule" controlFlag="REQUIRED" id="myCustomWebInbound" libraryRef="customLoginLib">
         <options
-          exclude_usernames="websphere,${env.SYSTEM_USER}"
+          exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
           {{- if .Values.global.openldap.enabled }}
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"
@@ -66,7 +66,7 @@ data:
       <jaasLoginContextEntry id="system.DEFAULT" loginModuleRef="myCustomDefault,hashtable,userNameAndPassword,certificate,token" name="system.DEFAULT"/>
       <jaasLoginModule className="curam.util.security.CuramLoginModule" controlFlag="REQUIRED" id="myCustomDefault" libraryRef="customLoginLib">
         <options
-          exclude_usernames="websphere,${env.SYSTEM_USER}"
+          exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
           {{- if .Values.global.openldap.enabled }}
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"

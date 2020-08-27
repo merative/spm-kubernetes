@@ -1,13 +1,13 @@
 # What's new
 
-* OpenShift support introduced
+* Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
 
 ### Fixes
 
 # Breaking Changes
 
-* The structure of values for configuring the Liberty runtime of the application has changed
+* The structure of values for configuring the Liberty runtime of the application has changed:
 
   | Old property | New property | Default value | Comment |
   | ------------ | ------------ | ------------- | ------- |
@@ -26,7 +26,7 @@
   | `global.xmlserver.port` | Removed | `- `| Specifying the XML server port is not relevant in the Kubernetes environment. |
 
 
-* The new values must be nest under `apps`, when specifying values using the umbrella chart to take effect, for example:
+* When specifying value overrides using the umbrella chart the new values must be nested under `apps`, for example:
 
   ```yaml
   apps:
@@ -39,9 +39,16 @@
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v3.1.0
+
+* Generate WebSphere Liberty keystore and administrative credentials on install
+* Move custom SQL execution to pre-install hook
+* Add option to provide pull secret name created outside the release
+* Fixed Helm Chart syntax for enabling JMX Stats
 
 ## v3.0.0
 

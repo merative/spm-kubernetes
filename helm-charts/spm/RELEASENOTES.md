@@ -7,9 +7,16 @@
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v2.0.1
+
+* Add override option for enabling WebSphere Liberty Admin Center
+* Add option to provide pull secret name created outside the release
+* Add `proxy-read-timeout` for NGinx-based Ingress controllers
+* Add option to provide the `ibm.io/region` annotation to PVC
 
 ## v2.0.0
 

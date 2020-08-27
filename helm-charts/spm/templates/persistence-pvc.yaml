@@ -1,5 +1,5 @@
 {{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
-{{- if $.Values.global.apps.common.persistence.enabled }}
+{{- if .Values.global.apps.common.persistence.enabled }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -20,13 +20,16 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $.Release.Name }}-persistence-pvc
+  name: {{ .Release.Name }}-persistence-pvc
   annotations:
     ibm.io/auto-create-bucket: "false"
     ibm.io/auto-delete-bucket: "false"
-    ibm.io/bucket: {{ required "bucketName is required" $.Values.global.apps.common.persistence.bucketName | quote }}
-    ibm.io/endpoint: {{ required "bucketEndpoint is required" $.Values.global.apps.common.persistence.bucketEndpoint | quote }}
-    ibm.io/secret-name: "{{ $.Release.Namespace }}-persistence-secret"
+    ibm.io/bucket: {{ required "bucketName is required" .Values.global.apps.common.persistence.bucketName | quote }}
+    ibm.io/endpoint: {{ required "bucketEndpoint is required" .Values.global.apps.common.persistence.bucketEndpoint | quote }}
+    ibm.io/secret-name: "{{ .Release.Namespace }}-persistence-secret"
+    {{- if .Values.global.apps.common.persistence.bucketRegion }}
+    ibm.io/region: {{ .Values.global.apps.common.persistence.bucketRegion | quote }}
+    {{- end }}
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
 spec:
@@ -35,5 +38,5 @@ spec:
   resources:
     requests:
       storage: 10Gi # Enter a fictitious value
-  storageClassName: {{ required "storageClassName is required" $.Values.global.apps.common.persistence.storageClassName | quote }}
+  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
 {{- end }}

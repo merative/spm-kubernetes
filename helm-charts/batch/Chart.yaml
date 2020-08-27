@@ -18,7 +18,7 @@ kubeVersion: ">=1.16"
 appVersion: "7.0.10.0"
 name: batch
 description: Batch Chart for SPM Batch within a Kubernetes Cluster
-version: 2.0.0
+version: 2.0.1
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

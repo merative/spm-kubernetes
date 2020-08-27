@@ -168,16 +168,6 @@ To enable Ingress for Minikube, you must enable the `ingress` add-on.
 minikube addons enable ingress
 ```
 
-To avoid manipulation of DNS configuration (which requires elevated privileges), you can use a public wildcard DNS service like `nip.io` or `xip.io`.
-Both provide _translation_ of domain names to a LAN address, e.g. a domain of `hello-world.192.168.99.100.nip.io` will behave as if you have entered `192.168.99.100` (replace the IP with your own Minikube IP!) in the address bar.
-``
-
-<InlineNotification>
-
-**Note:** Use of these DNS services does not actually expose your local environment to the internet.
-
-</InlineNotification>
-
 ## Useful Minikube commands
 
 Some useful Minikube commands are as follows:

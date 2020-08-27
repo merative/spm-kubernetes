@@ -34,4 +34,4 @@ Not required as web server runs with the default restricted policy
 
 ## Configuration
 
-See [README.md](../spm) in the `spm` umbrella chart.
+See [README.md](../spm/README.md) in the `spm` umbrella chart.

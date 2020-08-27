@@ -1,6 +1,7 @@
 [filtering]
 ignore=^http://localhost
        ^https://www.ibm.com/support
+       ^https://ibm.biz/
 
 internlinks=^http://TRAVIS_HOST:8888/
 checkextern=1

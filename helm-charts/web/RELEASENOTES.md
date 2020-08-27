@@ -1,15 +1,19 @@
 # What's new
 
-* OpenShift support introduced.
+* Red Hat OpenShift support introduced.
 * Runs with `restricted` (default) pod security policy.
 
 ### Fixes
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v3.0.1
+
+* Add option to provide pull secret name created outside the release
 
 ## v3.0.0
 

@@ -20,14 +20,14 @@ limitations under the License.
 Build up full image path
 */}}
 {{- define "batch.imageFullName" -}}
-{{- .registry -}}/
-{{- if .imageLibrary -}}
-{{- .imageLibrary -}}/
+{{- .ImageConfig.registry -}}/
+{{- if .ImageConfig.imageLibrary -}}
+{{- .ImageConfig.imageLibrary -}}/
 {{- end -}}
-{{- if .imagePrefix -}}
-{{- .imagePrefix -}}
+{{- if .ImageConfig.imagePrefix -}}
+{{- .ImageConfig.imagePrefix -}}
 {{- end -}}
-batch:{{- .imageTag -}}
+{{- .ImageName -}}:{{- .ImageConfig.imageTag -}}
 {{- end -}}
 
 {{/*

@@ -42,6 +42,15 @@ spec:
       imagePullSecrets:
         - name: {{ $.Release.Name }}-pull-secret
       {{- end }}
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        fsGroup: {{ $.Values.global.mq.security.context.fsGroup }}
+        supplementalGroups:
+        {{- range $group := $.Values.global.mq.security.context.supplementalGroups }}
+          - {{ $group -}}
+        {{ end }}
       volumes:
         - name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
           persistentVolumeClaim:
@@ -119,22 +128,11 @@ spec:
             readOnly: true
           {{- end }}
           securityContext:
-            seLinuxOptions:
-              type: spc_t
-            allowPrivilegeEscalation: true
+            allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
             runAsNonRoot: true
-            runAsUser: 888
             privileged: false
             capabilities:
-              add:
-                - CHOWN
-                - SETGID
-                - SETUID
-                - AUDIT_WRITE
-                - DAC_OVERRIDE
-                - FOWNER
-                - SYS_ADMIN
               drop:
                 - ALL
           # Set liveness probe to determine if the queue manager is running
@@ -155,48 +153,6 @@ spec:
             periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
             failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
-      initContainers:
-      - name: {{ $.Chart.Name }}-{{ $name }}-init
-        image: {{ include "mqserver.imageFullName" $.Values.global.images }}
-        imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
-        terminationMessagePath: "/run/termination-log"
-        command: ["runmqserver"]
-        args: ["-i"]
-        env:
-        - name: LICENSE
-          value: {{ $.Values.global.license }}
-        - name: MQ_QMGR_NAME
-          value: {{ $.Values.global.mq.queueManager.name }}
-        - name: MQ_MULTI_INSTANCE
-          {{- if ($.Values.global.mq.multiInstance.cephEnabled) }}
-          value: "{{ $.Values.global.mq.multiInstance.cephEnabled | default false }}"
-          {{- else if ($.Values.global.mq.multiInstance.nfsEnabled) }}
-          value: "{{ $.Values.global.mq.multiInstance.nfsEnabled | default false }}"
-          {{ end }}
-        - name: LOG_FORMAT
-          value: {{ $.Values.log.format | default "basic" }}
-        - name: DEBUG
-          value: {{ $.Values.log.debug | default false | quote }}
-        volumeMounts:
-        - mountPath: /mnt/mqm-log
-          name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
-        - mountPath: /mnt/mqm-data
-          name: {{ $.Release.Namespace }}-{{ $name }}-pvc-data
-        - mountPath: /mnt/mqm
-          name: {{ $.Release.Namespace }}-{{ $name }}-pvc-qm
-        securityContext:
-          allowPrivilegeEscalation: true
-          readOnlyRootFilesystem: false
-          runAsNonRoot: false
-          runAsUser: 0
-          privileged: false
-          capabilities:
-            add:
-              - CHOWN
-              - FOWNER
-              - DAC_OVERRIDE
-            drop:
-              - ALL
 {{- end }}
 {{- end }}
 {{- end }}

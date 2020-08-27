@@ -34,4 +34,4 @@ Not required as the underlying WebSphere Liberty server runs with the default re
 
 ## Configuration
 
-See [README.md](../spm) in the `spm` umbrella chart.
+See [README.md](../spm/README.md) in the `spm` umbrella chart.

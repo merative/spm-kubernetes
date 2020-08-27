@@ -46,6 +46,8 @@
   pages:
     - title: Preparing Helm charts
       path: /04-deployment/hc_preparation
+    - title: Handling Secrets
+      path: /04-deployment/secrets
     - title: Deploying Helm charts
       path: /04-deployment/hc_deployment
 - title: Operations

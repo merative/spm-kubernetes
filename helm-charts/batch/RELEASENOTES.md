@@ -1,14 +1,14 @@
 # What's new
 
-* OpenShift support introduced
+* Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
-* Add option to specify multiple batch programs
+* Add the option to specify multiple batch programs
 
 ### Fixes
 
 # Breaking Changes
 
-* The structure of values for specifying the Batch programs has changed
+* The structure of values for specifying the Batch programs has changed:
 
   | Old property | New property | Default value | Comment |
   | ------------ | ------------ | ------------- | ------- |
@@ -20,7 +20,7 @@
   | `global.batch.programParameters` | `programs.<progID>.parameters` | `''` | Parameters, if any, to be passed to the batch process (`-Dbatch.parameters=`) |
 
 
-* The new values must be nest under `batch`, when specifying values using the umbrella chart to take effect, for example:
+* When specifying value overrides using the umbrella chart the new values must be nested under `batch`, for example:
 
   ```yaml
   batch:
@@ -35,9 +35,15 @@
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v2.0.1
+
+* Use a custom utilities image as the `initContainer`
+* Remove unused volume definition
+* Add option to provide pull secret name created outside the release
 
 ## v2.0.0
 

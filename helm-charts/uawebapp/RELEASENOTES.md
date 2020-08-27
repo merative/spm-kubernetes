@@ -1,13 +1,13 @@
 # What's new
 
-* OpenShift support introduced
+* Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
 
 ### Fixes
 
 # Breaking Changes
 
-* The structure of values for specifying the Universal Access image has changed
+* The structure of values for specifying the Universal Access image has changed:
 
   | Old property | New property | Default value | Comment |
   | ------------ | ------------ | ------------- | ------- |
@@ -21,7 +21,7 @@
   | `global.apps.common.port` | Removed | `-` | Port configuration has been removed with the change to an Apache HTTP server image |
 
 
-* The new values must be nest under `uawebapp`, when specifying values using the umbrella chart to take effect, for example:
+* When specifying value overrides using the umbrella chart the new values must be nested under `uawebapp`, for example:
 
   ```yaml
   uawebapp:
@@ -33,9 +33,13 @@
 
 ## Prerequisites
 
-* See README.md
+* For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v3.0.1
+
+* Add option to provide pull secret name created outside the release
 
 ## v3.0.0
 
@@ -50,7 +54,7 @@
 * Change to UBI base images
 * Add option to inject certificates
 * Allow binding to privileged ports
-* OpenShift support introduced
+* Red Hat OpenShift support introduced
 
 ## v1.1.0
 

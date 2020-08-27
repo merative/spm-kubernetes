@@ -1,5 +1,4 @@
 {{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
-{{- if not .Values.ltpaKeys.secretName }}
 ---
 ###############################################################################
 # Copyright 2020 IBM Corporation
@@ -20,10 +19,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "sch.names.fullCompName" (list . "delete-ltpa-keys") }}
+  name: {{ include "sch.names.fullCompName" (list . "delete-generated") }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sch.metadata.labels.standard" (list . "delete-hook") | nindent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "delete-generated-hook") | nindent 4 }}
   annotations:
     "helm.sh/hook": post-delete
     "helm.sh/hook-weight": "5"
@@ -33,7 +32,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "sch.metadata.labels.standard" (list . "delete-hook") | nindent 8 }}
+        {{- include "sch.metadata.labels.standard" (list . "delete-generated-hook") | nindent 8 }}
     spec:
       restartPolicy: Never
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
@@ -41,14 +40,18 @@ spec:
         {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
       serviceAccountName: {{ default (include "sch.names.fullCompName" (list . "secret-manager")) .Values.hookServiceAccountName }}
       containers:
-        - name: delete-secret
+        - name: delete-generated
           image: bitnami/kubectl:{{ .Capabilities.KubeVersion.Major }}.{{ trunc 2 .Capabilities.KubeVersion.Minor }}
           command:
             - /bin/sh
             - -c
           args:
             - |
-              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-ltpa-keys
+              /opt/bitnami/kubectl/bin/kubectl delete job {{ include "sch.names.fullCompName" (list . "apply-customsql") }} --ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete configmap {{ include "sch.names.fullCompName" (list . "hook-bootstrap") }}--ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete configmap {{ include "sch.names.fullCompName" (list . "hook-customsql") }}--ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete secret {{ include "sch.names.fullCompName" (list . "hook-dbcreds") }} --ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-ltpa-keys --ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-wlpadm --ignore-not-found
           {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
           {{- include "initContainer.resources" . | nindent 10 }}
-{{- end }}

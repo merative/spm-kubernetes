@@ -19,6 +19,7 @@ global:
     registry: &imageRegistry minikube.local:5000
     pullPolicy: Always
   imagePullSecret:
+    secretName: ''
     username: ''
   sch:
     enabled: true

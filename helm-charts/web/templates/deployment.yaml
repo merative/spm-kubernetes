@@ -37,9 +37,9 @@ spec:
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
-      {{- if .Values.global.imagePullSecret.username }}
+      {{- if or .Values.global.imagePullSecret.secretName .Values.global.imagePullSecret.username }}
       imagePullSecrets:
-        - name: {{ .Release.Name }}-pull-secret
+        - name: {{ default (printf "%s-pull-secret" .Release.Name) .Values.global.imagePullSecret.secretName }}
       {{- end }}
       restartPolicy: Always
       serviceAccountName: {{ default (include "sch.names.fullName" (list .)) .Values.serviceAccountName }}
