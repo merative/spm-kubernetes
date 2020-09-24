@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file.
 * Truncate MQ object labels to be under 20 characters
 * Updated IBM SDK for Java image name
 * Updated Nav items links for all pages. *Note:* any bookmarked pages will no longer work
-* Included embedded videos in Arctitecture Overview
+* Included embedded videos in Architecture Overview
 * Included list of supported software requirements
 * Updated WebSphere Liberty version to 20.0.0.9
 
