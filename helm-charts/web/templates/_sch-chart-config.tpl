@@ -21,6 +21,17 @@ the Shared Configurable Helpers overridden for this chart.
 {{- define "web.sch.chart.config.values" -}}
 sch:
   chart:
+    nodeAffinity:
+      nodeAffinityRequiredDuringScheduling:
+        key: beta.kubernetes.io/arch
+        operator: In
+        values:
+          - amd64
+      nodeAffinityPreferredDuringScheduling:
+        {{ default "application" $.Values.affinityValue }}:
+          key: {{ default "worker-type" $.Values.affinityKey }}
+          operator: In
+          weight: 100
     labelType: "prefixed"
     podSecurityContext:
       hostIPC: false
@@ -28,6 +39,10 @@ sch:
       hostPID: false
       securityContext:
         runAsNonRoot: true
+    metering:
+      productName: "IBM Curam Social Program Management Platform"
+      productVersion: "7.0.10"
+      productID: "1bba719a1b4744a9901f85563744c0d1"
     containerSecurityContext:
       securityContext:
         privileged: false

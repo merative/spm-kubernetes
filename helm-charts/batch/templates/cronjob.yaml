@@ -80,6 +80,8 @@ spec:
             env:
               - name: ANT_OPTS
                 value: {{ include "batch.antOpts" $javaOptions | quote }}
+              - name: TZ
+                value: {{ $.Values.global.timezone }}
             command:
               - build.sh
               - runbatch

@@ -1,0 +1,33 @@
+---
+title: Architecture Overview
+description: Architecture Overview
+tabs: ['Architecture Overview','What is Containerization?', 'What is Helm?', 'What is Kubernetes?','What is OpenShift?']
+---
+
+Figure 1 shows how SPM is built as a containerized application by using WebSphere® Application Server Liberty, packaged as Docker®
+containers, orchestrated by Helm, and running on IKS.
+
+![spm on kubernetes](../../../images/spm_on_kubernetes.png)
+<Caption>
+
+*Figure 1:* SPM on Kuberbetes
+
+</Caption>
+
+<InlineNotification>
+
+**Note:** Database support and MQ support remains on virtual machines (VMs) as part of the initial offering.
+
+</InlineNotification>
+
+To support containerized architectures, a number of architectural changes were made. The changes are documented below and apply only to SPM running on
+Kubernetes.
+
+* [Message Architecture](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.wlp.doc/Kubernetes/c_KubJMSArchitecture.html)
+  When IBM® Cúram Social Program Management is containerized, IBM MQ Long Term Support (LTS) is used as the message engine to process internal application
+  JMS-based deferred processing.
+* [Transaction Isolation](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.wlp.doc/Kubernetes/c_KubThreadIsolation.html)
+  Client HTTP initiated transactions and JMS initiated transactions run on different WebSphere Application Server Liberty instances, integrated through
+  an external message engine (for example, IBM MQ).
+* [Elasticity](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.wlp.doc/Kubernetes/c_KubElasticity.html)
+  Elasticity in IBM Cloud Kubernetes Service is the ability to scale up or down pods and nodes to adjust to the load to meet the end user demand.

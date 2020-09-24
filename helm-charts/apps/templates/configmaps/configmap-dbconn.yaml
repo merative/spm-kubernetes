@@ -58,5 +58,7 @@ data:
       >
         {{- include "apps.dsprops.fragment" . | nindent 8 }}
       </dataSource>
+      <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTimer_${env.POD_HOSTNAME}" dataSourceRef="DefaultDataSource" createTables="true" />
+      <persistentExecutor id="defaultEJBPersistentTimerExecutor" taskStoreRef="EJBTimerDatabaseStore" missedTaskThreshold="5m"/>
 
     </server>

@@ -2,33 +2,113 @@
 title: Frequently Asked Questions
 description: Frequently Asked Questions
 ---
+<PageDescription>
 
-## Which cloud delivery model applies to IBM Cúram Social Program Management?
+List of the frequently asked question in relation to SPM on Cloud
 
+</PageDescription>
+
+## FAQ's
+
+<Accordion>
+
+<AccordionItem title="Which cloud delivery model applies to IBM Cúram Social Program Management?" >
 The most common cloud delivery models are Infrastructure-as-a-Service (IaaS), Platform-as-a-Service (PaaS) and Software-as-a-Service (SaaS).
-All other cloud delivery models (that is, Application Platform-as-a-Service, Database-as-a-Service, Security-as-a-Service, Container-as-a-Service etc.)
-are specialized variations of one of the three main models. At this moment, only IaaS applies to SPM.
 
-## How does Infrastructure-as-a-Service (IaaS) apply to SPM?
+All other cloud delivery models (that is, Application Platform-as-a-Service, Database-as-a-Service, Security-as-a-Service, Container-as-a-Service etc.) are specialized variations of one of the three main models.
 
-IaaS is a cloud delivery model that is used to host applications. Most typically, Cloud users self-serve servers over the internet to support their
-development, test and production workloads without the intervention of a system administrator. Once provisioned, these servers are used to host the
-middleware and the SPM application. In this model, software platform (PaaS) or final software (SaaS) are not delivered to end users over the internet
-in a self-serve manner – the intervention of the system administrator is still required to install and configure all the middleware, integrate them,
-deploy the application, and promote the application and data through the phases of the Software Development Life Cycle (SDLC).
+At this moment, only IaaS applies to SPM.
+</AccordionItem>
 
-## Can we host SPM containers outside Kubernetes?
+<AccordionItem title="How does Infrastructure-as-a-Service (IaaS) apply to SPM?">
+IaaS is a cloud delivery model that is used to host applications. Most typically, Cloud users self-serve servers over the internet to support their development, test and production workloads without the intervention of a system administrator.
 
-No. SPM does not support hosting of Docker containers outside Kubernetes, for example, Apache Mesos, AWS Elastic Container Services (ECS) or even
-directly on virtual machines or bare metal.
+Once provisioned, these servers are used to host the middleware and the SPM application.
 
-## Can we use WebSphere Liberty Collectives on the architecture?
+In this model, software platform (PaaS) or final software (SaaS) are not delivered to end users over the internet in a self-serve manner.
 
-No. SPM does not support WebSphere Liberty Collectives, regardless of the deployment architecture. Although WebSphere Liberty
-provides support to Collectives, SPM does not support a deployment architecture of the SPM application on WebSphere Liberty Collectives.
+The intervention of the system administrator is still required to install and configure all the middleware, integrate them, deploy the application,
+and promote the application and data through the phases of the Software Development Life Cycle (SDLC).
+</AccordionItem>
 
-## What is the Universal Base Image (UBI)?
+<AccordionItem title="How does hybrid cloud apply to SPM?">
+Hybrid cloud combines IT resources (compute, middleware, application etc.) on the customer on-premises environment and in the cloud.
 
-Universal Base Image (UBI) consists of enterprise-ready and OCI-compliant Linux containers that offer greater security with stricter defaults than general images. By basing the images on UBI, deployment of Curam on OpenShift can be certified.
+Therefore, for example, SPM hosted on the IBM Cloud VPC with integration with legacy systems running on-premises is a hybrid Social Program architecture.
+
+<InlineNotification kind="warning">
+
+**Important**:
+SPM runtime application is not hybrid - that is, part running on the cloud and part running on-premises.
+
+</InlineNotification>
+
+In the example mentioned above, the Social Program ecosystem architecture is hybrid – that is, some applications running on-premises with SPM running on the cloud.
+</AccordionItem>
+
+<AccordionItem title="Can the SPM application be decomposed to run in a hybrid cloud architecture?">
+A potential scenario would be the SPM caseworker application running on-premises while the SPM portals such as Citizen Engagement or Providers are running on the Cloud.
+
+Although possible, this architecture can lead into complications.
+SPM was designed according to the Shared Database Pattern; therefore, the caseworker application and the portals share the same physical database.
+
+In such scenario described above, the database would be geographically distant from one of the tenants which could result into issues that are difficult to address:
+
+* Latency to run high volume of operations against a remote database.
+* Eventual (or even prolonged) unavailability of the remote database due to network glitches.
+
+</AccordionItem>
+
+<AccordionItem title="Could SPM hosted on the Cloud be integrated with on-premises legacy systems?">
+Yes. The integration can be direct site-to-site connection through VPN tunnels or over WAN using HTTP over TLS.
+
+</AccordionItem>
+
+<AccordionItem title="Can we host SPM on Amazon Elastic Kubernetes Services (EKS) or Azure Kubernetes Services (AKS)?">
+No. SPM only supports hosting of containerized architectures on IBM Cloud Kubernetes Services.
+
+However, SPM will provide multi-cloud support through OpenShift in 2020; this means that SPM will support Docker containers hosted on any cloud provider (i.e. AWS, Azure, etc) or on-premises,
+as long as the underlying container management platform is OpenShift.
+
+It is also important to remember that AWS EKS and Azure AKS are not container management services based on OpenShift.
+</AccordionItem>
+
+<AccordionItem title="Can we host SPM containers outside Kubernetes?">
+No. SPM does not support hosting of Docker containers outside Kubernetes, for example, Apache Mesos, AWS Elastic Container Services (ECS) or even directly on virtual machines or bare metal.
+
+SPM only supports hosting on containerized architectures of SPM on IBM Cloud Kubernetes Services.
+
+SPM does not support Docker containers hosted on virtual machines or bare metal, outside Kubernetes.
+</AccordionItem>
+
+<AccordionItem title="Can we use WebSphere Liberty Collectives on the architecture?">
+No. SPM does not support WebSphere Liberty Collectives, regardless of the deployment architecture.
+
+Although WebSphere Liberty provides support to Collectives, SPM does not support a deployment architecture of the SPM application on WebSphere Liberty Collectives.
+
+</AccordionItem>
+
+<AccordionItem title="Can we use WebSphere Liberty outside Kubernetes? For example, on a virtual machine?">
+No. SPM only supports WebSphere Liberty when containerized as Docker images with SPM EAR packages and deployed on IBM Cloud Kubernetes Services.
+
+<InlineNotification kind="warning">
+
+**Important**:
+SPM does not support WebSphere Liberty hosted directly on a virtual machine or bare metal, outside of Kubernetes.
+
+</InlineNotification>
+
+When the customer opens a ticket for a problem with SPM on WebSphere Liberty, the customer will need to provide the server.xml, Dockerfiles and Helm Charts used to deploy SPM on Kubernetes.
+
+If the customer is testing SPM on WebSphere Liberty on a virtual machine, the problem needs to be reproducible in Kubernetes and the Kubernetes artifacts (i.e. server.xml, Dockerfiles and Helm Charts) must be provided.
+
+SPM will not troubleshoot, provide guidance or advise on WebSphere Liberty running on virtual machines or bare metal, regardless if the problem occurred in a development, test, staging or production environments.
+</AccordionItem>
+
+<AccordionItem title="What is the Universal Base Image (UBI)?">
+UBI consists of enterprise-ready and OCI-compliant Linux containers that offer greater security with stricter defaults than general images. By basing the images on UBI, deployment of SPM on OpenShift can be certified.
 
 For more information, see Red Hat's [Universal Base Image](https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image)
+</AccordionItem>
+
+</Accordion>

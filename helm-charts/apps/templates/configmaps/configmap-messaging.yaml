@@ -19,7 +19,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $.Release.Name }}-messaging-config
+  name: {{ .Release.Name }}-messaging-config
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
@@ -48,7 +48,6 @@ data:
       <variable name="mqName" value="${env.MQ_QMGR_NAME}"/>
       <variable name="channel" value="${env.MQ_CHANNEL_NAME}"/>
       <variable name="userName" value="${env.MQ_CONN_USER}"/>
-      <variable name="password" value="${env.MQ_CONN_PASS}"/>
       {{- if .Values.global.mq.useConnectionNameList }}
       <variable name="connectionNameList" value="${env.MQ_CONN_NAME_LIST}"/>
       {{- else }}
@@ -57,7 +56,7 @@ data:
       {{- end }}
 
       <jmsActivationSpec id="eis/DPEnactmentAS">
-        {{- include "jms.activationSpec" (list . "Queue" "DPEnactment") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "DPEnactment") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="DPEnactment" jndiName="jms/DPEnactment">
@@ -65,7 +64,7 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/DPErrorAS">
-        {{- include "jms.activationSpec" (list . "Queue" "DPError") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "DPError") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="DPError" jndiName="jms/DPError">
@@ -73,7 +72,7 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowEnactmentAS">
-        {{- include "jms.activationSpec" (list . "Queue" "WorkflowEnactment") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "WorkflowEnactment") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowEnactment" jndiName="jms/WorkflowEnactment">
@@ -81,7 +80,7 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowActivityAS">
-        {{- include "jms.activationSpec" (list . "Queue" "WorkflowActivity") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "WorkflowActivity") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowActivity" jndiName="jms/WorkflowActivity">
@@ -89,7 +88,7 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/WorkflowErrorAS">
-        {{- include "jms.activationSpec" (list . "Queue" "WorkflowError") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "WorkflowError") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="WorkflowError" jndiName="jms/WorkflowError">
@@ -97,7 +96,7 @@ data:
       </jmsQueue>
 
       <jmsActivationSpec id="eis/CuramDeadMessageQueueAS">
-        {{- include "jms.activationSpec" (list . "Queue" "CuramDeadMessageQueue") | nindent 8 }}
+        {{- include "jms.queueActivationSpec" (list . "CuramDeadMessageQueue") | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsQueue id="CuramDeadMessageQueue" jndiName="jms/CuramDeadMessageQueue">
@@ -106,12 +105,12 @@ data:
 
       <!-- Activation Spec for CuramCacheInvalidationTopic in EJB Infrastructure Module -->
       <jmsActivationSpec id="eis/CuramCacheInvalidationTopicAS">
-        {{- include "jms.activationSpec" (list . "Topic" "CuramCacheInvalidationTopic") | nindent 8 }}
+        {{- include "jms.topicActivationSpec" . | nindent 8 }}
       </jmsActivationSpec>
 
       <!-- Activation Spec for CuramCacheInvalidationTopic in Invalidation Module -->
       <jmsActivationSpec id="Curam/InvalidationModule/CuramCacheInvalidationTopicMDB">
-        {{- include "jms.activationSpec" (list . "Topic" "CuramCacheInvalidationTopic") | nindent 8 }}
+        {{- include "jms.topicActivationSpec" . | nindent 8 }}
       </jmsActivationSpec>
 
       <jmsTopic id="CuramCacheInvalidationTopic" jndiName="jms/CuramCacheInvalidationTopic">
@@ -123,7 +122,7 @@ data:
         jndiName="jms/CuramQueueConnectionFactory"
         connectionManagerRef="ConMgr6">
 
-        {{- include "jms.connectionFactory" . | nindent 8 }}
+        {{- include "jms.queueConnectionFactory" . | nindent 8 }}
       </jmsConnectionFactory>
       <connectionManager id="ConMgr6" maxPoolSize="12"/>
 
@@ -131,7 +130,7 @@ data:
         id="CuramTopicConnectionFactory"
         jndiName="jms/CuramTopicConnectionFactory">
 
-        {{- include "jms.connectionFactory" . | nindent 8 }}
+        {{- include "jms.topicConnectionFactory" . | nindent 8 }}
       </jmsTopicConnectionFactory>
 
     </server>

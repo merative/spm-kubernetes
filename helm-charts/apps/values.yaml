@@ -26,6 +26,7 @@ global:
   imagePullSecret:
     secretName: ''
     username: ''
+  timezone: 'UTC'
   sch:
     enabled: true
   database:
@@ -71,6 +72,12 @@ global:
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
           enabled: false
           timerPeriod: 60000
+      jmxExporter:
+        # Enable use of Prometheus JMX Exporter javaagent in Liberty
+        enabled: false
+        agent:
+          host: localhost
+          port: 8080
     config:
       curam:
         enabled: true
@@ -218,15 +225,12 @@ global:
       secret:
         # name is the secret that contains the 'admin' user password and the 'app' user password to use for messaging
         name: ''
-        # adminPasswordKey is the secret key that contains the 'admin' user password (used in the 'mqserver' Chart)
-        # adminPasswordKey: 'adminPasswordKey'
+        # appUsernameKey is the secret key that contains the username for client connections between Liberty and MQ
+        appUsernameKey: 'appUsername'
         # appPasswordKey is the secret key that contains the 'admin' user password
         appPasswordKey: 'appPasswordKey'
   ingress:
     hostname: minikube.local
-
-# Require Intel-based workers
-arch: "amd64"
 
 # Name of an existing ServiceAccount for the application runtime
 serviceAccountName: ""
@@ -261,7 +265,7 @@ wlpAdmin:
 
 # Configure Login Module
 loginConfig:
-  trace: true
+  trace: false
   identityOnly: false
 
 # Configure Session and Transactions
@@ -278,6 +282,11 @@ replicaCount: 1
 
 # HTTPS port for running the application(s)
 httpsPort: 8443
+
+# Settings for node affinty, will give an affinity preference of
+#weight 100 for nodes labelled as worker-type:application
+affinityKey: worker-type
+affinityValue: application
 
 defaultResources:
   requests:

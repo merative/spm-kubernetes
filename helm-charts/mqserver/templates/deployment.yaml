@@ -77,6 +77,8 @@ spec:
                 secretKeyRef:
                   name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
                   key: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
+            - name: TZ
+              value: {{ $.Values.global.timezone }}
           ports:
             - containerPort: 1414
             - containerPort: 9443

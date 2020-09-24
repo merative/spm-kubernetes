@@ -18,6 +18,7 @@ global:
   license: ''
   sch:
     enabled: true
+  timezone: 'UTC'
   apps:
     common:
       persistence:
@@ -56,6 +57,8 @@ global:
       secret:
         # name is the secret that contains the 'admin' user password and the 'app' user password to use for messaging
         name: ''
+        # appUsernameKey is the secret key that contains the username for client connections between Liberty and MQ
+        appUsernameKey: 'appUsername'
         # adminPasswordKey is the secret key that contains the 'admin' user password
         adminPasswordKey: 'adminPasswordKey'
         # appPasswordKey is the secret key that contains the 'admin' user password
@@ -71,11 +74,8 @@ global:
       nfsFolder: ''
     security:
       context:
-        fsGroup:
+        fsGroup: ''
         supplementalGroups: []
-
-# Require Intel-based workers
-arch: "amd64"
 
 # Name of an existing ServiceAccount for the application runtime
 serviceAccountName: ""
@@ -100,3 +100,8 @@ readinessProbe:
 log:
   format: basic
   debug: false
+
+# Settings for node affinty, will give an affinity preference of
+# weight 100 for nodes labelled as worker-type:application
+affinityKey: worker-type
+affinityValue: application

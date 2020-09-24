@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.9.0
+
+### Added
+
+* Add an overridable affinity for nodes with a label of `worker-type:application`
+* Add an option to specify the timezone for the running containers (`global.timezone: UTC`)
+* Add detailed guide of available values for configuring the `spm` Helm chart
+* Add JDBC configuration for persistent EJB timers
+* Add page "Monitoring performance using JMX statistics"
+
+### Fixed
+
+* Use common `CuramCacheInvalidationTopic` across all applications to correctly invalidate the SPM property cache
+
+### Changed
+
+* Included changes to navigation flow
+* Exposing MQ username via Kubernetes secret
+* Truncate MQ object labels to be under 20 characters
+* Updated IBM SDK for Java image name
+* Updated Nav items links for all pages. *Note:* any bookmarked pages will no longer work
+* Included embedded videos in Arctitecture Overview
+* Included list of supported software requirements
+* Updated WebSphere Liberty version to 20.0.0.9
+
 ## v20.8.0
 
 ### Removed
@@ -17,7 +42,6 @@ All notable changes to this project will be documented in this file.
 * Add troubleshooting section to cover IBM Cloud Object storage connection issue
 * Add Note explaining Universal Base Images (UBI)
 
-
 ### Changed
 
 * Remove hardcoded WebSphere Liberty credentials
@@ -30,6 +54,7 @@ All notable changes to this project will be documented in this file.
 * InitContainer for Batch does not meet pod security policy requirements
 * Missing Batch debug-file configmap ([#29](https://github.com/IBM/spm-kubernetes/issues/29))
 * Fixed Helm Chart syntax for enabling JMX Stats
+
 
 ## v20.7.0
 

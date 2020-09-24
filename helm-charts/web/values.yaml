@@ -24,6 +24,7 @@ global:
   imagePullSecret:
     secretName: ''
     username: ''
+  timezone: 'UTC'
   sch:
     enabled: true
   apps:
@@ -44,9 +45,6 @@ global:
 
 # Override the global image tag for the web server only
 imageTagOverride: ''
-
-# Require Intel-based workers
-arch: "amd64"
 
 logging:
   level: warn
@@ -84,3 +82,8 @@ readinessProbe:
   periodSeconds: 10
   timeoutSeconds: 3
   failureThreshold: 1
+
+# Settings for node affinty, will give an affinity preference of
+# weight 100 for nodes labelled as worker-type:application
+affinityKey: worker-type
+affinityValue: application

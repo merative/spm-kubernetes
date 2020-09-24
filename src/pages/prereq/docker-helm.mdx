@@ -1,0 +1,38 @@
+---
+title: Docker®, Kubernetes, and Helm
+description: Docker, Kubernetes, and Helm
+---
+
+## Docker
+
+[Docker](https://www.docker.com/get-started) is an open source tool that creates, deploys, and runs applications by using containers.
+Install Docker by following the instructions in [docker.com](https://docs.docker.com/install/overview/). You can follow this runbook by using any Docker edition, including the community edition.
+
+<InlineNotification>
+
+**Note:** The following Docker versions were used to verify this runbook:
+
+* Docker Engine: 19.03
+* Docker Desktop for Windows: 2.1.0.5
+* Docker Desktop for Mac: 2.2.0.3
+
+</InlineNotification>
+
+## Helm V3
+
+<InlineNotification>
+
+**Note:** As of Release 20.7.0, the Helm version used to verify this runbook is 3.2. All the Helm commands that are used in this runbook are based on Helm v3.
+
+</InlineNotification>
+
+[Helm](https://helm.sh/) is a package manager that helps you to find, share, and use software that is built for Kubernetes.
+Helm streamlines the installation and management of Kubernetes applications, and is the equivalent of the apt, yum, or homebrew utilities for Kubernetes.
+
+Helm uses a packaging format called Chart. A chart is a collection of files that describe a related set of Kubernetes resources.
+A single chart might be used to deploy something simple, like a memcached pod, or a complex deployment, like a full web app stack with HTTP servers, databases, and caches.
+Charts are created as files laid out in a particular directory tree, then they can be packaged into versioned archives for deployment. For more information, see the [Helm documentation](https://helm.sh/docs/).
+
+This runbook uses Helm Charts and describes how to package and deploy them. For more information, see [Preparing Helm Charts](/deployment/hc_preparation).
+
+Install Helm by following the steps described in [Helm install](https://github.com/helm/helm#install).

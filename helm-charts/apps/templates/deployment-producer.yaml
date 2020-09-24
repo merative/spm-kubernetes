@@ -3,6 +3,7 @@
 {{- range $name, $app := .Values.global.apps.config }}
 {{- if $app.enabled }}
 {{- $imageData := dict "ImageConfig" $.Values.global.images "ImageName" $name }}
+{{- $qmgrName := printf "%s_%s" (trunc 5 $.Values.global.mq.objectSuffix) (trunc -10 $name) }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -111,6 +112,8 @@ spec:
         {{- end }}
         - name: keystore-volume
           emptyDir: {}
+        - name: env-volume
+          emptyDir: {}
         - name: service-certs
           secret:
             {{- if $.Capabilities.APIVersions.Has "route.openshift.io/v1" }}
@@ -209,8 +212,8 @@ spec:
         - name: import-certs-for-mq
           {{- include "utilities.definition" $ | indent 10 }}
           env:
-            - name: mqCrtFile
-              value: /mnt/mqCertificates/tls.crt
+            - name: mqCrtDir
+              value: /mnt/mqCertificates
             - name: truststore
               value: /mnt/keystores/key.p12
             - name: password
@@ -218,19 +221,27 @@ spec:
                 secretKeyRef:
                   name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
                   key: KeystorePassword
+            - name: podHostname
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
           command:
             - /bin/sh
             - -c
             - >
               {{- if $.Values.global.mq.useConnectionNameList }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm_{{ $.Values.global.mq.objectSuffix | lower }}_{{ $name }} -file $mqCrtFile -keystore $truststore -storepass $password -storetype pkcs12;
+              keytool -import -trustcacerts -noprompt -alias {{ $qmgrName | lower }} -file $mqCrtDir/key_{{ $qmgrName }}.arm -keystore $truststore -storepass $password -storetype pkcs12;
               {{- else }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $mqCrtFile -keystore $truststore -storepass $password -storetype pkcs12;
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
               {{- end }}
               keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
+              echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env
           volumeMounts:
             - name: keystore-volume
               mountPath: /mnt/keystores
+            - name: env-volume
+              mountPath: /mnt/envvol
             - name: mq-certs
               mountPath: /mnt/mqCertificates
         {{- end }}
@@ -273,28 +284,28 @@ spec:
             - name: MQ_CONN_NAME_LIST
               value: {{ $app.mqConnectionNameList }}
             - name: MQ_QMGR_NAME
-              value: QM_{{ $.Values.global.mq.objectSuffix }}_{{ $name }}
+              value: {{ $qmgrName }}
             - name: MQ_CHANNEL_NAME
-              value: CHL_{{ $.Values.global.mq.objectSuffix | upper }}_{{ $name | upper }}
+              value: CHL_{{ $qmgrName | upper }}
             {{- else }}
             - name: MQ_HOST_NAME
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
-            - name: MQ_CONN_USER
-              value: app
-            - name: MQ_CONN_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
-                  key: enc_{{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
             - name: MQ_QMGR_NAME
               value: {{ $.Values.global.mq.queueManager.name }}
             - name: MQ_CHANNEL_NAME
               value: MQ_CHN
             {{- end }}
+            - name: MQ_CONN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: {{ $.Values.global.mq.queueManager.secret.appUsernameKey }}
             {{- if $.Values.global.apps.common.persistence.enabled }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
             {{- end }}
+            - name: TZ
+              value: {{ $.Values.global.timezone }}
           {{- with .readinessPath }}
           readinessProbe:
             httpGet:
@@ -402,5 +413,8 @@ spec:
               mountPath: {{ include "persistence.mountPoint" $ }}
               subPath: {{ include "persistence.subDir" $ }}
             {{- end }}
+            - name: env-volume
+              mountPath: /config/server.env
+              subPath: server.env
 {{- end }}
 {{- end }}

@@ -26,6 +26,7 @@ global:
   imagePullSecret:
     secretName: ''
     username: ''
+  timezone: 'UTC'
   sch:
     enabled: false
   database:
@@ -210,6 +211,8 @@ global:
   ingress:
     enabled: false
     hostname: ''
+    tlsSecretName: ''
+    generateCert: false
   isam:
     enabled: false
 
@@ -222,7 +225,7 @@ apps:
     password: "{xor}LCYsLz4sLA=="
   initialDelaySeconds: 150
   loginConfig:
-    trace: true
+    trace: false
     identityOnly: false
   sessionConfig:
     sessionTimeout: 30m

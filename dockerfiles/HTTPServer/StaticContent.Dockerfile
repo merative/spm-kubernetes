@@ -31,5 +31,9 @@ FROM ${BASE_REGISTRY}rhel8/httpd-24
 ARG CONTENT_DIR
 
 COPY --from=ExplodedStaticzip --chown=1001:0 /work/staticcontent/WebContent /var/www/html/$CONTENT_DIR
-
+USER root
+RUN rpm -e --nodeps tzdata \
+    && yum install -y tzdata \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 USER 1001

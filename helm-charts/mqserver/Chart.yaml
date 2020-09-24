@@ -16,7 +16,7 @@
 apiVersion: v2
 name: mqserver
 description: Helm Chart for Deployment of MQ server for SPM within a Kubernetes Cluster
-version: 1.6.0
+version: 1.6.1
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

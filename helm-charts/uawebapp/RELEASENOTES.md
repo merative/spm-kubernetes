@@ -37,6 +37,10 @@
 
 # Version History
 
+## v3.0.2
+
+* Specify `TZ` environment variable for managing timezone in pods
+
 ## v3.0.1
 
 * Add option to provide pull secret name created outside the release

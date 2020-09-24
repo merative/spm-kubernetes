@@ -33,6 +33,7 @@ spec:
       labels:
         {{- include "sch.metadata.labels.standard" (list . "") | nindent 8 }}
       annotations:
+        {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
     spec:
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
@@ -62,6 +63,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: {{ include "web.imageFullName" . }}
           imagePullPolicy: {{ .Values.global.images.pullPolicy }}
+          env:
+            - name: TZ
+              value: {{ .Values.global.timezone }}
           ports:
             - name: client
               containerPort: 8443

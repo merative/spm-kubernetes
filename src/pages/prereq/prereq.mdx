@@ -1,0 +1,39 @@
+---
+title: Install prerequisite software
+description: Install prerequisite software
+---
+
+IBM® Cúram Social Program Management (SPM) has been enhanced in version 7.0.10.0 to enable it to be deployed on cloud native hosting platforms.
+To build and run IBM Cúram Social Program Management (SPM) for Kubernetes, install the following software components:
+
+* [Base third-party software](/prereq/3rdparty-sw)
+* [IBM Cúram Social Program Management (SPM) software](/deploy-spm/SPM-sw)
+* [Docker®, and Helm](/prereq/docker-helm)
+* [Kubernetes](/prereq/kubernetes/kubernetes-overview)
+  * [Minikube](/prereq/kubernetes/minikube)
+* [Code Ready Container](/prereq/openshift/codeready-containers)
+* [ChartMuseum](/prereq/chartmuseum)
+* [GitHub repo](/prereq/git)
+
+In order to be hosted on Kubernetes, IBM Cúram Social Program Management has been enhanced to support the following technologies:
+
+| Supported Software            | Version                   | Prerequisite Minimum | Notes |
+| ----------------------------- | ------------------------- | -------------------- | ------|
+| WebSphere Liberty             | 19.0.0.12                 | 19.0.0.12            | 1     |
+| Kubernetes                    | 1.16 and future fix packs | 1.16                 | 2     |
+| IBM MQ                        | 9.1                       | 9.1.0.4              | 3     |
+| Docker Community Edition (CE) | 19.03                     | 19.03.5              | 4,5,6 |
+| Helm                          | v2                        | v2.16                | 7     |
+
+|Notes|
+|-|
+|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS). |
+|`(2)` &#124; IBM Cúram Social Program Management only supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes.|
+|`(3)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS).|
+|`(4)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS).|
+|`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
+|`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services.|
+|`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 2.16 for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS).|
+
+These technologies cannot be used independently from each other for IBM Cúram Social Program Management. IBM Cúram Social Program Management will update the supported versions of these technologies frequently throughout the year.
+The technologies listed above are fixed version support only.
