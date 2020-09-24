@@ -14,9 +14,10 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=20.0.0.6-full-java8-ibmjava-ubi
+ARG WLP_VERSION=20.0.0.9-full-java8-ibmjava-ubi
 ARG MQ_ADAPTER_VERSION=9.1.5.0
 ARG MQ_RA_LICENSE
+ARG JMX_EXPORTER_URL=https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.13.0/jmx_prometheus_javaagent-0.13.0.jar
 
 # Explode EAR in a disposable environment
 FROM alpine AS ExplodedEAR
@@ -38,14 +39,27 @@ RUN java -jar /tmp/${MQ_ADAPTER_VERSION}-IBM-MQ-Java-InstallRA.jar ${MQ_RA_LICEN
 
 # Create final image
 FROM ibmcom/websphere-liberty:${WLP_VERSION} AS servercode
+ARG JMX_EXPORTER_URL
 
 USER root
+RUN rpm -e --nodeps tzdata \
+    && yum install -y tzdata \
+    && yum install -y wget \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 RUN ln -s /opt/ibm/wlp/usr/shared/resources /shared_resources \
     && chown -R 1001:0 /config/configDropins \
     && chown -R 1001:0 /opt/ibm/wlp/usr/shared \
     && chmod -R g=u /opt/ibm/wlp/usr/shared \
     && chmod -R g=u /output \
     && rm -f /config/configDropins/defaults/*
+
+# Prometheus JMX Exporter
+RUN wget -O /config/configDropins/overrides/jmx_prometheus_javaagent.jar -o /tmp/wget.txt $JMX_EXPORTER_URL \
+    && touch /config/configDropins/overrides/config.yaml \
+    && chown 1001:0 /config/configDropins/overrides/config.yaml /config/configDropins/overrides/jmx_prometheus_javaagent.jar \
+    && rm -f /tmp/wget.txt
+ 
 USER 1001
 
 COPY --chown=1001:0 content/*.sh /opt/ibm/helpers/runtime/

@@ -1,0 +1,39 @@
+---
+title: Updating tools
+description: Updating tools
+---
+
+In Cloud environments, all the components of the platform must be up-to-date because of the often short maintenance cycles.
+
+## Kubernetes
+
+The Kubernetes project gets minor releases approximately every three months, and it maintains only the three most recent minor releases. This is reflected in the IBM® Cloud Kubernetes Service (IKS) deprecation cycle.
+
+<InlineNotification>
+
+Find out more about the Kubernetes project release cycle in [Kubernetes version and version skew support](https://kubernetes.io/docs/setup/release/version-skew-policy/).
+
+Find out more about the IBM Cloud Kubernetes Service release and support cycle in [IBM Cloud Docs](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions).
+
+</InlineNotification>
+
+Managed Kubernetes services like IKS have a hands-off upgrade process, whereby the upgrade is performed with the click of a button.
+Before upgrading, review all the release notes between the source and target versions because Kubernetes features can change over time.
+
+<InlineNotification kind='warning'>
+
+**Warning:** Kubernetes upgrades cannot be rolled back. Always make sure to do the upgrade on a development cluster before proceeding to higher environments.
+
+</InlineNotification>
+
+Alongside the upgrade of the Kubernetes service, ensure you upgrade any pipelines and developer tools with a compatible version of `kubectl`. The command-line tool must be within one minor version (older or newer) of the Kubernetes service.
+
+## Helm
+
+Starting with Helm v3, there is no server-side component, so the process of upgrading the command-line tool is a case of replacing the binary.
+As with any software, make sure to review the Helm [Release Notes](https://github.com/helm/helm/releases) before upgrading.
+
+## Middleware components
+
+Because of the immutable nature of containers, when the application middleware (for example, IBM® WebSphere® Liberty) needs to be updated, new application images must be built upon a new base image.
+The new images should then be promoted throughout the software development lifecycle using the methods outlined in [Updating SPM Deployment](/operations/updating_curam).

@@ -62,6 +62,8 @@ spec:
 {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | indent 10 }}
           {{- if .Values.global.apps.common.persistence.enabled }}
           env:
+            - name: TZ
+              value: {{ .Values.global.timezone }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
           volumeMounts:

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-* The MQ Server chart is a component of IBM Curam Social Program Management (SPM) Platform responsible for providing an MQ instance for JMS processing. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
+* The MQ Server chart is a component of IBM Cúram Social Program Management (SPM) Platform responsible for providing an MQ instance for JMS processing. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
 
 ## Chart Details
 
@@ -18,4 +18,4 @@
 
 ## Configuration
 
-See [README.md](../spm/README.md) in the `spm` umbrella chart.
+See [Configuration reference](https://ibm.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.

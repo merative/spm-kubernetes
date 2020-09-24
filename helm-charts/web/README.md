@@ -2,7 +2,7 @@
 
 ## Introduction
 
-* The `web` chart is a component of IBM Curam Social Program Management (SPM) Platform responsible for providing the static content for the SPM application on Apache HTTP Server.
+* The `web` chart is a component of IBM Cúram Social Program Management (SPM) Platform responsible for providing the static content for the SPM application on Apache HTTP Server.
 * This component should not be deployed outside of the [`spm`](../spm) chart.
 
 ## Chart Details
@@ -34,4 +34,4 @@ Not required as web server runs with the default restricted policy
 
 ## Configuration
 
-See [README.md](../spm/README.md) in the `spm` umbrella chart.
+See [Configuration reference](https://ibm.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.

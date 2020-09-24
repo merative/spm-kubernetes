@@ -17,10 +17,11 @@
 # If set, must end with a forward slash, e.g. "registry.connect.redhat.com/"
 ARG BASE_REGISTRY
 
-FROM ${BASE_REGISTRY}ibm/ibmjava8:latest
+FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:latest
 
 USER root
-RUN microdnf install -y nc \
+RUN rpm -e --nodeps tzdata \
+    && microdnf install -y nc tzdata \
     && microdnf clean all \
     && rm -rf /var/cache/yum
 

@@ -14,7 +14,7 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=20.0.0.6-full-java8-ibmjava-ubi
+ARG WLP_VERSION=20.0.0.9-full-java8-ibmjava-ubi
 ARG ANT_VERSION=1.10.6
 
 # Intermediate image: extract Ant
@@ -42,6 +42,11 @@ ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     JAVAMAIL_HOME=/opt/javamail \
     WLP_HOME=/opt/ibm/wlp
 ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
+USER root
+RUN rpm -e --nodeps tzdata \
+    && yum install -y tzdata \
+    && yum clean all \
+    && rm -rf /var/cache/yum
 USER 1001
 
 COPY --from=PrepStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}

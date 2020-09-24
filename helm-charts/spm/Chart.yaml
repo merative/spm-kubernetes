@@ -19,7 +19,7 @@ kubeVersion: ">=1.16"
 appVersion: "7.0.10.0"
 name: spm
 description: Umbrella Helm Chart for Full Curam Deployment of SPM within a Kubernetes Cluster
-version: 2.0.1
+version: 2.0.2
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
@@ -43,22 +43,22 @@ icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~3.1.0"
+    version: "~3.1.1"
     repository: "@local-development"
   - name: batch
-    version: "~2.0.0"
+    version: "~2.0.2"
     repository: "@local-development"
   - name: uawebapp
-    version: "~3.0.0"
+    version: "~3.0.2"
     repository: "@local-development"
   - name: web
-    version: "~3.0.0"
+    version: "~3.0.2"
     repository: "@local-development"
   - name: mqserver
     version: "~1.6.0"
     repository: "@local-development"
   - name: xmlserver
-    version: "~2.0.0"
+    version: "~2.0.2"
     repository: "@local-development"
   - name: openldap
     version: "~1.2.0"

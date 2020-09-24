@@ -31,7 +31,7 @@ RUN unzip -qo /tmp/apache-ant.zip -d /opt/ \
     && chmod -c +x /opt/ibm/Curam/xmlserver/*.sh
 
 # Final image
-FROM ${BASE_REGISTRY}ibm/ibmjava8:latest
+FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:latest
 
 EXPOSE 1800
 WORKDIR /opt/ibm/Curam/xmlserver
@@ -44,6 +44,10 @@ ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
 ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
 
 USER root
+RUN rpm -e --nodeps tzdata \
+    && microdnf install -y tzdata \
+    && microdnf clean all \
+    && rm -rf /var/cache/yum
 RUN mkdir -p /opt/ibm/Curam/xmlserver \
     && chmod -c g+w /etc/passwd
 

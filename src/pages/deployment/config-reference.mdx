@@ -1,0 +1,183 @@
+---
+title: Configuration Reference
+description: Helm chart configuration reference for SPM
+---
+
+This page contains all available configuration options built into the reference Helm charts for SPM.
+The published charts are intended to be a starting point for you to tailor the charts to your own environment and requirements.
+
+The tables below list the configurable parameters of the `spm` chart and their default values.
+
+* [Global properties](#global-properties)
+* [Liberty runtime](#liberty-runtime)
+* [Batch jobs](#batch-jobs)
+* [IBM MQ](#ibm-mq)
+* [Static Content Server](#static-content-server)
+* [XML Server](#xml-server)
+* [Universal Access (React App)](#universal-access-(react-app)-optional) - optional
+
+### Global properties
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `global.license` | Set to `accept` to accept the terms of the IBM license | `''` |
+| `global.images.imageLibrary` | Namespace in the image registry containing your SPM images | `''` |
+| `global.images.imageTag` | Image tag of all SPM images to be used for deployment | `latest` |
+| `global.images.registry` | Private image registry hosting your SPM images | `minikube.local:5000` |
+| `global.imagePullSecret.secretName` | Name of a pre-created secret containing the credentials for connecting to your private image registry - if left blank, will attempt unauthenticated connection | `''` |
+| `global.database.type` | Database type (Valid values: `DB2` or `ORA`) | `DB2` |
+| `global.database.credsSecretName` | Name of a pre-created secret containing the database credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
+| `global.database.dbName` | Database name | `DATABASE` |
+| `global.database.serviceName` | The Oracle database service name | `''` |
+| `global.database.hostname` | Database server hostname (required) | `''` |
+| `global.database.port` | Database server TCP/IP port | `50000` |
+| `global.database.ssl.enabled` | Use Secure (TLS) connection to the database | `false` |
+| `global.database.ssl.secretKey` | The key in the secret containing the TLS certificate for the secure connection to the database | `db2admin.arm` |
+| `global.database.ssl.secretName` | Name of a pre-created secret containing the TLS certificate for the secure connection to the database | `''` |
+| `global.apps.common.persistence.enabled` | Use persistent storage for logs | `false` |
+| `global.apps.common.persistence.accessKey` | HMAC Access Key of the Cloud Object Storage credentials with a `Writer` role | `''` |
+| `global.apps.common.persistence.instanceId` | Cloud Object Storage instance ID | `''` |
+| `global.apps.common.persistence.secretKey` | HMAC Secret Key of the Cloud Object Storage credentials with a `Writer` role | `''` |
+| `global.apps.common.persistence.bucketEndpoint` | HTTP(s) endpoint of the Cloud Object Storage service | `''` |
+| `global.apps.common.persistence.bucketName` | Name of the Cloud Object Storage bucket to use | `''` |
+| `global.apps.common.persistence.bucketRegion` | Region (`ibm.io/region`) of the Cloud Object Storage bucket, if required by your storage provisioner | `''` |
+| `global.apps.common.persistence.storageClassName` | Name of the Storage Class to use | `''` |
+| `global.apps.common.persistence.mountPoint` | Path, where the persistent volume should be mounted in pods | `''` |
+| `global.apps.common.persistence.subDir` | Subdirectory inside the mount point, where logs should be stored. If blank, defaults to the Helm release name | `''` |
+| `global.apps.config.<applicationID>.enabled` | Enable/disable SPM applications in the Helm release, where `applicationID` is the lower-cased name of the EAR file deployed | `true` for `curam`, `false` for all others |
+| `global.ingress.enabled` | Toggle creation of Ingress/Route resources | `false` |
+| `global.ingress.generateCert` | Create a self-signed certificate for use in Ingress definitions | `false` |
+| `global.ingress.hostname` | Hostname for use in Ingress/Route definition | `''` |
+| `global.ingress.tlsSecretName` | Name of a pre-created secret containing TLS key and certificate files | `''` |
+| `global.timezone` | Timezone* to be set in all deployed pods - this should be aligned with the underlying infrastructure | `UTC` |
+
+<InlineNotification>
+
+**Note:** Some elements of the deployment stack may have unexpected behaviour in half-hour timezones - we recommend using the nearest full-hour timezone for the `global.timezone` property, where possible.
+
+</InlineNotification>
+
+### Liberty runtime
+
+In the properties below, `<applicationID>` is a placeholder for the name of SPM applications in lower case (e.g. `curam`, `citizenportal`, `rest`, etc).
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `global.apps.config.<applicationID>.jvm` | Array of JVM options to be passed to Liberty | Varies by application (see `values.yaml`) |
+| ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
+| `global.apps.config.<applicationID>.replicaCount` | Number of replicas of the application to be deployed | `1` |
+| `global.apps.config.<applicationID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
+| ![SPM version](https://img.shields.io/badge/SPM-7.0.10.0-blue) `global.openldap.enabled` | Deploy OpenLDAP alongside SPM as the identity provider | `false` |
+| `apps.initialDelaySeconds` | Time in seconds before commencing application readiness probes | `150` |
+| `apps.loginConfig.identityOnly` | Use LDAP authentication in `Identity-Only` mode | `false` |
+| `apps.loginConfig.trace` | Debug authentication process by printing tracing information on invocation of the login module | `false` |
+| `apps.replicaCount` | Default number of replicas, if `global.apps.config.<applicationID>.replicaCount` is not specified | `1` |
+| `apps.sessionConfig.maxInMemorySessionCount` | Maximum number of sessions to maintain in memory for each web module | `1000` |
+| `apps.sessionConfig.sessionTimeout` | Amount of time a session can go unused before it is no longer valid | `30m` |
+| `apps.sessionConfig.transactionTimeout` | Maximum time allowed for transactions started on this server to complete. Any such transactions that do not complete before this timeout occurs are rolled back. | `3m` |
+| `apps.systemUser.credsSecretName` | Name of a pre-created secret containing credentials of the system user (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `SYSTEM` |
+| `apps.wlpAdmin.secretName` | Name of a pre-created secret containing WebSphere Liberty administration credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
+| `apps.wlpAdmin.enableAdminCenter` | Toggle whether the WebSphere Liberty Admin Center should be enabled | `false` |
+
+### Batch jobs
+
+In the properties below, `<progID>` is a placeholder for the name of the batch program - this must be a valid YAML term, but does not need to match the Batch process class.
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `batch.javaOptions` | Default Java Heap options for all programs | `-Xms1g -Xmx1g` |
+| `batch.programs.<progID>.className` | Java class for the batch process (`-Dbatch.program=`) | `''` |
+| `batch.programs.<progID>.javaOptions` | Java options to be injected via `ANT_OPTS` | `-Xms1g -Xmx1g` |
+| `batch.programs.<progID>.parameters` | Parameters, if any, to be passed to the batch process (`-Dbatch.parameters=`) | `''` |
+| `batch.programs.<progID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | `''` |
+| `batch.programs.<progID>.username` | SPM username for the execution of the batch progress (`-Dbatch.username=`) | `''` |
+| `batch.programs.<progID>.schedule` | Different schedules can be specified for different batch jobs. The default schedule applies to any jobs queued in the system. | `*/30 * * * *` |
+
+The default batch configuration runs any queued jobs every 30 minutes (equivalent of running `build.sh runbatch` without any parameters).
+
+Additional batch jobs may be added with additional keys under `batch.programs`:
+
+```yaml
+batch:
+  programs:
+    queued:
+      schedule: "*/30 * * * *"
+    reassessment:
+      className: curam.healthcare.sl.intf.BulkICReassessment.process
+      javaOptions: "-Xms2g -Xmx2g -Xgcpolicy:gencon"
+      parameters: "evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"
+      username: system
+      schedule: "0 2 * * 6"
+```
+
+The above example adds the [bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
+batch job to be run at 2am every Sunday night.
+
+<InlineNotification>
+
+**Note:** Kubernetes by default has limits set on resources such as memory and CPU usage. SPM containers require more resources than the default values that we have set.
+We have set the default resource values to the limits that we have found to work best during development.
+
+_The resource values are subject to change during further iterations._
+
+The resource values can be changed. However, for troubleshooting, we will request that our default values are used at a minimum.
+
+</InlineNotification>
+
+### IBM MQ
+
+<InlineNotification>
+
+**Note:** There are two deployment strategies for IBM MQ, with MQ installed on a virtual machine or within a container.
+We support MQ on a VM for both Openshift and IBM Kubernetes Service.
+We only support containerised MQ on Openshift.
+
+</InlineNotification>
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.1.5.0-r2` |
+| ![VM based only](https://img.shields.io/badge/-IKS_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode | `false` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.queueManager.name` | Name of the queue manager to be created in the MQ container | `QM1` |
+| `global.mq.queueManager.secret.name` | Name of a pre-created secret containing credentials of the MQ client and admin users (see [Handling Secrets](/deployment/secrets) topic) | `''` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.queueManager.secret.adminPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ admin user | `adminPasswordKey` |
+| `global.mq.queueManager.secret.appUsernameKey` | The key in the Kubernetes Secret containing the username for the MQ client user | `appUsername` |
+| `global.mq.queueManager.secret.appPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ client user | `appPasswordKey` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.cephEnabled` | Deploy MQ as a StatefulSet using Ceph storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.storageClassName` | Storage class used for dynamic provisioning on the Ceph backend | `''` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsEnabled` | Deploy MQ as a StatefulSet using NFS storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsIP` | IP address or hostname of the NFS server | `''` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsFolder` | Path on the NFS server, where MQ data should be stored | `''` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.security.context.fsGroup` | Primary user group for any filesystem mounts, if required by the storage provisioner | `''` |
+| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.security.context.supplementalGroups` | Supplemental user groups for any filesystem mounts, if required by the storage provisioner | `[]` |
+
+### Static Content Server
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `web.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match [what had been defined](/deploy-spm/spm-build#set-up-static-content) when the application was built) | `/CuramStatic` |
+| `web.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/CuramStatic/` |
+| `web.replicaCount` | Number of replicas to be deployed | `1` |
+
+### XML Server
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `xmlserver.replicaCount` | Number of replicas to be deployed | `1` |
+
+<InlineNotification>
+
+In a Kubernetes environment, there is only one XML Server from SPM's point of view - the load balancing functionality is handled by Kubernetes services between all the replicas.
+
+</InlineNotification>
+
+### Universal Access (React App) - optional
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `uawebapp.imageConfig.library` | Namespace in the image registry containing your Univeral Access image | `''` |
+| `uawebapp.imageConfig.name` | Name of your Univeral Access image to be used | `''` |
+| `uawebapp.imageConfig.tag` | Image tag of your Univeral Access image to be used | `latest` |
+| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.universalaccess.doc/CitizenEngagement/t_CEINST_WebApp_depl.html) variable when the application was built) | `/universal` |
+| `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
+| `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |

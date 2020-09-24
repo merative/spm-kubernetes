@@ -11,6 +11,11 @@
 
 # Version History
 
+## v2.0.2
+
+* Add `global.timezone` value for managing timezone in pods
+* Add support for Cúram application timer-based JMX statistics
+
 ## v2.0.1
 
 * Add override option for enabling WebSphere Liberty Admin Center

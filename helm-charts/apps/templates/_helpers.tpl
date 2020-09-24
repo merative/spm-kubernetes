@@ -79,6 +79,13 @@ JMX Stats Persistence enablement options
 {{- end -}}
 
 {{/*
+Prometheus JMX Exporter 
+*/}}
+{{- define "jmxExporter.config" -}}
+{{- printf "-javaagent:/config/configDropins/overrides/jmx_prometheus_javaagent.jar=%s:%d:/config/configDropins/overrides/config.yaml"  .Values.global.apps.common.jmxExporter.agent.host ( .Values.global.apps.common.jmxExporter.agent.port | default 8080 | int ) -}}
+{{- end -}}
+
+{{/*
 InitContainer resources
 */}}
 {{- define "initContainer.resources" }}
@@ -110,9 +117,9 @@ image: {{ include "apps.imageFullName" (dict "ImageConfig" $.Values.global.image
 {{- end }}
 
 {{/*
-JMS Connection Factory properties
+JMS Queue Connection Factory properties
 */}}
-{{- define "jms.connectionFactory" }}
+{{- define "jms.queueConnectionFactory" }}
 <properties.wmqJms
   {{- if .Values.global.mq.useConnectionNameList }}
   connectionNameList="${connectionNameList}"
@@ -128,16 +135,35 @@ JMS Connection Factory properties
 {{- end }}
 
 {{/*
-JMS Activation Spec properties
+JMS Topic Connection Factory properties
 */}}
-{{- define "jms.activationSpec" }}
+{{- define "jms.topicConnectionFactory" }}
+<properties.wmqJms
+  {{- if .Values.global.mq.useConnectionNameList }}
+  connectionNameList="{{ .Values.global.apps.config.curam.mqConnectionNameList }}"
+  queueManager="QM_{{ .Values.global.mq.objectSuffix }}_curam"
+  channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
+  {{- else }}
+  hostName="{{ .Release.Name }}-mqserver-curam"
+  port="${listenerPort}"
+  queueManager="${mqName}"
+  channel="${channel}"
+  {{- end }}
+  userName="${userName}"
+  sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+/>
+{{- end }}
+
+{{/*
+JMS Queue Activation Spec properties
+*/}}
+{{- define "jms.queueActivationSpec" }}
 {{- $params := . -}}
 {{- $root := first $params -}}
-{{- $type := (include "sch.utils.getItem" (list $params 1 "")) -}}
-{{- $refName := (include "sch.utils.getItem" (list $params 2 "")) -}}
+{{- $refName := (include "sch.utils.getItem" (list $params 1 "")) -}}
 <properties.wmqJms
   destinationRef="{{ $refName }}"
-  destinationType="javax.jms.{{ $type }}"
+  destinationType="javax.jms.Queue"
   {{- if $root.Values.global.mq.useConnectionNameList }}
   connectionNameList="${connectionNameList}"
   {{- else }}
@@ -146,6 +172,29 @@ JMS Activation Spec properties
   {{- end }}
   queueManager="${mqName}"
   channel="${channel}"
+  userName="${userName}"
+  sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
+  subscriptionDurability="Durable"
+/>
+{{- end }}
+
+{{/*
+JMS Topic Activation Spec properties
+*/}}
+{{- define "jms.topicActivationSpec" }}
+<properties.wmqJms
+  destinationRef="CuramCacheInvalidationTopic"
+  destinationType="javax.jms.Topic"
+  {{- if .Values.global.mq.useConnectionNameList }}
+  connectionNameList="{{ .Values.global.apps.config.curam.mqConnectionNameList }}"
+  queueManager="QM_{{ .Values.global.mq.objectSuffix }}_curam"
+  channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
+  {{- else }}
+  hostName="{{ .Release.Name }}-mqserver-curam"
+  port="${listenerPort}"
+  queueManager="${mqName}"
+  channel="${channel}"
+  {{- end }}
   userName="${userName}"
   sslCipherSuite="SSL_RSA_WITH_AES_128_CBC_SHA256"
   subscriptionDurability="Durable"

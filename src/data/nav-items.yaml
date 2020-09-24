@@ -1,97 +1,102 @@
 - title: Introduction
   pages:
-    - title: Architecture
-      path: /00-intro/arch-overview
-    - title: Deployment architecture
-      path: /00-intro/deploy-arch
-    - title: SPM architecture on IKS
-      path: /00-intro/referenceArchSPM
-    - title: Static content deployment architecture
-      path: /00-intro/IHSStaticContent
+    - title: Introduction
+      path: /intro/Introduction
+- title: Architecture
+  pages:
+    - title: Architecture Overview
+      path: /architecture/arch-overview/architecture-overview
+    - title: Cloud Deployment architecture
+      path: /architecture/cloud-arch/dev-workstation-architecture
+  hasDivider: true
 - title: Prerequisites
   pages:
     - title: Install prerequisite software
-      path: /01-prereq/prereq
+      path: /prereq/prereq
     - title: Base third-party software
-      path: /01-prereq/3rdparty-sw
-    - title: Docker, Kubernetes, and Helm
-      path: /01-prereq/Docker-Kubernetes-Helm
-    - title: Minikube
-      path: /01-prereq/minikube
-    - title: IBM Cloud Kubernetes Service
-      path: /01-prereq/iks
-    - title: CodeReady Containers
-      path: /01-prereq/crc_installation
+      path: /prereq/3rdparty-sw
+    - title: Docker and Helm
+      path: /prereq/docker-helm
+    - title: Kubernetes
+      path: /prereq/kubernetes/kubernetes-overview
+    - title: OpenShift
+      path: /prereq/openshift/codeready-containers
     - title: ChartMuseum
-      path: /01-prereq/chartmuseum
+      path: /prereq/chartmuseum
     - title: GitHub repo
-      path: /01-prereq/git
+      path: /prereq/git
 - title: IBM Cúram Social Program Management application
   pages:
     - title: Installing SPM software
-      path: /02-deploy-spm/SPM-sw
+      path: /deploy-spm/SPM-sw
     - title: Creating the SPM database
-      path: /02-deploy-spm/create_spm_db
+      path: /deploy-spm/create_spm_db
     - title: Building the SPM application
-      path: /02-deploy-spm/spm-build
+      path: /deploy-spm/spm-build
 - title: Building Docker images
   pages:
     - title: Setting up the Docker context
-      path: /03-build-images/setup_docker_context
+      path: /build-images/setup_docker_context
     - title: Building base images
-      path: /03-build-images/base_images
+      path: /build-images/base_images
     - title: Building the Docker images
-      path: /03-build-images/build_images
+      path: /build-images/build_images
 - title: Deploying with Helm charts
   pages:
     - title: Preparing Helm charts
-      path: /04-deployment/hc_preparation
+      path: /deployment/hc_preparation
+    - title: Configuration Reference
+      path: /deployment/config-reference
     - title: Handling Secrets
-      path: /04-deployment/secrets
+      path: /deployment/secrets
     - title: Deploying Helm charts
-      path: /04-deployment/hc_deployment
+      path: /deployment/hc_deployment
 - title: Operations
   pages:
     - title: Updating tools
-      path: /06-operations/updating_tools
+      path: /operations/updating_tools
     - title: Updating SPM deployment
-      path: /06-operations/updating_curam
+      path: /operations/updating_curam
+  hasDivider: true
 - title: Supporting infrastructure
   pages:
-    - title: Configuring MQ on a VM
-      path: /07-supporting-infrastructure/MQSetupConfig
+    - title: MQ Overview and Configuration
+      path: /supporting-infrastructure/mq/mq-overview
     - title: Cloud Object Storage
-      path: /07-supporting-infrastructure/COS
+      path: /supporting-infrastructure/COS
     - title: LDAP
-      path: /07-supporting-infrastructure/LDAP
+      path: /supporting-infrastructure/LDAP
     - title: LogDNA
-      path: /07-supporting-infrastructure/LogDNA
+      path: /supporting-infrastructure/LogDNA
     - title: SPM batch processing on IKS
-      path: /07-supporting-infrastructure/batch
+      path: /supporting-infrastructure/batch
     - title: Enabling ISAM
-      path: /07-supporting-infrastructure/ISAM
+      path: /supporting-infrastructure/ISAM
 - title: Monitoring and troubleshooting
   pages:
     - title: Monitoring the application
-      path: /08-runtime/interrogate_runtime
+      path: /runtime/interrogate_runtime
+    - title: Monitoring JMX statistics 
+      path: /runtime/jmx-statistics-performance-monitoring
     - title: Batch processing
-      path: /08-runtime/batch
+      path: /runtime/batch
     - title: XML server
-      path: /08-runtime/xmlserver
-    - title: Troubleshooting problems
-      path: /08-runtime/troubleshoot
+      path: /runtime/xmlserver
     - title: Handling failed JMS messages on the MQ dead message queue
-      path: /08-runtime/failed_jms_messages
+      path: /runtime/failed_jms_messages
     - title: Remote debugging
-      path: /08-runtime/Remote-Debugging
+      path: /runtime/Remote-Debugging
+    - title: Troubleshooting problems
+      path: /runtime/troubleshoot
     - title: MustGather
-      path: /08-runtime/must_gather
+      path: /runtime/must_gather
 - title: Known issues
   pages:
     - path: /known_issues
-- title: Frequently Asked Questions
+  hasDivider: true
+- title: FAQ
   pages:
-    - path: /FAQ
+    - path: /faq
 - title: Feedback
   pages:
     - title: Contact Us

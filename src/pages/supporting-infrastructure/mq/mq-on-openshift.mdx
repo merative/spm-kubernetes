@@ -1,0 +1,29 @@
+---
+title: MQ on OpenShift
+description: MQ on OpenShift
+tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift']
+---
+
+## Stateful Sets
+
+If a highly available MQ cluster is desired, a **Stateful Set** can be used. The stateful set used for SPM contains two identical
+pods, one active pod and one standby pod. If the active pod goes down, the standby pod is moved into the active role and a new pod is rescheduled in standby mode.
+This occurs seamlessly, with persistent storage allowing for minimal downtime. The Stateful Set used in SPM requires several values that must be configured prior to
+deployment. These values are those located under the MQ `multiInstance` section within the relevant values file. There, NFS or Ceph can be chosen as the desired
+multi-instance delivery method.
+
+* **NFS** - In order to deploy with NFS, an NFS server and NFS folder must be available and configured; the supplementalGroups may need to be provided depending on the NFS server security setup.
+* **Ceph** - In order to deploy with Ceph, the desired Storage Class must be provided.
+
+## Persistent Volumes & Persistent Volume Claims
+
+A **PersistentVolume** (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+It is a resource in the cluster just like a node is a cluster resource. A **PersistentVolumeClaim** (PVC) is a request for storage by a user. It is similar to
+a Pod. Pods consume node resources and PVCs consume PV resources. Pods can request specific levels of resources (CPU and Memory). Claims can request specific
+size and access modes.
+
+When using NFS as the desired multi-instance method, the PV and PVCs must be configured by the user. Within the PVs, the NFS IP and NFS folder must be provided.
+In the PV, a `claimRef` can be defined in order to ensure that the correct PVC matches with the correct PV. The templates provided also contain labels, which can
+also be used to ensure correct coupling.
+
+If using Ceph, the PVs are dynamically configured. Therefore, no further configuration is required.

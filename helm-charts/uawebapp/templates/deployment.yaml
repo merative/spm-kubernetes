@@ -64,6 +64,9 @@ spec:
         - name: {{ .Chart.Name | lower }}
           image: {{ include "uawebapp.imageFullName" . }}
           imagePullPolicy: {{ .Values.global.images.pullPolicy }}
+          env:
+            - name: TZ
+              value: {{ .Values.global.timezone }}
           ports:
             - name: client
               containerPort: 8443

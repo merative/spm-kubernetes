@@ -1,6 +1,6 @@
 # What's new
 
-* Chart realignment.
+* Updated the topic structure to correctly invalidate the SPM properties cache.
 
 ### Fixes
 
@@ -9,6 +9,11 @@
 * For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v1.6.1
+
+* Updated `CuramCacheInvalidationTopic` to only be defined for the `Curam` application.
+* Specify `TZ` environment variable for managing timezone in pods
 
 ## v1.6.0
 

@@ -18,7 +18,7 @@ kubeVersion: ">=1.16"
 appVersion: "7.0.10.0"
 name: xmlserver
 description: Helm Chart for XMLServer Container Deployment of SPM within a Kubernetes Cluster
-version: 2.0.1
+version: 2.0.2
 maintainers:
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes

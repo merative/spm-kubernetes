@@ -24,6 +24,7 @@ global:
   imagePullSecret:
     secretName: ''
     username: ''
+  timezone: 'UTC'
   sch:
     enabled: true
   apps:
@@ -42,9 +43,6 @@ global:
         mountPoint: ''
         subDir: ''
 
-# Require Intel-based workers
-arch: "amd64"
-
 # XML server port number
 serverPort: 1800
 
@@ -62,3 +60,8 @@ resources:
 
 # Name of an existing ServiceAccount for running the XML server
 serviceAccountName: ""
+
+# Settings for node affinty, will give an affinity preference of
+# weight 100 for nodes labelled as worker-type:application
+affinityKey: worker-type
+affinityValue: application

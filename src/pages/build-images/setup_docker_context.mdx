@@ -1,0 +1,169 @@
+---
+title: Setting up the Docker® context
+description: Setting up the Docker context
+---
+
+To build the required Docker images, the context for building them must be established as described in the [Docker build](https://docs.docker.com/engine/reference/commandline/build/) command description.
+
+The following components provide this context:
+
+* The artifacts that you downloaded by following the steps that are described in [GitHub repo](/prereq/git).
+* The `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/spm-build).
+
+## Building IBM® Social Program Management (SPM) resources
+
+Some of the Docker images that you build rely on the `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/spm-build).
+
+If you built `release.zip` and `StaticContent.zip` on a different computer to the one where container environment will be deployed, you must transfer the files to the computer you're currently working on.
+For simplicity, it is assumed that these files are copied to `/tmp/`.
+
+## Preparing the SPM environment
+
+Prepare the SPM Docker environment by using the `release.zip` file.
+
+For the following steps, use the `$SPM_HOME` folder that you created in [GitHub repo](/prereq/git).
+
+1. To create a `release-stage` folder to contain the contents of `release.zip`, run the following command:
+
+  ```shell
+  mkdir $SPM_HOME/dockerfiles/Liberty/content/release-stage
+  ```
+
+1. To extract `release.zip` into the `release-stage` folder, run the following commands:
+
+  ```shell
+  unzip -qd $SPM_HOME/dockerfiles/Liberty/content/release-stage /tmp/release.zip
+  chmod +x $SPM_HOME/dockerfiles/Liberty/content/release-stage/*.sh
+  ```
+
+  Where `/tmp/release.zip` is the absolute path where the `release.zip` is saved.
+
+## Modifying SPM properties
+
+`Bootstrap.properties` and `AppServer.properties` are required to configure WebSphere® Liberty.
+However the relevant properties in `Bootstrap.properties` that you modify in the on-premise implementation of SPM are no longer relevant because Kubernetes configmaps provide the necessary values for the database configuration.
+
+The only properties that you must modify in `AppServer.properties` are `security.username` and `security.password`.
+These properties contain the WebSphere Liberty administrator credentials. If the password is changed, the value must be the encrypted  by running the following commands:
+
+```shell
+cd $SERVER_DIR
+./build.sh encrypt -Dpassword=<The password to be encrypted>
+```
+
+Copy the property files by using the following command:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/content
+cp -vf *.properties release-stage/project/properties/
+```
+
+## WebSphere Liberty server configuration
+
+All configuration of WebSphere Liberty will be handled by the Helm Charts. See the [Preparing Helm Charts](/deployment/hc_preparation) topic for more information.
+
+## Copying static content artifacts
+
+Copy the static content `.zip` file for Docker image creation. Run the following command:
+
+```shell
+cp -vf /tmp/StaticContent.zip $SPM_HOME/dockerfiles/HTTPServer/
+```
+
+## Installing external artifacts
+
+In addition to `release.zip` and `StaticContent.zip`, download and install the following artifacts.
+
+### Add the Ant zip file to the Docker environment
+
+Copy `apache-ant-1.10.6-bin.zip` to `$SPM_HOME/dockerfiles/Liberty/content`. If Ant is not already available on the computer, run the following commands:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/content
+wget https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.6-bin.zip
+```
+
+### CryptoConfig.jar
+
+`CryptoConfig.jar` is required for SPM cryptography to function correctly. This jar is automatically created in the following locations when you run the
+ `build.sh configtest` target:
+
+* `$SERVER_DIR/build/CryptoConfig.jar`
+* `$JAVA_HOME/jre/lib/ext/CryptoConfig.jar`
+
+However, the `release.zip` does not include this jar file, so the jar file must be copied separately from the environment where the `release.zip` was built.
+
+Place the `CryptoConfig.jar` file in `$SPM_HOME/dockerfiles/Liberty/content/release-stage/build`.
+
+<InlineNotification>
+
+Cryptography keystores for SPM vary based on the JVM vendor, so the vendor in the build environment must correspond to that used in the Docker images.
+The `websphere-liberty` images from [Docker Hub](https://hub.docker.com/_/websphere-liberty) use IBM Java SDK 8.
+
+</InlineNotification>
+
+For convenience, you can use the following command to create a `CryptoConfig.jar` file in a Docker container:
+
+```shell
+docker run --rm \
+    -v $ANT_HOME:/tmp/ant \
+    -v $SPM_HOME/dockerfiles/Liberty/content/release-stage:/work/dir \
+    -v $SPM_HOME/dockerfiles/Liberty/content/release-stage/SetEnvironment.sh:/work/SetEnvironment.sh \
+    -w /work/dir \
+    -u root \
+    -e ANT_HOME=/tmp/ant \
+    -e WLP_HOME=/opt/ibm/wlp \
+    websphere-liberty:20.0.0.9-full-java8-ibmjava \
+    bash -c 'export PATH=$ANT_HOME/bin:$PATH:.; build.sh internal.update.crypto.jar'
+```
+
+<InlineNotification>
+
+Note the use of `$ANT_HOME` above. The value must map to a working copy of Ant on your workstation, which can be extracted from `$SPM_HOME/dockerfiles/Liberty/content/apache-ant-1.10.6-bin.zip`:
+
+</InlineNotification>
+
+```shell
+# Ignore this step if ANT_HOME is already set.
+unzip -qd /tmp/ $SPM_HOME/dockerfiles/Liberty/content/apache-ant-1.10.6-bin.zip
+export ANT_HOME=/tmp/apache-ant-1.10.6
+```
+
+### Installing javax.mail.jar and activation.jar files
+
+Java Mail is an external dependency for SPM and is represented by the JAR files `activation.jar` and `javax.mail.jar`.
+Place these files in the folder `$SPM_HOME/dockerfiles/Liberty/content/dependencies` (filenames must be exact, that is, have no version numbers).
+
+If you do not have the jar files available, you can use the `getJavaMail.xml` Ant file that is located in the `$SPM_HOME/dockerfiles/Liberty/content` folder to download the files:
+
+```shell
+cd $SPM_HOME/dockerfiles/Liberty/content
+$ANT_HOME/bin/ant -f getJavaMail.xml
+```
+
+Confirm the availability of the JAR files by running the following command:
+
+`ls $SPM_HOME/dockerfiles/Liberty/content/dependencies`
+
+### Downloading IBM MQ Resource Adapter
+
+<InlineNotification>
+
+**Note:** As of Release 20.7.0, the IBM MQ Resource Adapter version used to verify this runbook is 9.1.5.0.
+
+</InlineNotification>
+
+IBM MQ is required for WebSphere Liberty JMS support, therefore you must install the MQ Resource Adapter.
+
+1. Download the IBM MQ resource adapter from Fix Central.
+    * Click this link: [IBM MQ Resource Adapter](https://ibm.biz/mq91cdRA)
+    * Find the resource adapter for your version of IBM MQ in the displayed list of available fixes. For example:
+
+      ```
+      release level: 9.1.5.0-IBM-MQ-Java-InstallRA
+      Continuous Delivery Release: 9.1.5 IBM MQ Resource Adapter for use with Application Servers
+      ```
+
+    * Then click the resource adapter file name and follow the download process.
+
+2. Copy the downloaded file ( `V.R.M.F-IBM-MQ-Java-InstallRA.jar` ) to `$SPM_HOME/dockerfiles/Liberty/content/`.
