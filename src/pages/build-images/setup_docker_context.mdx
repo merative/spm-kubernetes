@@ -8,11 +8,11 @@ To build the required Docker images, the context for building them must be estab
 The following components provide this context:
 
 * The artifacts that you downloaded by following the steps that are described in [GitHub repo](/prereq/git).
-* The `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/spm-build).
+* The `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/build-spm).
 
 ## Building IBM® Social Program Management (SPM) resources
 
-Some of the Docker images that you build rely on the `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/spm-build).
+Some of the Docker images that you build rely on the `release.zip` and `StaticContent.zip` files that you built in [Building the SPM application](/deploy-spm/build-spm).
 
 If you built `release.zip` and `StaticContent.zip` on a different computer to the one where container environment will be deployed, you must transfer the files to the computer you're currently working on.
 For simplicity, it is assumed that these files are copied to `/tmp/`.
@@ -119,7 +119,7 @@ docker run --rm \
 
 <InlineNotification>
 
-Note the use of `$ANT_HOME` above. The value must map to a working copy of Ant on your workstation, which can be extracted from `$SPM_HOME/dockerfiles/Liberty/content/apache-ant-1.10.6-bin.zip`:
+Note the use of `$ANT_HOME` in the `docker run` command above. The value must map to a working copy of Ant on your workstation, which can be extracted from `$SPM_HOME/dockerfiles/Liberty/content/apache-ant-1.10.6-bin.zip`:
 
 </InlineNotification>
 

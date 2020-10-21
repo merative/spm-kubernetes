@@ -1,5 +1,6 @@
 {{- range $name, $app := .Values.global.apps.config }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
+{{- if not ($.Values.global.mq.multiInstance.operatorsEnabled) }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -34,5 +35,6 @@ spec:
   selector:
     app.kubernetes.io/name: {{ include "mqserver.fullname" $ }}-{{ $name }}
     app.kubernetes.io/instance: {{ $.Release.Name }}
+{{- end }}
 {{- end }}
 {{- end }}

@@ -4,21 +4,28 @@ description: Known issues
 ---
 
 Some issues might require product changes to resolve them.
+<AnchorLinks small>
+  <AnchorLink>Minikube dashboard command on Red Hat</AnchorLink>
+  <AnchorLink>Using Helm on Red Hat</AnchorLink>
+  <AnchorLink>Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages</AnchorLink>
+  <AnchorLink>The logs are filled by repetitions of the ICWWKS4001I message</AnchorLink>
+  <AnchorLink>Limitations when using the Minikube none driver</AnchorLink>
+</AnchorLinks>
 
-### **`minikube dashboard` command on Red Hat**
+## Minikube dashboard command on Red Hat
 
-When you follow the steps "Kubernetes dashboard" in [Monitoring the application](/runtime/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
+When you follow the steps`Kubernetes dashboard` in [Monitoring the application](/runtime/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
 For more information, see [Minikube issue 5815](https://github.com/kubernetes/minikube/issues/5815).
 
-### **Using Helm on Red Hat**
+## Using Helm on Red Hat
 
 When you use Helm on Red Hat, you might have to use the Linux® `yum` command to install the `socat` utility. Otherwise, Tiller does not work properly.
 
-### **"Context Root Not Found" error on the SPM home page, BIRT, or caseload summary pages**
+## Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages
 
-The "Context Root Not Found" error occurs because the deployment does not install the BIRT application.
+The `Context Root Not Found` error occurs because the deployment does not install the BIRT application.
 
-### **The logs are filled by repetitions of the ICWWKS4001I message**
+## The logs are filled by repetitions of the ICWWKS4001I message
 
 For example:
 
@@ -33,7 +40,7 @@ The root cause is users not clearing the browser cache after the application is 
 
 However, after a redeployment or an upgrade, the application does not recognize the cookies that are presented to it by the computer, which causes the error messages in the logs.
 
-### **Limitations when using the Minikube `none` driver**
+## Limitations when using the Minikube none driver
 
 There are a number of limitations associated with the Minikube none driver that are documented in [Minikube documentation](https://minikube.sigs.k8s.io/docs/reference/drivers/none/).
 You must evaluate the impacts of these limitations for your implementation.

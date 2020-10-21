@@ -11,6 +11,10 @@
 
 # Version History
 
+## v2.1.0
+
+* Remove hard requirement on OpenLDAP for elasticity.
+
 ## v2.0.2
 
 * Add `global.timezone` value for managing timezone in pods

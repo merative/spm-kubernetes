@@ -2,18 +2,19 @@
 title: Monitoring performance using JMX statistics
 description: Monitoring performance using JMX statistics
 ---
-## What is Cúram JMX
+## What is Cúram JMX?
 
-Cúram JMX is the system that provides operational data from a running Cúram application.JMX statistics as documented
+Cúram JMX statistics provides operational data from a running IBM® Cúram Social Program Management (SPM) application.
+JMX statistics for use with a traditional application server are documented
 in this [Knowledge Center](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/JMXAdministrator/ctr_CuramJMXAdministratorsGuide.html) page.
 
 ### Cúram JMX Kubernetes Limitations
 
-Cúram JMX statistics behave similar in Kubernetes, but have the following limitation:
+Cúram JMX statistics behave similarly in Kubernetes, but have the following limitations:
 
-* Access by using the [Cúram Administration Application](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/JMXAdministrator/c_JMXADMIN_Accessjmxstatsusingurl.html)
+* Access by using the [SPM Administration Application](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/JMXAdministrator/c_JMXADMIN_Accessjmxstatsusingurl.html)
 is not supported because:
-  * Not all pods have the requisite Cúram client installed, which means JMS performance is unavailable using this access mechanism.
+  * Not all pods have the requisite SPM client installed, which means JMS performance is unavailable using this access mechanism.
   * The reverse proxy nature of Kubernetes means that even for the pods with clients installed, identifying the correct target server would be difficult.
 
 Therefore, for Kubernetes you are restricted to using the timer-based access method, for more information, see [Using the JMX Timer](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/JMXAdministrator/c_JMXADMIN_Accesstothejmxstatsusingjmxtimer.html).
@@ -30,7 +31,7 @@ You must also consider the other persistence-related settings and configure them
 
 ### Cúram JMX statistics persisteance
 
-Persistence is required for timer-based statistics because of the non-permanent nature of pods means that as they come and go, you might need statistics from an earlier execution.
+Persistence is required for timer-based statistics because the non-permanent nature of pods means that as they come and go, you might need statistics from an earlier execution.
 
 Enable timer-based JMX statistics with a `global.apps.common.persistence.jmxstats.enabled=true` override.
 Once configured, the following SPM properties are added to the Liberty pod jvm.options files with the defaults shown:
@@ -60,13 +61,13 @@ For example:
   * For each configmap, use the `kubectl edit configmap` command to change the `curam.jmx.output_statistics_timer_enabled` setting to false.
   * Use the `kubectl delete pod` command for each of the application producer and consumer pods that have a corresponding application name to the configmap.
   * On restart the new pod no longer generates statistics files.
-* By default, statistics are accumulated over the life of a pod; therefore, the last file generated is superset of all the other files for that pod, therefore and you should only need the latest file.
+* By default, statistics are accumulated over the life of a pod; therefore, the last file generated is a superset of all the other files for that pod, therefore and you should only need the latest file.
   * There is a property to change this behavior so each period resets the statistics, but then you would have to address how to amalgamate the data and make sense of it; so,changing this is not recommended.
 * In support of EJB timers, IBM WebSphere Liberty dynamically creates three tables each time a pod starts; a `PART`, `PROP`, and `TASK` table.
   * The amount of data in these tables is small; but, over time could result in a large number of these tables in your database.
   * You should monitor these tables and drop those for pods that no longer exist.
-  * These tables are prefixed with `EJBTIMER_`, followed by the pod name. For example, for the bugsbunny-apps-curam-consumer deployment, the following three tables created for a single pod:
-  
+  * These tables are prefixed with `EJBTIMER_`, followed by the pod name. For example, for the bugsbunny-apps-curam-consumer deployment, the following three tables were created for a single pod:
+
   ```
     EJBTIMER_BUGSBUNNY_APPS_CURAM_CONSUMER_786586FD5F_BGMGWPART
     EJBTIMER_BUGSBUNNY_APPS_CURAM_CONSUMER_786586FD5F_BGMGWPROP

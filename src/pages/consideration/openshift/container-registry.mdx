@@ -1,0 +1,15 @@
+---
+title: OpenShift Container Registry
+description: OpenShift Container Registry
+tabs: ['Security','Networking','Authentication','Container Registry','Storage']
+---
+
+## Container Registry
+
+OpenShift Container Platform provides a built-in [container image registry](https://docs.openshift.com/container-platform/4.5/registry/architecture-component-imageregistry.html) that runs as a standard workload on the cluster.
+
+The registry is configured and managed by an infrastructure Operator.
+It provides an out-of-the-box solution for users to manage the images that run their workloads, and runs on top of the existing cluster infrastructure.
+This registry can be scaled up or down like any other cluster workload and does not require specific infrastructure provisioning.
+
+In addition, it is integrated into the cluster user authentication and authorization system, which means that access to create and retrieve images is controlled by defining user permissions on the image resources.

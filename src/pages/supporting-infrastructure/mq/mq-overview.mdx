@@ -1,16 +1,16 @@
 ---
 title: MQ Overview and Configuration
 description: MQ Overview
-tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift']
+tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift','MQ Containers']
 ---
 
-To support Kubernetes, changes to SPM were required.
-For more information on these changes, see
+IBM MQ is a queue managing service from the IBM stack. To support Kubernetes, changes to SPM were required. For more information on these changes, see
 [Kubernetes Architecture](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.wlp.doc/Kubernetes/c_KubArchitecture.html) section in
-the Knowledge Center.
+the Knowledge Center.  
 
-When SPM is containerized on Kubernetes, it uses IBM® MQ to manage JMS messages for Cúram Deferred Processes and Cúram Workflows. IBM MQ is a queue managing service from the IBM stack. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
+When SPM is containerized on Kubernetes, it uses IBM MQ to manage JMS messages for Cúram Deferred Processes and Cúram Workflows. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
 
-If MQ fails, certain functionality will be unusable. This includes and is not limited to, creation of a case and creation of an application.
+If MQ fails, certain functionality will be unusable. This includes and is not limited to, creation of a case and creation of an application. In order to reduce the likelihood
+of this, MQ can be configured to be a multi-instance deployment. This results in a stateful set being created, with one active/primary queue manager, and one standby/secondary queue manager.
 
-The MQ Cluster set up requires two queue managers nodes, with one active/primary queue manager, and one standby/secondary queue manager.
+Currently, MQ can be configured on [IKS](/supporting-infrastructure/mq/mq-on-iks) or [OpenShift](/supporting-infrastructure/mq/mq-on-openshift).

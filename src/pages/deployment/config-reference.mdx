@@ -3,18 +3,19 @@ title: Configuration Reference
 description: Helm chart configuration reference for SPM
 ---
 
-This page contains all available configuration options built into the reference Helm charts for SPM.
+This page contains all available configuration options built into the reference Helm charts for IBM® Cúram Social Program Management (SPM).
 The published charts are intended to be a starting point for you to tailor the charts to your own environment and requirements.
 
-The tables below list the configurable parameters of the `spm` chart and their default values.
+The following tables list the configurable parameters of the `spm` chart and their default values.
 
-* [Global properties](#global-properties)
-* [Liberty runtime](#liberty-runtime)
-* [Batch jobs](#batch-jobs)
-* [IBM MQ](#ibm-mq)
-* [Static Content Server](#static-content-server)
-* [XML Server](#xml-server)
-* [Universal Access (React App)](#universal-access-(react-app)-optional) - optional
+<AnchorLinks small>
+  <AnchorLink>Global properties</AnchorLink>
+  <AnchorLink>Liberty runtime</AnchorLink>
+  <AnchorLink>Batch jobs</AnchorLink>
+  <AnchorLink>Static Content Server</AnchorLink>
+  <AnchorLink>XML Server</AnchorLink>
+  <AnchorLink>Universal Access React App - optional</AnchorLink>
+</AnchorLinks>
 
 ### Global properties
 
@@ -59,7 +60,7 @@ The tables below list the configurable parameters of the `spm` chart and their d
 
 ### Liberty runtime
 
-In the properties below, `<applicationID>` is a placeholder for the name of SPM applications in lower case (e.g. `curam`, `citizenportal`, `rest`, etc).
+In the following properties, `<applicationID>` is a placeholder for the name of SPM applications in lower case (e.g. `curam`, `citizenportal`, `rest`, etc).
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
@@ -67,7 +68,6 @@ In the properties below, `<applicationID>` is a placeholder for the name of SPM 
 | ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
 | `global.apps.config.<applicationID>.replicaCount` | Number of replicas of the application to be deployed | `1` |
 | `global.apps.config.<applicationID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
-| ![SPM version](https://img.shields.io/badge/SPM-7.0.10.0-blue) `global.openldap.enabled` | Deploy OpenLDAP alongside SPM as the identity provider | `false` |
 | `apps.initialDelaySeconds` | Time in seconds before commencing application readiness probes | `150` |
 | `apps.loginConfig.identityOnly` | Use LDAP authentication in `Identity-Only` mode | `false` |
 | `apps.loginConfig.trace` | Debug authentication process by printing tracing information on invocation of the login module | `false` |
@@ -81,17 +81,37 @@ In the properties below, `<applicationID>` is a placeholder for the name of SPM 
 
 ### Batch jobs
 
-In the properties below, `<progID>` is a placeholder for the name of the batch program - this must be a valid YAML term, but does not need to match the Batch process class.
+In the following properties, `<progID>` is a placeholder for the name of the batch program - this must be a valid YAML term (lower case, alphanumerical plus hypens, must begin with a letter), but does not need to match the Batch process class.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
+| `batch.backoffLimit` | Number of retries for failed Batch executions | `1` |
 | `batch.javaOptions` | Default Java Heap options for all programs | `-Xms1g -Xmx1g` |
+| `batch.successfulJobsHistoryLimit` | Number of successful batch executions to keep | `3` |
+| --------- | ----------- | ------- |
+| `batch.programs.<progID>.activeDeadlineSeconds` | Number of seconds within which the job is expected to complete. If this time is exceeded, the job is terminated. Blank value denoted no limit. | `''` |
 | `batch.programs.<progID>.className` | Java class for the batch process (`-Dbatch.program=`) | `''` |
-| `batch.programs.<progID>.javaOptions` | Java options to be injected via `ANT_OPTS` | `-Xms1g -Xmx1g` |
+| `batch.programs.<progID>.javaOptions` | Java options to be injected via `ANT_OPTS` | `''` |
 | `batch.programs.<progID>.parameters` | Parameters, if any, to be passed to the batch process (`-Dbatch.parameters=`) | `''` |
 | `batch.programs.<progID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | `''` |
 | `batch.programs.<progID>.username` | SPM username for the execution of the batch progress (`-Dbatch.username=`) | `''` |
 | `batch.programs.<progID>.schedule` | Different schedules can be specified for different batch jobs. The default schedule applies to any jobs queued in the system. | `*/30 * * * *` |
+| --------- | ----------- | ------- |
+| `batch.streamed.<progID>.activeDeadlineSeconds` | Number of seconds within which the job is expected to complete. If this time is exceeded, the job is terminated. Blank value denoted no limit. | `''` |
+| `batch.streamed.<progID>.schedule` | Different schedules can be specified for different batch jobs. The default schedule applies to any jobs queued in the system. | `*/30 * * * *` |
+| `batch.streamed.<progID>.chunker.className` | Java class for the batch chunker (`-Dbatch.program=`) | `''` |
+| `batch.streamed.<progID>.chunker.javaOptions` | Java options to be injected via `ANT_OPTS` | `''` |
+| `batch.streamed.<progID>.chunker.parameters` | Parameters, if any, to be passed to the batch chunker (`-Dbatch.parameters=`) | `''` |
+| `batch.streamed.<progID>.chunker.replicaCount` | Number of replicas of chunker to launch | `''` |
+| `batch.streamed.<progID>.chunker.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | `''` |
+| `batch.streamed.<progID>.chunker.username` | SPM username for the execution of the batch chunker (`-Dbatch.username=`) | `''` |
+| --------- | ----------- | ------- |
+| `batch.streamed.<progID>.stream.className` | Java class for the batch stream (`-Dbatch.program=`) | `''` |
+| `batch.streamed.<progID>.stream.javaOptions` | Java options to be injected via `ANT_OPTS` | `''` |
+| `batch.streamed.<progID>.stream.parameters` | Parameters, if any, to be passed to the batch stream (`-Dbatch.parameters=`) | `''` |
+| `batch.streamed.<progID>.stream.replicaCount` | Number of replicas of stream to launch | `''` |
+| `batch.streamed.<progID>.stream.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | `''` |
+| `batch.streamed.<progID>.stream.username` | SPM username for the execution of the batch stream (`-Dbatch.username=`) | `''` |
 
 The default batch configuration runs any queued jobs every 30 minutes (equivalent of running `build.sh runbatch` without any parameters).
 
@@ -108,10 +128,29 @@ batch:
       parameters: "evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"
       username: system
       schedule: "0 2 * * 6"
+
+  streamed:
+    pd_eligibility:
+      schedule: "0 1 * * *"
+      chunker:
+        className: curam.core.intf.DetermineProductDeliveryEligibility.process
+        parameters: processingDate=20201013
+        replicaCount: 1
+      stream:
+        className: curam.core.intf.DetermineProductDeliveryEligibilityStream.process
+        replicaCount: 3
+        javaOptions: '-Xms2g -Xmx2g'
+        resources:
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+          requests:
+            cpu: "1"
+            memory: "2.5Gi"
 ```
 
-The above example adds the [bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
-batch job to be run at 2am every Sunday night.
+The `batch.programs` example above adds the [bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
+batch job to be run at 2AM every Sunday night.
 
 <InlineNotification>
 
@@ -155,7 +194,7 @@ We only support containerised MQ on Openshift.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| `web.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match [what had been defined](/deploy-spm/spm-build#set-up-static-content) when the application was built) | `/CuramStatic` |
+| `web.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match [what had been defined](/deploy-spm/build-spm#set-up-static-content) when the application was built) | `/CuramStatic` |
 | `web.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/CuramStatic/` |
 | `web.replicaCount` | Number of replicas to be deployed | `1` |
 
@@ -171,7 +210,7 @@ In a Kubernetes environment, there is only one XML Server from SPM's point of vi
 
 </InlineNotification>
 
-### Universal Access (React App) - optional
+### Universal Access React App - optional
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |

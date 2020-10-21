@@ -1,0 +1,99 @@
+{{ $apps := .Values.global.apps.config }}
+{{- range $name, $app := $apps }}
+{{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
+{{- if ($.Values.global.mq.multiInstance.operatorsEnabled) }}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+apiVersion: mq.ibm.com/v1beta1
+kind: QueueManager
+metadata:
+  name: {{ $name }}{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+{{ include "mqserver.labels" $ | indent 4 }}
+spec:
+  version: {{ $.Values.global.mq.version }}
+  pki:
+    keys:
+      - name: ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
+        secret:
+          secretName: {{ $.Release.Name }}-mq-secret
+          items: 
+          - tls.key
+          - tls.crt
+  license:
+    accept: true
+    license: {{ $.Values.global.mq.license }}
+    use: {{ $.Values.global.mq.use }}
+  queueManager:
+    name: {{ $.Values.global.mq.queueManager.name }}
+    imagePullPolicy: {{ $.Values.global.pullPolicy }}
+    mqsc:
+      - configMap:
+          name: {{ $.Release.Namespace }}-mq-config
+          items: 
+          - config.mqsc
+          - channel_{{$name}}.mqsc
+    availability:
+      type: {{ $.Values.global.mq.multiInstance.availabilityType }}
+    livenessProbe:
+      initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
+      periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
+      timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
+      failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
+    readinessProbe:
+      initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
+      periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
+      timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+      failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+    storage:
+      queueManager:
+        type: persistent-claim
+        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        size: 2Gi
+      recoveryLogs:
+        type: persistent-claim
+        enabled: true
+        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        size: 2Gi
+      persistedData:
+        type: persistent-claim
+        enabled: true
+        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        size: 2Gi
+  template:
+    pod:
+      containers:
+        - name: qmgr
+          env:
+            - name: MQSNOAUT
+              value: 'yes'
+            - name: MQ_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
+            - name: MQ_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
+                  key: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
+  web:
+    enabled: true
+{{- end }}
+{{- end }}
+{{- end }}

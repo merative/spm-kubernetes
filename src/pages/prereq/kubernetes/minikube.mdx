@@ -29,7 +29,8 @@ Minikube installation steps are described in the official documentation for your
 
 ## Starting Minikube
 
-Minikube can be started with a command as simple as `minikube start` without any additional parameters. However, the resulting VM will be too small to deploy an instance of SPM, so several other parameters are required:
+Minikube can be started with a command as simple as `minikube start` without any additional parameters. However, the resulting VM will be too small to deploy an instance of IBM® Cúram Social Program Management (SPM),
+so several other parameters are required:
 
 ```shell
 minikube start --vm-driver=virtualbox --cpus 4 --memory 8G --insecure-registry "192.168.0.0/16" --disk-size='30G' --kubernetes-version v1.18.6

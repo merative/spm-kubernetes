@@ -211,8 +211,6 @@ global:
         jvm:
           - "-Xms512m"
           - "-Xmx512m"
-  openldap:
-    enabled: false
   isam:
     enabled: false
   mq:
@@ -220,6 +218,8 @@ global:
     useConnectionNameList: false
     objectSuffix: minikube
     tlsSecretName: mq-secret
+    multiInstance:
+      operatorsEnabled: false
     queueManager:
       name: "QM1"
       secret:

@@ -1,0 +1,120 @@
+{{- include "sch.config.init" (list . "batch.sch.chart.config.values") -}}
+{{- range $name, $program := .Values.programs }}
+{{- $filtered_name := ( $name | replace "_" "-" ) }}
+{{- $javaOptions := dict "DefaultOptions" $.Values.javaOptions "ProgramOptions" $program.javaOptions "PersistenceConfig" $.Values.global.apps.common.persistence }}
+---
+###############################################################################
+# Copyright 2019,2020 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "sch.names.fullCompName" (list $ $filtered_name) }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list $ $filtered_name (dict "batch-role" "standalone")) | nindent 4 }}
+spec:
+  schedule: {{ required (printf "'schedule' key cannot be omitted for Batch program '%s'" $name) ($program.schedule | quote) }}
+  successfulJobsHistoryLimit: {{ default $.Values.successfulJobsHistoryLimit $program.successfulJobsHistoryLimit }}
+  concurrencyPolicy: {{ default $.Values.concurrencyPolicy $program.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ default $.Values.backoffLimit $program.backoffLimit }}
+      completions: {{ $program.replicaCount | default 1 }}
+      parallelism: {{ $program.replicaCount | default 1 }}
+      {{- if $program.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ $program.activeDeadlineSeconds }}
+      {{- end }}
+      template:
+        spec:
+          {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
+          imagePullSecrets:
+            - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}
+          {{- end }}
+          {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 10 }}
+          affinity:
+            {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | nindent 12 }}
+          serviceAccountName: {{ default (include "sch.names.fullName" (list $)) $.Values.serviceAccountName }}
+          volumes:
+            - name: bootstrap-file
+              configMap:
+                name: {{ $.Release.Name }}-bootstrap-cm
+          {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+            - name: keystore-volume
+              emptyDir: {}
+            - name: db2-cert
+              secret:
+                secretName: {{ $.Values.global.database.ssl.secretName }}
+          initContainers:
+          - name: import-db2-cert
+            image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
+            env:
+              - name: certfile
+                value: /mnt/certificates/{{ $.Values.global.database.ssl.secretKey }}
+              - name: keystore_jks
+                value: /mnt/keystores/db2TrustStore.jks
+            command:
+              - /bin/sh
+              - -c
+              - keytool -import -trustcacerts -noprompt -file $certfile -keystore $keystore_jks -storepass changeit -storetype jks
+            volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: db2-cert
+              mountPath: /mnt/certificates
+          {{- end }}
+          containers:
+          - name: runbatch-{{ $filtered_name | lower }}
+            image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "batch") }}
+            imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+            envFrom:
+              - secretRef:
+                  name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
+            env:
+              - name: ANT_OPTS
+                value: {{ include "batch.antOpts" $javaOptions | quote }}
+              - name: TZ
+                value: {{ $.Values.global.timezone }}
+            command:
+              - build.sh
+              - runbatch
+            {{- if or $program.className $program.parameters $program.username }}
+            args:
+            {{- if $program.className }}
+              - -Dbatch.program={{ $program.className }}
+            {{- end }}
+            {{- if $program.parameters }}
+              - -Dbatch.parameters={{ $program.parameters | quote }}
+            {{- end }}
+            {{- if $program.username }}
+              - -Dbatch.username={{ $program.username }}
+            {{- end }}
+            {{- end }}
+            {{- if or $.Values.resources $program.resources }}
+            resources:
+              {{- toYaml (default $.Values.resources $program.resources) | nindent 14 }}
+            {{- end }}
+            {{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) | nindent 12 }}
+            volumeMounts:
+              - name: bootstrap-file
+                mountPath: /opt/ibm/Curam/release/project/properties/Bootstrap.properties
+                subPath: Bootstrap.properties
+              {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+              - name: keystore-volume
+                mountPath: /mnt/keystores
+              {{- end }}
+          restartPolicy: Never
+{{- end }}

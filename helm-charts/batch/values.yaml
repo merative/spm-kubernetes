@@ -88,7 +88,7 @@ resources:
 successfulJobsHistoryLimit: 3
 
 # Number of attempts to run a batch job, in case of failure (can be overridden per job)
-backoffLimit: 5
+backoffLimit: 1
 
 # Specifies how to treat concurrent executions of a Job (can be overridden per job)
 # Valid values are:
@@ -106,6 +106,26 @@ programs:
   #   className: curam.healthcare.sl.intf.BulkICReassessment.process
   #   parameters: "evidenceMigrationDetails=CASE|DET0026071;DET0026027|CT26301"
   #   username: superuser
+
+streamed: {}
+  # Schedule streamed jobs using a similar syntax as standalone Batch
+  # pd_eligibility:
+  #   schedule: "0 1 * * *"
+  #   chunker:
+  #     className: curam.core.intf.DetermineProductDeliveryEligibility.process
+  #     parameters: processingDate=20201013
+  #     replicaCount: 1
+  #   stream:
+  #     className: curam.core.intf.DetermineProductDeliveryEligibilityStream.process
+  #     replicaCount: 3
+  #     javaOptions: '-Xms2g -Xmx2g'
+  #     resources:
+  #       limits:
+  #         cpu: "2"
+  #         memory: "4Gi"
+  #       requests:
+  #         cpu: "1"
+  #         memory: "2.5Gi"
 
 # Settings for node affinty, will give an affinity preference of
 # weight 100 for nodes labelled as worker-type:application

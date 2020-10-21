@@ -1,8 +1,17 @@
 ---
 title: MQ on OpenShift
 description: MQ on OpenShift
-tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift']
+tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift','MQ Containers']
 ---
+
+## Support for IBM MQ certified containers on OpenShift
+
+IBM® Cúram Social Program Management (SPM) customers may obtain IBM MQ certified containers from the IBM Cloud Container Registry for use as a Supporting Program for SPM.
+Use as a Supporting Program means that IBM MQ certified containers can only be used to process internal JMS messages within SPM.
+
+SPM does not require or support the use of any IBM MQ Advanced features available in the IBM MQ certified containers.
+
+IBM MQ certified container is supported only on SPM Version 7.0.11 and later versions.
 
 ## Stateful Sets
 
@@ -27,3 +36,12 @@ In the PV, a `claimRef` can be defined in order to ensure that the correct PVC m
 also be used to ensure correct coupling.
 
 If using Ceph, the PVs are dynamically configured. Therefore, no further configuration is required.
+
+## Operators
+
+MQ can also be deployed via Operators. Operators are a method of packaging and deploying Kubernetes applications that take human operational knowledge of managing the application and encode it into the
+package itself, which can then be shared with users. Operator deployment can be used to create a single-instance or a multi-instance deployment, as desired.  
+
+The IBM MQ Operator can be installed using the Operator Hub. More information on  installing the IBM Operator using the OpenShift CLI
+can be found [here](https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.1.0/com.ibm.mq.ctr.doc/ctr_installing_cli.htm).  
+When deploying in this way, a **Queue Manager** object is created. The Operator deployment also handles the creation of the **PersistentVolume** and **Stateful Set** objects.

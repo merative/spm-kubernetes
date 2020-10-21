@@ -12,6 +12,10 @@
 
 # Version History
 
+## v3.2.0
+
+* Remove hard requirement on OpenLDAP for elasticity.
+
 ## v3.1.1
 
 * Update messaging configuration to use a common `CuramCacheInvalidationTopic` across all applications

@@ -15,7 +15,7 @@ There are broadly two contexts for JMS failures:
 
 If the production of a JMS message fails, a Java exception is thrown in Liberty (shown in the application server logs), the transaction fails, and the message is never processed by MQ.
 
-For example, if an MQ queue fills up you would see the exception below in the chain of stack. This points back to the issue in MQ and other related exceptions would identify the failing queue.
+For example, if an MQ queue fills up you would see the following exception in the chain of stack. This points back to the issue in MQ and other related exceptions would identify the failing queue.
 
 ```
 traces in the WebSphere Liberty log files:
@@ -25,7 +25,8 @@ IBM MQ call failed with compcode '2' ('MQCC_FAILED') reason '2053' ('MQRC_Q_FULL
 
 ## Message consumption failures
 
-The JMS configuration for Cúram specifies a hierarchy of queues, from the normal queue, to an error queue, and finally to the dead message queue. The following diagram illustrates this flow of JMS messages for the Cúram SPM application.
+The JMS configuration for IBM® Cúram Social Program Management (SPM) specifies a hierarchy of queues, from the normal queue, to an error queue, and finally to the dead message queue.
+Figure 1 illustrates this flow of JMS messages for SPM.
 
 ![SPM on Kubernetes - Cúram JMS queue message flow](../../images/curam_jmsqueue_message_flow.png)
 <Caption>
@@ -38,7 +39,7 @@ JMS messages are usually handled within one of the three queues: `DPEnactment`, 
 
 Should the message not succeed at that point it is routed to its associated error or exception queue as shown in the diagram: `DPEnactment` to `DPError`, and `WorkflowEnactment` and `WorkflowActivity` to `WorkflowError`.
 
-At this point, Cúram SPM or custom error processing can take over, depending on the message type and your configuration.  Similarly, the error queues are defined to retry up to five times.
+At this point, SPM or custom error processing can take over, depending on the message type and your configuration.  Similarly, the error queues are defined to retry up to five times.
 
 Should the error queue processing fail the message is finally routed to the `CuramDeadMessageQueue`, specified as the MQ dead letter queue.
 The message will stay until you either resend it to its originating queue or delete it, and how to do that is the subject of this document.

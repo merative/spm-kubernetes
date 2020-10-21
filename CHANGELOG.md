@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.10.0 ![SPM 7.0.11.0](https://img.shields.io/badge/-SPM_7.0.11.0-green)
+
+### Removed
+
+* Remove hard requirement on OpenLDAP for elasticity.
+
+### Added
+
+* Added SPM 7.0.11.0 supported prerequisites
+* Added SPM release tag to ChangeLog
+* Added OpenShift Reference Architecture
+* Added statement for usage of IBM MQ certified containers on OpenShift
+* Add the ability to create an MQ deployment via Operators
+* Add a `queue manager` object for use in MQ Operator deployments
+* Add instructions to access IBM MQ certified containers on IBM Cloud Container Registry
+* Added Consideration section to runbook
+  * Section on IKS: Security, Networking Authentication, Container Registry, Storage
+  * Section on OpenShift: Security, Networking Authentication, Container Registry, Storage
+* Updated documentation to include target to precompile SPM ear files.
+* Added OpenShift Overview page to runbook
+* Add a reference implementation for Batch streaming jobs
+* Updated some inpage navigation
+
+### Changed
+
+* Implemented accessibility recommendations on the runbook content.
+* Refactored and reorganised the architecture pages. Added Architecture Overview diagram.
+* Add `operatorsEnabled` if clause to `mqserver` deployment, statefulset, and service objects
+* Correcting product name on first use to "IBM® Cúram Social Program Management (SPM)" and "SPM" thereafter.
+* Reduced default backoff limit for Batch jobs to 1
+* Updated MQ on VM reference configuration to use `SHA256WithRSA` signature algorithm
+* Clarified CRC minimum system requirements
+
 ## v20.9.0
 
 ### Added
@@ -26,6 +59,7 @@ All notable changes to this project will be documented in this file.
 * Included embedded videos in Architecture Overview
 * Included list of supported software requirements
 * Updated WebSphere Liberty version to 20.0.0.9
+
 
 ## v20.8.0
 
@@ -130,7 +164,7 @@ All notable changes to this project will be documented in this file.
 * [Broken Links in Prerequisites.](https://github.com/IBM/spm-kubernetes/issues/18)
 
 
-## v20.5.0
+## v20.5.0 ![SPM 7.0.10.0](https://img.shields.io/badge/-SPM_7.0.10.0-green)
 
 ### Added
 

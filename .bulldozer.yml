@@ -1,17 +1,19 @@
 version: 1
 
 merge:
-  whitelist:
+  trigger:
     labels: ["merge when ready"]
     comment_substrings: ["==AUTOMERGE==", "==MERGE_WHEN_READY=="]
-    branches: ["master", "epic/*"]
-  blacklist:
+    branches: ["master"]
+    branch_patterns: ["epic/.*"]
+  ignore:
     labels: ["do not merge"]
     comment_substrings: ["==DO_NOT_MERGE=="]
   method: merge
   delete_after_merge: true
 
 update:
-  whitelist:
+  trigger:
     labels: ["wip", "update me"]
-    branches: ["master", "epic/*"]
+    branches: ["master"]
+    branch_patterns: ["epic/.*"]

@@ -16,6 +16,7 @@
 global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
+  pullPolicy: 'Always'
   sch:
     enabled: true
   timezone: 'UTC'
@@ -49,6 +50,9 @@ global:
         enabled: false
   mq:
     version: 9.1.5.0-r2
+    # Licensing reference for mq.ibm.com/v1beta1
+    license: "L-APIG-BM7GDH"
+    use: "Development"
     # Set to True if running MQ in HA mode
     useConnectionNameList: false
     tlsSecretName: mq-secret
@@ -67,14 +71,21 @@ global:
       enabled: false
     resources: {}
     multiInstance:
+      operatorsEnabled: false
+      # availabilityType to be used for deployments via Operators only. Alternatives: MultiInstance or SingleInstance.
+      availabilityType: ''
+      # cephEnabled to be used for MultiInstance deployment via Helm using Storage Class
       cephEnabled: false
+      # storageClassName'required when availabilityType is provided or cephEnabled is true.
       storageClassName: ''
+      # nfsEnabled / nfsIP / nfsFolder applies only 
       nfsEnabled: false
       nfsIP: ''
       nfsFolder: ''
     security:
       context:
-        fsGroup: ''
+        # fsGroup / supplementalGroups may be required when using NFS.
+        fsGroup:
         supplementalGroups: []
 
 # Name of an existing ServiceAccount for the application runtime

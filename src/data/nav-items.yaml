@@ -1,17 +1,16 @@
 - title: Introduction
   pages:
-    - title: Introduction
-      path: /intro/Introduction
+    - path: /Introduction
 - title: Architecture
   pages:
+    - title: SPM and Kubernetes 101
+      path: /architecture/kubernetes/spm-on-kubernetes-101
     - title: Architecture Overview
       path: /architecture/arch-overview/architecture-overview
-    - title: Cloud Deployment architecture
-      path: /architecture/cloud-arch/dev-workstation-architecture
   hasDivider: true
 - title: Prerequisites
   pages:
-    - title: Install prerequisite software
+    - title: Prerequisite software
       path: /prereq/prereq
     - title: Base third-party software
       path: /prereq/3rdparty-sw
@@ -20,19 +19,25 @@
     - title: Kubernetes
       path: /prereq/kubernetes/kubernetes-overview
     - title: OpenShift
-      path: /prereq/openshift/codeready-containers
+      path: /prereq/openshift/openshift-overview
     - title: ChartMuseum
       path: /prereq/chartmuseum
     - title: GitHub repo
       path: /prereq/git
+- title: IKS and OpenShift Considerations
+  pages:
+    - title: IKS
+      path: /consideration/iks/security
+    - title: OpenShift
+      path: /consideration/openshift/security
 - title: IBM Cúram Social Program Management application
   pages:
     - title: Installing SPM software
-      path: /deploy-spm/SPM-sw
+      path: /deploy-spm/install-spm
     - title: Creating the SPM database
       path: /deploy-spm/create_spm_db
     - title: Building the SPM application
-      path: /deploy-spm/spm-build
+      path: /deploy-spm/build-spm
 - title: Building Docker images
   pages:
     - title: Setting up the Docker context
@@ -64,22 +69,18 @@
       path: /supporting-infrastructure/mq/mq-overview
     - title: Cloud Object Storage
       path: /supporting-infrastructure/COS
-    - title: LDAP
-      path: /supporting-infrastructure/LDAP
     - title: LogDNA
       path: /supporting-infrastructure/LogDNA
-    - title: SPM batch processing on IKS
-      path: /supporting-infrastructure/batch
+    - title: Batch Processing
+      path: /supporting-infrastructure/batch/batch-processing
     - title: Enabling ISAM
       path: /supporting-infrastructure/ISAM
 - title: Monitoring and troubleshooting
   pages:
     - title: Monitoring the application
       path: /runtime/interrogate_runtime
-    - title: Monitoring JMX statistics 
+    - title: Monitoring JMX statistics
       path: /runtime/jmx-statistics-performance-monitoring
-    - title: Batch processing
-      path: /runtime/batch
     - title: XML server
       path: /runtime/xmlserver
     - title: Handling failed JMS messages on the MQ dead message queue

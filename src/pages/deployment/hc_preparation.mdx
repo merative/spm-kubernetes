@@ -9,14 +9,13 @@ description: Preparing Helm charts
 
 </InlineNotification>
 
-The [spm-kubernetes](https://github.com/IBM/spm-kubernetes) repository provides nine Helm charts:
+The [spm-kubernetes](https://github.com/IBM/spm-kubernetes) repository provides the following Helm charts:
 
-* *apps:* defines how to deploy the IBM® WebSphere® Liberty images with the SPM application.
+* *apps:* defines how to deploy the IBM® WebSphere® Liberty images with IBM® Cúram Social Program Management (SPM).
 * *batch:* defines the batch image configuration.
 * *uawebapp:* defines how to deploy the Universal Access (React) application.
 * *web:* defines how to deploy the static content image for SPM (`Curam` image only).
 * *mqserver:* defines the IBM WebSphere MQ image configuration.
-* *openldap:* defines the OpenLDAP image configuration (used for session failover).
 * *xmlserver:* defines the xmlserver container configuration.
 * *spm:* an umbrella chart to contain all the other charts.
 
@@ -33,7 +32,7 @@ You may also optionally integrate your deployment with an ISAM server for SSO en
 to do so please complete the steps on the [Enabling ISAM](/supporting-infrastructure/ISAM) page under Supporting Infrastructure before returning here.
 Before you run the charts, you must configure the database, configure IBM MQ, and resolve all chart dependencies.
 
-Many of the Helm charts that make up a deployment of SPM depend on the [IBM Shared Configuration Helpers](https://github.com/IBM/charts/tree/master/samples/ibm-sch) chart, so an extra Helm repository must be added using the command below:
+Many of the Helm charts that make up a deployment of SPM depend on the [IBM Shared Configuration Helpers](https://github.com/IBM/charts/tree/master/samples/ibm-sch) chart, so an extra Helm repository must be added using the following command:
 
 ```shell
 helm repo add sch https://raw.githubusercontent.com/IBM/charts/master/repo/samples
@@ -57,7 +56,7 @@ Sample override files for Minikube, IKS, and CRC are also available in the `$SPM
 IBM MQ is already configured to work out of the box with a secure connection with IBM WebSphere Liberty.
 The commands that create all the objects that are needed on the queue manager are defined in a config map, in the `configmap-mqsc.yaml` file.
 
-The password for the IBM MQ web console can be retrieved from the created Secret resource using the command below **after** it has been deployed:
+The password for the IBM MQ web console can be retrieved from the created Secret resource using the following command **after** it has been deployed:
 
 ```shell
 kubectl get secret <releaseName>-mq-credentials -o go-template='{{.data.adminPasswordKey | base64decode}}{{"\n"}}'
@@ -68,6 +67,14 @@ kubectl get secret <releaseName>-mq-credentials -o go-template='{{.data.adminPas
 To use the Helm Charts to install SPM, package the charts and load them into a repository. For more information, see [ChartMuseum](/prereq/chartmuseum).
 
 For each chart, its dependencies must be resolved before it can be loaded into a Helm repository like Chart museum.
+
+<InlineNotification>
+
+Due to an internal Helm [defect](https://github.com/helm/helm/issues/5780), conditional subchart enablement does not work in Helm 3.
+As a result of this, `uawebapp` needs to be packaged and pushed, irrespective of whether you are deploying it or not.
+It is possible to remove the dependency from the spm chart.yaml, if you do not wish to package and push it to the repo.
+
+</InlineNotification>
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -100,7 +107,6 @@ helm push xmlserver local-development
 helm push batch local-development
 helm push web local-development
 helm push uawebapp local-development
-helm push openldap local-development
 
 helm repo update
 ```

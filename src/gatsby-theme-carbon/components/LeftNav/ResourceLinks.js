@@ -8,7 +8,7 @@ const links = [
   },
   {
     title: 'Knowledge Center',
-    href: 'https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.nav.doc/spm_7010_welcome.html',
+    href: 'https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.nav.doc/spm_welcome.html',
   },
   {
     title: 'Change Log',
