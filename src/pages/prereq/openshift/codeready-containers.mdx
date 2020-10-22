@@ -1,7 +1,7 @@
 ---
 title: CodeReady Containers
 description: CodeReady Containers
-tabs: ['CodeReady Containers']
+tabs: ['OpenShift Overview','CodeReady Containers']
 ---
 
 ## What is CRC?
@@ -11,21 +11,19 @@ For more information, see [CodeReady Containers](https://github.com/code-ready/c
 
 Similar to Minikube in concept, CRC provides a cloud like environment locally to create and deploy an OpenShift cluster for development and testing purposes.
 
-This page covers some common CRC operations, including deploying SPM to the CRC environment. You will use the helm charts produced in [Preparing Helm charts](/deployment/hc_deployment).
+This page covers some common CRC operations, including deploying IBM® Cúram Social Program Management (SPM) to the CRC environment. You will use the helm charts produced in [Preparing Helm charts](/deployment/hc_deployment).
 
 For a full getting started guide for CRC, see [Getting Started Guide CodeReady Containers](https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/1.8/html/getting_started_guide/index)
 
+### Minimum System requirements
+
+CodeReady Containers system requirements can be found here: [CRC Minimum system requirements](https://code-ready.github.io/crc/#minimum-system-requirements_gsg).
+
 <InlineNotification>
 
-**Note:**  SPM does not provide official support of OpenShift. All the references to OpenShift and CRC should be considered as an Early Adopter Release.
+There is a know CRC [issue](https://github.com/code-ready/crc/issues/557) with respect to resource usage. When deploying SPM on CRC our experience has shown that a minimum of 16GB will improve performance, however 32GB is optimal.
 
 </InlineNotification>
-
-**System Requirements**:
-
-You can find detailed system requirements in the [CRC Getting Started Guide](https://code-ready.github.io/crc/#minimum-system-requirements_gsg).
-CRC must be able to allocate a minimum of 9GB RAM to its VM.
-Your workstation should have at least 16GB to operate, some workloads may require more.
 
 ## Installing CRC
 
@@ -50,7 +48,9 @@ tar -xvf crc-macos-amd64.tar.xz
 <Row>
 <Column>
 
-`export PATH=$CRC_HOME/crc-macos-1.10.0-amd64:$PATH`
+```shell
+export PATH=$CRC_HOME/crc-macos-1.10.0-amd64:$PATH`
+```
 
 </Column>
 </Row>
@@ -60,7 +60,9 @@ tar -xvf crc-macos-amd64.tar.xz
 <Row>
 <Column>
 
-`mv $CRC_HOME/crc-macos-1.10.0-amd64/crc /usr/local/bin`
+```shell
+mv $CRC_HOME/crc-macos-1.10.0-amd64/crc /usr/local/bin
+```
 
 </Column>
 </Row>
@@ -103,8 +105,11 @@ crc config set pull-secret-file $CRC_HOME/pull-secret.txt
 <InlineNotification>
 
 **Note:**  While CRC's minimum memory allocation requirement is 8GB, only a single replica SPM deployment can be achieved using this.
+
 You should allocate as many resources as are available.
+
 The greater the workload the greater the memory and processor requirements.
+
 Any changes to the crc config require you to delete the cluster and start a new one.
 
 </InlineNotification>
@@ -139,9 +144,11 @@ Note the `kubeadmin` and `developer` credentials for later use.
 
 <InlineNotification>
 
-**Note:**  For the rest of the guide you can substitute the credentials you received when you started your cluster for $KUBEADMN_PSWD and $KUBEDEVEL_PSWD.
+**Note:**  For the rest of the guide you can substitute the credentials you received when you started your cluster for `$KUBEADMN_PSWD` and `$KUBEDEVEL_PSWD`.
+
 Alternatively, these credentials are returned by the `crc console --credentials` command.
-This guide uses $KUBEDEVEL_PSWD and $KUBEADMN_PSWD environment variables.
+This guide uses `$KUBEDEVEL_PSWD` and `$KUBEADMN_PSWD` environment variables.
+
 You may find it convenient to to the same, so you can copy and paste commands without having to switch values:
 
 `export KUBEADMN_PSWD=yourKubeAdminPassword`
@@ -173,13 +180,13 @@ crc delete
 
 Create a project for the SPM deployment, again use an environment variable for your convenience when following the guide.
 
-Create the environment variable, you can set to value to anything you like, but it should consist of lower case alphanumeric characters or '-', and must start and end with an alphanumeric character (e.g. 'my-name',  or '123-abc"):
+Create the environment variable, you can set to value to anything you like, but it should consist of lower case alphanumeric characters or `-`, and must start and end with an alphanumeric character (e.g. `my-name`,  or `123-abc`):
 
 ```shell
 export releasename="spm-deploy"
 ```
 
-Login as kubeadmin:
+Log in as kubeadmin:
 
 ```shell
 oc login -u kubeadmin -p $KUBEADMN_PSWD https://api.crc.testing:6443
@@ -198,17 +205,6 @@ kubectl config set-context --current --namespace $releasename
 ```
 
 ## Deployment Process
-
-Creation of a Security Context Constraint (SCC).
-This SCC allows DB2 and MQ images to run as they require certain permissions, which are by default blocked in OpenShift.
-
-You can find a shell script to configure the SCC located at `$SPM_HOME/helm-charts/spm/prereqs`.
-Apply the policy by running the following script:
-
-```shell
-cd $SPM_HOME/helm-charts/spm/prereqs
-./createSCC.sh -n $releasename
-```
 
 Enable the Image Registry default route:
 
@@ -229,24 +225,49 @@ oc adm policy add-cluster-role-to-user registry-viewer kube:admin
 
 **Note:**  This step overwrites any existing policy that has the same name.
 
-If policy already exists, add system:serviceaccount:${releasename}:default to the users array in the policy by editing the policy YAML or by running the following command:
+If policy already exists, add `system:serviceaccount:${releasename}:default` to the users array in the policy by editing the policy YAML or by running the following command:
 
 `oc adm policy add-scc-to-user spm-dev-scc -z system:serviceaccount:${releasename}:default`
 
 </InlineNotification>
 
-You can verify that the SCC for SPM has been created:
+Log in to the OpenShift registry:
 
+```shell
+docker login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps-crc.testing
 ```
-kubectl get scc
-NAME               AGE
-anyuid             1d
-hostaccess         1d
-hostmount-anyuid   1d
-hostnetwork        1d
-node-exporter      1d
-nonroot            1d
-privileged         1d
-restricted         1d
-spm-dev-scc        1m
+
+## Hostname configuration for CRC
+
+This runbook uses a generic hostname of `spm-ocp.apps-crc.testing` as an example in commands and the configuration files.
+You should add the CRC IP address to the `hosts` file by using the generic hostname, or else modify the usage of `spm-ocp.apps-crc.testing` in this runbook to reflect your local hostname.
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
+```shell
+echo -e "$(crc ip)\tspm-ocp.apps-crc.testing" | sudo tee -a /etc/hosts
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows">
+<Row>
+<Column>
+
+```powershell
+Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "$(crc ip)\tspm-ocp.apps-crc.testing" -Force
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+Where `crc ip` is the command that returns the CRC VM's IP address that is accessible from your workstation.

@@ -41,12 +41,52 @@
 }
 
 @media (min-width: 66rem) {
+  [class*='Tabs-module--panel'] {
+    padding-bottom: 1rem;
+    max-width: 75%;
+  }
+  [class*='Markdown-module--list'] {
+    max-width: 90%;
+    margin-bottom: 10px;
+  }
+
   [class*='Tabs-module--panel'] .Code-module--row--3_5cm {
     width: 100%;
   }
+
   [class*='Markdown-module--list'].bx--list--nested {
     width: calc(100% - 1rem);
     margin-bottom: 10px;
+  }
+
+  .page-table__container.bx--col-lg-8 {
+    display: block;
+    flex: 0 0 90%;
+    max-width: 90%;
+  }
+  .bx--no-gutter-sm.bx--col-lg-8 {
+    display: block;
+    flex: 0 0 90%;
+    max-width: 90%;
+  }
+
+  li [class*='InlineNotification-module--notification'].bx--col-md-6.bx--col-lg-8 {
+    display: block;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  h3#global-properties + div.bx--row table.page-table tbody tr td:nth-child(1),
+  h3#liberty-runtime + div.bx--row + div.bx--row table.page-table tbody tr td:nth-child(1),
+  h3#batch-jobs + div.bx--row + div.bx--row table.page-table tbody tr td:nth-child(1) {
+    width: 35%;
+  }
+
+  h3#ibm-mq + div.bx--row + div.bx--row table.page-table tbody tr td:nth-child(1),
+  h3#static-content-server + div.bx--row table.page-table tbody tr td:nth-child(1),
+  h3#xml-server + div.bx--row table.page-table tbody tr td:nth-child(1),
+  h3#universal-access-react-app-optional + div.bx--row table.page-table tbody tr td:nth-child(1) {
+    width: 30%;
   }
 }
 
@@ -68,3 +108,35 @@
     display: none;
   }
 }
+
+.Code-module--row--3_5cm {
+  width: 70%;
+}
+
+[class*='Markdown-module--list'] {
+  width: 77.5%;
+}
+
+li [class*='Code-module--container'] {
+  width: 100%;
+}
+
+.bx--inline-notification.bx--inline-notification--low-contrast.bx--inline-notification--hide-close-button {
+  width: 86%;
+}
+
+[class*='InlineNotification-module--notification'].bx--col-md-6.bx--col-lg-8 {
+  display: block;
+  flex: 0 0 80%;
+  max-width: 80%;
+}
+
+[class*='Markdown-module--list-item'] .bx--row {
+  max-width: 100%;
+}
+
+[class*='Caption-module--caption'] {
+  max-width: 75%;
+}
+
+// This is where your application styles could go.

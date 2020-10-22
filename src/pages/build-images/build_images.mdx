@@ -22,21 +22,24 @@ You must be logged in to the following registries:
 
 <InlineNotification>
 
-If you do not have an active RedHat subscription, or prefer to build these images from source, see the [building Base images](../base_images) page.
+If you do not have an active RedHat subscription, or prefer to build these images from source, see [building Base images](../base_images).
 
-Should you opt to build your own base images, the `BASE_REGISTRY` argument in the below commands may be omitted, if the base images are built in the same environment.
+Should you opt to build your own base images, the `BASE_REGISTRY` argument in the following commands may be omitted, if the base images are built in the same environment.
+
 If the images are stored in a private registry, set `BASE_REGISTRY` to the registry's hostname.
 
 </InlineNotification>
 
 Now that all the elements are in place, build the images as follows:
 
-* We will use a `$DOCKER_REGISTRY` for the commands below. Please select based on the container environment you are deploying.
+* We will use a `$DOCKER_REGISTRY` for the following commands. Please select based on the container environment you are deploying:
   * CRC will be `default-route-openshift-image-registry.apps-crc.testing`
   * Minikube will be `minikube.local:5000`
   * IKS will be `us.icr.io`
 
 * To build the XML server image, run the following commands:
+
+In the following commands, `$PROJECT` refers to the name of the project in use:
 
 <Tabs>
 
@@ -47,7 +50,7 @@ Now that all the elements are in place, build the images as follows:
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/xmlserver:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver:latest \
      --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
      --file XMLServer.Dockerfile .
 ```
@@ -63,7 +66,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/xmlserver:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver:latest \
      --file XMLServer.Dockerfile .
 ```
 
@@ -85,7 +88,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/utilities:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/utilities:latest \
      --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
      --file Utilities.Dockerfile .
 ```
@@ -101,7 +104,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/utilities:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/utilities:latest \
      --file Utilities.Dockerfile .
 ```
 
@@ -118,7 +121,7 @@ docker build \
 cd $SPM_HOME/dockerfiles/Liberty/
 echo -e 'content/release-stage/ear' > .dockerignore
 docker build \
-     --tag $DOCKER_REGISTRY/batch:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/batch:latest \
      --file Batch.Dockerfile .
 rm -f .dockerignore
 ```
@@ -128,13 +131,13 @@ rm -f .dockerignore
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/servercode:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/servercode:latest \
      --file ServerEAR.Dockerfile \
      --build-arg "MQ_RA_LICENSE=--acceptLicense" .
 ```
 
 * To build the application image, run the following commands for each of the applications (EAR files) needed:
-  * Take note of the `SERVERCODE_IMAGE` build argument which references the server code image above - this gives the images a common base
+  * Take note of the `SERVERCODE_IMAGE` build argument which references the server code image - this gives the images a common base
 
 <Tabs>
 
@@ -145,9 +148,9 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/curam:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/curam:latest \
      --file ClientEAR.Dockerfile \
-     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/servercode:latest" \
+     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/$PROJECT/servercode:latest" \
      --build-arg "EAR_NAME=Curam" .
 ```
 
@@ -166,9 +169,9 @@ For additional SPM applications (e.g. Rest, CitizenPortal), make the following c
 
 ```shell
 docker build \
-     --tag $DOCKER_REGISTRY/rest:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/rest:latest \
      --file ClientEAR.Dockerfile \
-     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/servercode:latest" \
+     --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/$PROJECT/servercode:latest" \
      --build-arg "EAR_NAME=Rest" .
 ```
 
@@ -189,7 +192,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/httpd:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/httpd:latest \
      --file StaticContent.Dockerfile \
      --build-arg "BASE_REGISTRY=registry.redhat.io/" \
      --build-arg "CONTENT_DIR=/CuramStatic" .
@@ -206,7 +209,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/httpd:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/httpd:latest \
      --file StaticContent.Dockerfile \
      --build-arg "CONTENT_DIR=/CuramStatic" .
 ```
@@ -219,7 +222,7 @@ docker build \
 
 <InlineNotification>
 
-**Note:** The `CONTENT_DIR` build argument must correspond to the value set in `curam-config.xml` when the webclient was build.
+**Note:** The `CONTENT_DIR` build argument must correspond to the value set in `curam-config.xml` when the webclient was built.
 
 </InlineNotification>
 
@@ -244,7 +247,7 @@ This is applicable only if you are licensed for [Universal Access](https://www.i
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/uawebapp:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/uawebapp:latest \
      --file UAWebApp.Dockerfile \
      --build-arg "BASE_REGISTRY=registry.redhat.io/" \
      --build-arg "CONTENT_DIR=/universal" .
@@ -261,7 +264,7 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
-     --tag $DOCKER_REGISTRY/uawebapp:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/uawebapp:latest \
      --file UAWebApp.Dockerfile \
      --build-arg "CONTENT_DIR=/universal" .
 ```
@@ -278,12 +281,12 @@ When you set up Minikube by following the steps in [Minikube](/prereq/kubernetes
 To push the new images that you created to the registry, run the following shell script:
 
 ```shell
-docker push $DOCKER_REGISTRY/xmlserver:latest
-docker push $DOCKER_REGISTRY/utilities:latest
-docker push $DOCKER_REGISTRY/batch:latest
-docker push $DOCKER_REGISTRY/servercode:latest
-docker push $DOCKER_REGISTRY/curam:latest
-docker push $DOCKER_REGISTRY/httpd:latest
+docker push $DOCKER_REGISTRY/$PROJECT/xmlserver:latest
+docker push $DOCKER_REGISTRY/$PROJECT/utilities:latest
+docker push $DOCKER_REGISTRY/$PROJECT/batch:latest
+docker push $DOCKER_REGISTRY/$PROJECT/servercode:latest
+docker push $DOCKER_REGISTRY/$PROJECT/curam:latest
+docker push $DOCKER_REGISTRY/$PROJECT/httpd:latest
 ```
 
 <InlineNotification>
@@ -291,8 +294,8 @@ docker push $DOCKER_REGISTRY/httpd:latest
 If any additional images were built (for other SPM applications or for the React application), do not forget to push the images too. For example:
 
 ```shell
-docker push $DOCKER_REGISTRY/rest:latest
-docker push $DOCKER_REGISTRY/uawebapp:latest
+docker push $DOCKER_REGISTRY/$PROJECT/rest:latest
+docker push $DOCKER_REGISTRY/$PROJECT/uawebapp:latest
 ```
 
 </InlineNotification>
@@ -318,9 +321,33 @@ docker push us.icr.io/<ICR_NAMESPACE>/httpd:latest
 
 Confirm that the pushes to the Docker registry succeeded. Run the following command:
 
+<Tabs>
+
+<Tab label="Minikube">
+<Row>
+<Column>
+
 ```shell
 curl http://$DOCKER_REGISTRY/v2/_catalog
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="CRC">
+<Row>
+<Column>
+
+```shell
+curl -k -ukubeadmin:$(oc whoami -t) https://default-route-openshift-image-registry.apps-crc.testing/v2/_catalog
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 The command returns the following result:
 

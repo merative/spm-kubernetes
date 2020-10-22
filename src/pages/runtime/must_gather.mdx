@@ -41,7 +41,7 @@ description: MustGather
 The information laid out in this section details the information needed when raising a support case. Note that not all information detailed is necessary when
 raising an issue on [GitHub](https://github.com/IBM/spm-kubernetes/issues).
 
-What information should I collect for issues with IBM Cúram Social Program Management (SPM) in a Kubernetes environment to assist IBM Support with their investigations?
+What information should I collect for issues with IBM® Cúram Social Program Management (SPM) in a Kubernetes environment to assist IBM Support with their investigations?
 
 First, a comprehensive description of the problem along with answers to the following questions:
 
@@ -50,7 +50,7 @@ First, a comprehensive description of the problem along with answers to the foll
 * Have you identified any workarounds or mitigations?
 * What investigation have you already performed; for example, via the IBM Support site, Google, etc.?
 
-Beyond the above you will need to collect general third party software information (for example, versions) and more specific diagnostic, log, and other information for the areas where you are seeing the issue.
+Beyond the answers to these questions, you need to collect general third party software information (for example, versions) and more specific diagnostic, log, and other information for the areas where you are seeing the issue.
 This general information is described in the sections that follow.
 For issues with the following third party software you should consult their external MustGather links as appropriate:
 
@@ -68,10 +68,10 @@ In general:
 * Do not provide any unanonymized data or information.
 * Save all output to text files or files of appropriate formats. Include the command that created the output file.
 * Logs and other artifacts can only be obtained from a Kubernetes pod if the pod is running; the two exceptions are:
-  * stdout is still available via `kubectl logs` (see below for detail) even if the pod is in a non-running state such as completed
-  * logs (see below) that are stored persistently are available over the lifetime of that storage medium
+  * stdout is still available via `kubectl logs` (see [stdout logs from pods](#stdout-logs-from-pods) for detail) even if the pod is in a non-running state such as completed
+  * logs that are stored persistently are available over the lifetime of that storage medium
 * Regarding command examples that follow:
-  * In commands with variable information, such as namespaces, these are represented below by angle brackets, which you must replace.
+  * In commands with variable information, such as namespaces, these are represented in the example commands by angle brackets, which you must replace.
   * Commands where additional options are possible are indicated by an ellipses: ...
 
 ## Basic MustGather information
@@ -89,7 +89,7 @@ Because there are many layers of software and interdependencies the following re
 
 ### Operating system and platform
 
-Include this information for the relevant platform where you build Cúram SPM.
+Include this information for the relevant platform where you build SPM.
 
 On most systems the following command provides basic platform and operating system information:
 
@@ -179,7 +179,7 @@ If you encounter any errors, correct these, and recreate your issue.
 ### Helm Chart rendering
 
 Running the `helm template` command processes the chart and generates output similar to what would be generated during deployment;
-however, the `helm install` command (see below) provides additional information; notably overrides provided via the install.
+however, the `helm install` command (see the following examples) provides additional information; notably overrides provided via the install.
 So, where possible, the output from `helm install` is preferable to that of `helm template`.
 
 ```
@@ -240,7 +240,7 @@ For each of the pods displayed by the `kubectl get pods` command use the pod nam
 kubectl describe pod <pod_name> --namespace <name_space> ...
 ```
 
-A convenient way to run the above command for all the pods in a namespace:
+A convenient way to run the `kubectl describe pod <pod_name> --namespace <name_space> ...` command for all the pods in a namespace is as follows:
 
 ```
 mkdir pod
@@ -248,7 +248,7 @@ pods=`kubectl get pods -o name --namespace <name_space>`
 for p in $pods ; do kubectl describe $p --namespace <name_space> > $p.txt ; done
 ```
 
-The results will be in the `pod` folder created above.
+The results will be in the `pod` folder created using the `kubectl` command.
 
 ## Detailed MustGather for logs and other artifacts
 
@@ -265,7 +265,7 @@ kubectl cp <name_space>/<pod_name>:/logs /tmp/logs
 kubectl exec -n <name_space> <pod_name> -- tar cf - /logs | tar xf - -C /tmp
 ```
 
-**Note:** Both of the above command formats produce the following spurious, benign error which you can ignore:
+**Note:** Both of the above `kubectl` command formats produce the following spurious, benign error which you can ignore:
 
 ```
 tar: Removing leading `/' from member names
@@ -349,7 +349,7 @@ bootstrap.properties
 adc_conf/
 ```
 
-The WebSphere Liberty `server package` command can be used to zip up the server; but, the logs folder, being stored separately, must be handled directly from the `/logs` folder (see above).
+The WebSphere Liberty `server package` command can be used to zip up the server; but, the logs folder, being stored separately, must be handled directly from the `/logs` folder.
 
 ### MQ logs and artifacts
 
@@ -360,7 +360,7 @@ So, if your Helm release was named "purpleclown" you would find pod names like t
 * `purpleclown-mqserver-curam-557d64c76-7sm8r`
 * `purpleclown-mqserver-rest-dbb994dc8-4p5cv`
 
-where the number of pods may vary depending on the Cúram SPM applications deployed.
+where the number of pods may vary depending on the SPM applications deployed.
 
 The location of MQ logs is inside the MQ pods is as documented in the [MQ Knowledge Center](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.tro.doc/q039570_.htm).
 You can interrogate the various log, error, and trace locations identified in the MQ Knowledge Center (and its MustGather) by accessing the MQ pod's shell; for example:
@@ -428,15 +428,3 @@ would show the relevant logs:
 -rw-r--r-- 1 default root    7826 Jul 28 09:32 /var/log/httpd/access_log
 -rw-r--r-- 1 default root    3297 Jul 28 09:25 /var/log/httpd/error_log
 ```
-
-### LDAP
-
-LDAP pods are identified by the pod naming pattern beginning with: `<helm_release_name>-openldap-`.
-
-So, if your Helm release was named "purpleclown" you would find pods named like the following from a `kubectl get pods` command:
-
-* `purpleclown-openldap-7b4b5855cc-b9j5z`
-
-where the number of pods may vary depending on the number of replicas specified.
-
-Use the `kubctl logs` command to view the LDAP pod's stdout.

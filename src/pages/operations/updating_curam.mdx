@@ -3,7 +3,7 @@ title: Updating SPM deployment
 description: Updating SPM deployment
 ---
 
-One of the benefits of SPM on Kubernetes is the reduced time required to roll out a new version of your application from development all the way to production.
+One of the benefits of IBM® Cúram Social Program Management (SPM) on Kubernetes is the reduced time required to roll out a new version of your application from development all the way to production.
 
 Depending on the type of change that needs to be made, there are multiple options for rolling out the change. The different options are visualized in figure 1.
 
@@ -54,7 +54,7 @@ An update using Helm can include configuration changes, as well as a change of D
 helm upgrade <releasename> <chartName> --reuse-values --set images.tag=vNext
 ```
 
-The above command keeps all the values used with the original `helm install` due to the `--reuse-values` flag, and only changes the `images.tag` value, so all new images are deployed with the `vNext` tag.
+The `helm upgrade` command keeps all the values used with the original `helm install` due to the `--reuse-values` flag, and only changes the `images.tag` value, so all new images are deployed with the `vNext` tag.
 
 Like `kubectl`, if you must reverse any configuration changes applied by the last action, use `helm rollback <releasename>`.
 
@@ -62,7 +62,7 @@ The full documentation of the `helm upgrade` command is available on the Helm [U
 
 ## Upgrade with SQL changes
 
-Both of the scenarios above assume a no-impact, zero-downtime upgrade, that is no changes to the database are required.
+Both of the scenarios described assume a no-impact, zero-downtime upgrade, that is no changes to the database are required.
 However, should the rollout include schema changes, the application must be halted. This must be coordinated together with your IT Operations and DBA teams.
 
 To halt the application for the duration of the upgrade without deleting all Kubernetes objects, the application can be scaled down to 0 pods:
@@ -71,7 +71,8 @@ To halt the application for the duration of the upgrade without deleting all Kub
 kubectl scale --replicas=0 deployment/<deploymentName>
 ```
 
-After the database upgrade is completed, the new version of application code can be rolled out using the Helm method described above.
+After the database upgrade is completed, the new version of application code can be rolled out using the Helm method described in
+[Rolling out updates with Helm](#rolling-out-updates-with-helm).
 
 <InlineNotification>
 

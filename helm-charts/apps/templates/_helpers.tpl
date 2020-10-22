@@ -79,7 +79,7 @@ JMX Stats Persistence enablement options
 {{- end -}}
 
 {{/*
-Prometheus JMX Exporter 
+Prometheus JMX Exporter
 */}}
 {{- define "jmxExporter.config" -}}
 {{- printf "-javaagent:/config/configDropins/overrides/jmx_prometheus_javaagent.jar=%s:%d:/config/configDropins/overrides/config.yaml"  .Values.global.apps.common.jmxExporter.agent.host ( .Values.global.apps.common.jmxExporter.agent.port | default 8080 | int ) -}}
@@ -141,10 +141,14 @@ JMS Topic Connection Factory properties
 <properties.wmqJms
   {{- if .Values.global.mq.useConnectionNameList }}
   connectionNameList="{{ .Values.global.apps.config.curam.mqConnectionNameList }}"
-  queueManager="QM_{{ .Values.global.mq.objectSuffix }}_curam"
+  queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  hostName="{{ .Release.Name }}-mqserver-curam"
+  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- else }}
+  hostName="{{ $.Release.Name }}-mqserver-curam"
+  {{- end }}
   port="${listenerPort}"
   queueManager="${mqName}"
   channel="${channel}"
@@ -187,10 +191,14 @@ JMS Topic Activation Spec properties
   destinationType="javax.jms.Topic"
   {{- if .Values.global.mq.useConnectionNameList }}
   connectionNameList="{{ .Values.global.apps.config.curam.mqConnectionNameList }}"
-  queueManager="QM_{{ .Values.global.mq.objectSuffix }}_curam"
+  queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  hostName="{{ .Release.Name }}-mqserver-curam"
+  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- else }}
+  hostName="{{ $.Release.Name }}-mqserver-curam"
+  {{- end }}
   port="${listenerPort}"
   queueManager="${mqName}"
   channel="${channel}"

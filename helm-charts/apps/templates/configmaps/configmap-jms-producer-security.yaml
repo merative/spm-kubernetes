@@ -35,9 +35,7 @@ data:
 
       <basicRegistry id="basic" realm="BasicRegistry">
         <user name="${env.WebSphereUsername}" password="${env.XORWebSpherePassword}" />
-        {{- if not .Values.global.openldap.enabled }}
         <user name="${env.SYSTEM_USER}" password="${env.SYSTEM_PASSWORD}" />
-        {{- end }}
 
         <group name="everyone"/>
       </basicRegistry>
@@ -57,9 +55,7 @@ data:
         <options
           exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
-          {{- if .Values.global.openldap.enabled }}
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"
-          {{- end }}
         />
       </jaasLoginModule>
 
@@ -68,9 +64,7 @@ data:
         <options
           exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
-          {{- if .Values.global.openldap.enabled }}
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"
-          {{- end }}
         />
       </jaasLoginModule>
 

@@ -97,11 +97,6 @@ spec:
           configMap:
             name: {{ $.Release.Name }}-birt-bind
         {{- end }}
-        {{- if $.Values.global.openldap.enabled }}
-        - name: openldap-cm
-          configMap:
-            name: {{ $.Release.Name }}-openldap-cm
-        {{- end }}
         {{- if $.Values.global.isam.enabled }}
         - name: isam-cm
           configMap:
@@ -159,11 +154,19 @@ spec:
           command:
             - /bin/sh
             - -c
+            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+            - >
+              until nc -z -w3 {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq 1414; do
+                echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
+                sleep 2;
+              done;
+            {{- else }}
             - >
               until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }} 1414; do
                 echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}:1414 to be reachable;
                 sleep 2;
               done;
+            {{- end }}
         {{- end }}
         {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
         - name: import-db2-cert
@@ -289,7 +292,11 @@ spec:
               value: CHL_{{ $qmgrName | upper }}
             {{- else }}
             - name: MQ_HOST_NAME
+            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+              value: {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq
+            {{- else }}
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
+            {{- end }}
             - name: MQ_QMGR_NAME
               value: {{ $.Values.global.mq.queueManager.name }}
             - name: MQ_CHANNEL_NAME
@@ -393,11 +400,6 @@ spec:
             - name: ltpa-secret
               mountPath: /opt/ibm/wlp/output/defaultServer/resources/security/ltpa.keys
               subPath: ltpa.keys
-            {{- if $.Values.global.openldap.enabled }}
-            - name: openldap-cm
-              mountPath: /config/configDropins/overrides/server_openldap.xml
-              subPath: server_openldap.xml
-            {{- end }}
             {{- if $.Values.global.isam.enabled }}
             - name: isam-cm
               mountPath: /config/configDropins/overrides/server_isam.xml

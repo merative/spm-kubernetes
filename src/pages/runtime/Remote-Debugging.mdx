@@ -6,7 +6,7 @@ description: Remote debugging
 ## Remote debugging
 
 It might be necessary to use a remote debugger to step through code execution on the cluster, where log analysis does not provide sufficient information to resolve an issue.
-The following is an outline of the steps required to connect eclipse's remote debugger to the SPM code running on the cluster.
+The following is an outline of the steps required to connect eclipse's remote debugger to the IBM® Cúram Social Program Management (SPM) code running on the cluster.
 
 * Edit the Cúram Producer deployment spec to pass debug arguments to the WebSphere® Liberty server.
 * Forward the debugging port from the port running the Cúram Producer pod.
@@ -43,11 +43,11 @@ In order to tail the logs while you debug use the following command:
 
 ```kubectl logs -f release-apps-curam-producer-XXXX```
 
-Note, WebSphere® Liberty will not start the Cúram application until the remote debugger attaches to the listener. Therefore, the log will not be populated before you launch the remote debugger.
+Note, WebSphere® Liberty will not start SPM until the remote debugger attaches to the listener. Therefore, the log will not be populated before you launch the remote debugger.
 
 ### Create the remote debug configuration
 
-From the Eclipse debug view, create a Java Remote Application. Attach an appropriate source code project, and attach the Java Remote Application to the port you forwarded in the above step.
+From the Eclipse debug view, create a Java Remote Application. Attach an appropriate source code project, and attach the Java Remote Application to the port you forwarded in [Forward the debugging port](#forward-the-debugging-port).
 
 ![Figure 1: Example Debugger Config](../../images/remote_debugger.png)
 <Caption>

@@ -4,7 +4,7 @@ description: Frequently Asked Questions
 ---
 <PageDescription>
 
-List of the frequently asked question in relation to SPM on Cloud
+List of the frequently asked question in relation to IBM® Cúram Social Program Management (SPM) on Cloud
 
 </PageDescription>
 
@@ -42,17 +42,16 @@ Therefore, for example, SPM hosted on the IBM Cloud VPC with integration with le
 SPM runtime application is not hybrid - that is, part running on the cloud and part running on-premises.
 
 </InlineNotification>
-
-In the example mentioned above, the Social Program ecosystem architecture is hybrid – that is, some applications running on-premises with SPM running on the cloud.
+<br/>
+In the SPM hosting example mentioned, the Social Program ecosystem architecture is hybrid – that is, some applications running on-premises with SPM running on the cloud.
 </AccordionItem>
 
 <AccordionItem title="Can the SPM application be decomposed to run in a hybrid cloud architecture?">
-A potential scenario would be the SPM caseworker application running on-premises while the SPM portals such as Citizen Engagement or Providers are running on the Cloud.
+A potential scenario would be the SPM caseworker application running on-premises while the SPM portals such as Citizen Engagement or Providers are running on the Cloud. Although possible, this architecture can lead into complications.
 
-Although possible, this architecture can lead into complications.
 SPM was designed according to the Shared Database Pattern; therefore, the caseworker application and the portals share the same physical database.
 
-In such scenario described above, the database would be geographically distant from one of the tenants which could result into issues that are difficult to address:
+In such a scenario described, the database would be geographically distant from one of the tenants which could result into issues that are difficult to address:
 
 * Latency to run high volume of operations against a remote database.
 * Eventual (or even prolonged) unavailability of the remote database due to network glitches.
@@ -97,7 +96,7 @@ No. SPM only supports WebSphere Liberty when containerized as Docker images with
 SPM does not support WebSphere Liberty hosted directly on a virtual machine or bare metal, outside of Kubernetes.
 
 </InlineNotification>
-
+<br/>
 When the customer opens a ticket for a problem with SPM on WebSphere Liberty, the customer will need to provide the server.xml, Dockerfiles and Helm Charts used to deploy SPM on Kubernetes.
 
 If the customer is testing SPM on WebSphere Liberty on a virtual machine, the problem needs to be reproducible in Kubernetes and the Kubernetes artifacts (i.e. server.xml, Dockerfiles and Helm Charts) must be provided.
@@ -108,7 +107,16 @@ SPM will not troubleshoot, provide guidance or advise on WebSphere Liberty runni
 <AccordionItem title="What is the Universal Base Image (UBI)?">
 UBI consists of enterprise-ready and OCI-compliant Linux containers that offer greater security with stricter defaults than general images. By basing the images on UBI, deployment of SPM on OpenShift can be certified.
 
-For more information, see Red Hat's [Universal Base Image](https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image)
+For more information, see Red Hat's [Universal Base Image](https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image).
+</AccordionItem>
+
+<AccordionItem title="Can we use Operators?">
+No. SPM does not support deployment on IBM Cloud Kubernetes Services via Operators. You must use Helm.
+</AccordionItem>
+
+<AccordionItem title="What happened to the OpenLDAP chart in the runbook?">
+As of Release 20.10.0, combined with SPM 7.0.11.0, the OpenLDAP chart has been removed, as there is no longer a dependency on an external identity provider for elasticity of SPM.
+If you need access to this chart, refer to an older release of the runbook.
 </AccordionItem>
 
 </Accordion>

@@ -206,8 +206,6 @@ global:
         jvm:
           - "-Xms512m"
           - "-Xmx512m"
-  openldap:
-    enabled: false
   ingress:
     enabled: false
     hostname: ''
@@ -256,6 +254,7 @@ batch:
   programs:
     queued:
       schedule: "*/30 * * * *"
+  streamed: {}
 
 # Override values in 'uawebapp' Chart
 uawebapp:

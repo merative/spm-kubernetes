@@ -15,7 +15,7 @@
 ###############################################################################
 apiVersion: v2
 kubeVersion: ">=1.16"
-appVersion: "7.0.10.0"
+appVersion: "7.0.11.0"
 name: web
 description: Chart for SPM webserver within a Kubernetes Cluster
 version: 3.0.2

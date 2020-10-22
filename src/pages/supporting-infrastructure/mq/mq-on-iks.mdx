@@ -1,10 +1,10 @@
 ---
 title: MQ on IKS
 description: MQ on IKS
-tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift']
+tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift','MQ Containers']
 ---
 
-Social Program Management supports only **IBM MQ LTS on a VM** , when running on IKS. The steps below outline how to do this. In this runbook we will outline the steps to create:
+IBM® Cúram Social Program Management (SPM) supports only **IBM MQ LTS on a VM** , when running on IKS. The following steps outline how to do this. In this runbook we will outline the steps to create:
 
 * [Queues](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q003090_.htm)
 * [Listeners](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q003300_.htm)
@@ -21,21 +21,21 @@ For the runbook, two standalone VMs were used as MQ nodes.
 
 ### Queue manager names
 
-For runbook configuration, the following naming conversion was used throughout the MQ setup: QM_NamingConvention_AppName. This must be unique, but ensure you change the commands used on this page accordingly.
+For runbook configuration, the following naming conversion was used throughout the MQ setup: `NamingConvention_AppName`. This must be unique, but ensure you change the commands used on this page accordingly.
 
 **Queue Name:**
 
-* QM_minikube_curam
+* minikube_curam
 
 **Channel Name:** This value should be all capitals
 
-CHL_NamingConvention_AppName
+`CHL_NamingConvention_AppName`
 
 * CHL_MINIKUBE_CURAM
 
 **Listeners Name:** This value should be all capitals
 
-LS_NamingConvention_AppName
+`LS_NamingConvention_AppName`
 
 * LS_MINIKUBE_CURAM
 
@@ -115,29 +115,29 @@ When creating the queue, start on the secondary node first then move to the prim
 On the secondary MQ node, run the following commands:
 
 ```shell
-crtmqm -ld /MQHA/logs -md /MQHA/qmgrs QM_minikube_curam
-dspmqinf -o command QM_minikube_curam
+crtmqm -ld /MQHA/logs -md /MQHA/qmgrs minikube_curam
+dspmqinf -o command minikube_curam
 ```
 
-Save the output of the above command. It should look like the following.
+Save the output of the `dspmqinf -o command minikube_curam` command, it should look like the following:
 
 ```shell
-addmqinf -s QueueManager -v Name=QM_minikube_curam -v Directory=QM_minikube_curam -v Prefix=/var/mqm -v DataPath=/MQHA/qmgrs/QM_minikube_curam
+addmqinf -s QueueManager -v Name=minikube_curam -v Directory=minikube_curam -v Prefix=/var/mqm -v DataPath=/MQHA/qmgrs/minikube_curam
 ```
 
-Wait for /MQHA/qmgrs/QM_minikube_curam/qm.ini to appear on other node
+Wait for /MQHA/qmgrs/minikube_curam/qm.ini to appear on other node
 
 On the primary MQ node run the following commands:
 
 ```shell
-addmqinf -s QueueManager -v Name=QM_minikube_curam -v Directory=QM_minikube_curam -v Prefix=/var/mqm -v DataPath=/MQHA/qmgrs/QM_minikube_curam
-strmqm -x QM_minikube_curam
+addmqinf -s QueueManager -v Name=minikube_curam -v Directory=minikube_curam -v Prefix=/var/mqm -v DataPath=/MQHA/qmgrs/minikube_curam
+strmqm -x minikube_curam
 ```
 
 On the secondary MQ node run the following command:
 
 ```shell
-strmqm -x QM_minikube_curam
+strmqm -x minikube_curam
 ```
 
 ## Create queues
@@ -145,7 +145,7 @@ strmqm -x QM_minikube_curam
 On the primary MQ node run the following commands:
 
 ```shell
-runmqsc QM_minikube_curam <<-EOS
+runmqsc minikube_curam <<-EOS
 DEFINE QLOCAL(QN.CURAMDEADMESSAGEQUEUE) CLWLUSEQ (ANY) DEFBIND (NOTFIXED)
 DEFINE QLOCAL(QN.WORKFLOWERROR) BOTHRESH(5) BOQNAME(QN.CURAMDEADMESSAGEQUEUE) CLWLUSEQ (ANY) DEFBIND (NOTFIXED)
 DEFINE QLOCAL(QN.WORKFLOWENACTMENT) BOTHRESH(5) BOQNAME(QN.WORKFLOWERROR) CLWLUSEQ (ANY) DEFBIND (NOTFIXED)
@@ -162,7 +162,7 @@ EOS
 On the primary MQ node run the following commands:
 
 ```shell
-runmqsc QM_minikube_curam <<-EOS
+runmqsc minikube_curam <<-EOS
 DEFINE LISTENER (LS_MINIKUBE_CURAM) TRPTYPE (TCP) CONTROL (QMGR) PORT (1414)
 START LISTENER (LS_MINIKUBE_CURAM)
 EOS
@@ -172,19 +172,19 @@ EOS
 
 On the primary MQ node run the following command:
 
-* Enter your MQ node names into the commands below
+* Enter your MQ node names into the following commands:
 
 <InlineNotification>
 
 **Note:** CERTLABL expects the value to be lower case ibmwebspheremq + Queue Name
-For this example it will be ibmwebspheremqqm_minikube_curam
+For this example it will be ibmwebspheremqminikube_curam
 
 </InlineNotification>
 
 ```shell
-runmqsc QM_minikube_curam <<-EOS
-DEFINE CHANNEL(CHL_MINIKUBE_CURAM) CHLTYPE(SVRCONN)  TRPTYPE(TCP) MCAUSER('mqm') SSLCIPH (TLS_RSA_WITH_AES_128_CBC_SHA256)  CERTLABL ('ibmwebspheremqqm_minikube_curam') SSLCAUTH (OPTIONAL) REPLACE
-DEFINE CHANNEL(CHL_MINIKUBE_CURAM) CHLTYPE(CLNTCONN) TRPTYPE(TCP) CONNAME('Node1(1414),Node2(1414)') QMNAME(QM_minikube_curam) SSLCIPH (TLS_RSA_WITH_AES_128_CBC_SHA256) CERTLABL ('ibmwebspheremqqm_minikube_curam') REPLACE
+runmqsc minikube_curam <<-EOS
+DEFINE CHANNEL(CHL_MINIKUBE_CURAM) CHLTYPE(SVRCONN)  TRPTYPE(TCP) MCAUSER('mqm') SSLCIPH (TLS_RSA_WITH_AES_128_CBC_SHA256)  CERTLABL ('ibmwebspheremqminikube_curam') SSLCAUTH (OPTIONAL) REPLACE
+DEFINE CHANNEL(CHL_MINIKUBE_CURAM) CHLTYPE(CLNTCONN) TRPTYPE(TCP) CONNAME('Node1(1414),Node2(1414)') QMNAME(minikube_curam) SSLCIPH (TLS_RSA_WITH_AES_128_CBC_SHA256) CERTLABL ('ibmwebspheremqminikube_curam') REPLACE
 EOS
 ```
 
@@ -193,7 +193,7 @@ EOS
 On the primary MQ node run the following command:
 
 ```shell
-runmqsc QM_minikube_curam <<-EOS
+runmqsc minikube_curam <<-EOS
 DEFINE TOPIC (CURAMCACHEINVALIDATIONTOPIC) TOPICSTR (CURAMCACHEINVALIDATIONTOPIC)
 ALTER QMGR CONNAUTH('CHECK.PWD')
 DEFINE AUTHINFO('CHECK.PWD') AUTHTYPE(IDPWOS) CHCKLOCL(OPTIONAL) CHCKCLNT(OPTIONAL)
@@ -211,49 +211,52 @@ The configuration of security is in four parts
 
 <InlineNotification>
 
-**Note:** The application pods run as a non-root user (default). This non-root user must exist on both MQ nodes.
+**Note:**
+
+The application pods must connect to MQ using a non-privileged account. The example commands use `mqclient` as the non-privileged account.
+This username must be set in the secret referenced by the `global.mq.queueManager.secret.name` property. See the [Handling Secrets](/deployment/secrets) page for more information.
 
 </InlineNotification>
 
 On the secondary MQ node run the following command:
 
 ```shell
-useradd -g 0 -M default && usermod -L default
+useradd -g 0 -M mqclient && usermod -L mqclient
 ```
 
 On the primary MQ node run the following commands:
 
 ```shell
-useradd -g 0 -M default && usermod -L default
-runmqsc QM_minikube_curam <<-EOS
-SET AUTHREC OBJTYPE(QMGR) PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.DPENACTMENT') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.DPERROR') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWACTIVITY') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWENACTMENT') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWERROR') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.CURAMDEADMESSAGEQUEUE') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(LISTENER) PROFILE('LS_MINIKUBE_CURAM') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(CHANNEL) PROFILE('CHL_MINIKUBE_CURAM') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(CLNTCONN) PROFILE('CHL_MINIKUBE_CURAM') PRINCIPAL('default') AUTHADD(ALL)
-SET AUTHREC OBJTYPE(TOPIC) PROFILE('CURAMCACHEINVALIDATIONTOPIC') PRINCIPAL('default') AUTHADD(ALL)
+useradd -g 0 -M mqclient && usermod -L mqclient
+runmqsc minikube_curam <<-EOS
+SET AUTHREC OBJTYPE(QMGR) PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.DPENACTMENT') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.DPERROR') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWACTIVITY') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWENACTMENT') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.WORKFLOWERROR') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(QUEUE) PROFILE('QN.CURAMDEADMESSAGEQUEUE') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(LISTENER) PROFILE('LS_MINIKUBE_CURAM') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(CHANNEL) PROFILE('CHL_MINIKUBE_CURAM') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(CLNTCONN) PROFILE('CHL_MINIKUBE_CURAM') PRINCIPAL('mqclient') AUTHADD(ALL)
+SET AUTHREC OBJTYPE(TOPIC) PROFILE('CURAMCACHEINVALIDATIONTOPIC') PRINCIPAL('mqclient') AUTHADD(ALL)
 EOS
 ```
 
 ```shell
-runmqckm -keydb -create -db /MQHA/qmgrs/QM_minikube_curam/ssl/key.kdb -type cms -pw Passw0rd -stash
-runmqakm -cert -create -db /MQHA/qmgrs/QM_minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqqm_minikube_curam -size 2048 -dn "CN=QM_minikube_curam,O=IBM,C=US" -x509version 3 -expire 365 -sig_alg SHA1WithRSA
-runmqakm -cert -extract -db /MQHA/qmgrs/QM_minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqqm_minikube_curam -target /MQHA/qmgrs/QM_minikube_curam/ssl/key_QM_minikube_curam.arm
-runmqakm -cert -export -db /MQHA/qmgrs/QM_minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqqm_minikube_curam -target /MQHA/qmgrs/QM_minikube_curam/ssl/key_QM_minikube_curam.p12 -target_type pkcs12 -target_pw Passw0rd
+runmqckm -keydb -create -db /MQHA/qmgrs/minikube_curam/ssl/key.kdb -type cms -pw Passw0rd -stash
+runmqakm -cert -create -db /MQHA/qmgrs/minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqminikube_curam -size 2048 -dn "CN=minikube_curam,O=IBM,C=US" -x509version 3 -expire 365 -sig_alg SHA256WithRSA
+runmqakm -cert -extract -db /MQHA/qmgrs/minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqminikube_curam -target /MQHA/qmgrs/minikube_curam/ssl/key_minikube_curam.arm
+runmqakm -cert -export -db /MQHA/qmgrs/minikube_curam/ssl/key.kdb -stashed -label ibmwebspheremqminikube_curam -target /MQHA/qmgrs/minikube_curam/ssl/key_minikube_curam.p12 -target_type pkcs12 -target_pw Passw0rd
 ```
 
 ```shell
-openssl pkcs12 -in /MQHA/qmgrs/QM_minikube_curam/ssl/key_QM_minikube_curam.p12 -passin pass:Passw0rd -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > /MQHA/qmgrs/QM_minikube_curam/ssl/tls.key
-openssl pkcs12 -in /MQHA/qmgrs/QM_minikube_curam/ssl/key_QM_minikube_curam.p12 -passin pass:Passw0rd -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /MQHA/qmgrs/QM_minikube_curam/ssl/tls.crt
+openssl pkcs12 -in /MQHA/qmgrs/minikube_curam/ssl/key_minikube_curam.p12 -passin pass:Passw0rd -nocerts -nodes | sed -ne '/-BEGIN PRIVATE KEY-/,/-END PRIVATE KEY-/p' > /MQHA/qmgrs/minikube_curam/ssl/tls.key
+openssl pkcs12 -in /MQHA/qmgrs/minikube_curam/ssl/key_minikube_curam.p12 -passin pass:Passw0rd -clcerts -nokeys | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /MQHA/qmgrs/minikube_curam/ssl/tls.crt
 ```
 
 ```shell
-runmqsc QM_minikube_curam <<-EOS
+runmqsc minikube_curam <<-EOS
 ALTER QMGR CONNAUTH('CHECK.PWD')
 DEFINE AUTHINFO('CHECK.PWD') AUTHTYPE(IDPWOS) CHCKLOCL(OPTIONAL) CHCKCLNT(OPTIONAL)
 REFRESH SECURITY TYPE(SSL)
@@ -271,9 +274,9 @@ Used these steps if you are reconfiguring MQ or cleaning up MQ.
 On both MQ nodes run the following commands:
 
 ```shell
-endmqm -w QM_minikube_curam
-dltmqm QM_minikube_curam
-rmvmqinf QM_minikube_curam
+endmqm -w minikube_curam
+dltmqm minikube_curam
+rmvmqinf minikube_curam
 ```
 
 On either MQ node run the following commands:
@@ -282,7 +285,7 @@ On either MQ node run the following commands:
 rm -rf /MQHA/qmgrs/**
 rm -rf /MQHA/logs/**
 rm -rf /MQHA/scratch
-endmqm -w QM_minikube_curam
-dltmqm QM_minikube_curam
-rmvmqinf QM_minikube_curam
+endmqm -w minikube_curam
+dltmqm minikube_curam
+rmvmqinf minikube_curam
 ```
