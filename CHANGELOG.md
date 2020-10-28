@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.10.1
+
+### Fixed
+
+* Fixed the SPM IKS Reference Architecture diagram.
+* Fixed line duplication in mq-secret.yaml file
+
 ## v20.10.0 ![SPM 7.0.11.0](https://img.shields.io/badge/-SPM_7.0.11.0-green)
 
 ### Removed
