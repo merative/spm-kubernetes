@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v20.10.2
+
+### Fixed
+
+* Corrected the sentence on OpenShift support in Introduction page
+
 ## v20.10.1
 
 ### Fixed

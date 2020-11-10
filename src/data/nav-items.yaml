@@ -3,7 +3,7 @@
     - path: /Introduction
 - title: Architecture
   pages:
-    - title: SPM and Kubernetes 101
+    - title: SPM on Kubernetes 101
       path: /architecture/kubernetes/spm-on-kubernetes-101
     - title: Architecture Overview
       path: /architecture/arch-overview/architecture-overview
