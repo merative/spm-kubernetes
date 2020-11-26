@@ -59,7 +59,7 @@ global:
     #   curambirtviewer:
     #     enabled: false
 
-# # Override values in 'apps' Chart
+# Override values in 'apps' Chart
 apps: {}
 #   replicaCount: 1
 #   initialDelaySeconds: 60
@@ -76,13 +76,13 @@ apps: {}
 #       cpu: 0.75
 #       memory: 1Gi
 
-# # Override values in 'batch' Chart
+# Override values in 'batch' Chart
 batch: {}
 #   programs:
 #     queued:
 #       schedule: "*/30 * * * *"
 
-# # Override values in 'uawebapp' Chart
+# Override values in 'uawebapp' Chart
 uawebapp: {}
 #   replicaCount: 1
 #   imageConfig:
@@ -93,13 +93,13 @@ uawebapp: {}
 #     path: /universal/
 #   ingressPath: /universal
 
-# # Override values in 'web' Chart
+# Override values in 'web' Chart
 web: {}
 #   replicaCount: 1
 #   readinessProbe:
 #     path: /CuramStatic/
 #   ingressPath: /CuramStatic
 
-# # Override values in 'xmlserver' Chart
+# Override values in 'xmlserver' Chart
 xmlserver: {}
 #   replicaCount: 1
