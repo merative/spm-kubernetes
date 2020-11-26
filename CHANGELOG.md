@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * Updated SPM 7.0.10.0 Supported Prereqs.
-  * Kubernetes version 1.18 supported introduced.
+  * Kubernetes version 1.18 support introduced.
   * Kubernetes version 1.16 is now in a state of deprecated.
 * Clarified MQ configuration reference for container or VM.
 * Moved IKS and OpenShift considerations into Architecture
