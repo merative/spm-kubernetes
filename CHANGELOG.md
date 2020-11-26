@@ -15,10 +15,10 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* Updated SPM 7.0.10.0 Supported Prereqs.
-  * Kubernetes version 1.18 support introduced.
-  * Kubernetes version 1.16 is now in a state of deprecated.
-* Clarified MQ configuration reference for container or VM.
+* Updated SPM 7.0.10.0 Supported Prereqs
+  * Kubernetes version 1.18 support introduced
+  * Kubernetes version 1.16 is now in a state of deprecated
+* Clarified MQ configuration reference for container or VM
 * Moved IKS and OpenShift considerations into Architecture
 * Updated Nav items for considerations. *Note:* any bookmarked pages will no longer work
 * Replaced inline links with anchor links in "MustGather"
@@ -28,12 +28,12 @@ All notable changes to this project will be documented in this file
 * Provided clarification on the use of helm releasename
 * Provided clarification on the use of subnet
 * Restructure command examples so that required additional information is before the command
-* Update dev workstation archtitecture diagram to differentiate the cluster content
+* Update architecture diagram to differentiate the cluster content for a local development workstation
 
 ### Fixed
 
 * Updated sample override values to have minimal install highlighted and specifically for CRC to not include image registry credentials
-* Fixed the SPM OpenShift Reference Architecture diagram regarding the IBM MQ statefulset.
+* Fixed the SPM OpenShift Reference Architecture diagram regarding the IBM MQ statefulset
 
 ### Removed
 
