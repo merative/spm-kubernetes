@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file
 * Add a route in OpenShift to allow connections to SSO, when enabled
 * Updated the `ServerEAR.Dockerfile` to reduce layers
 * Added note with fix needed for an update in IBM MQ, the details of which can be found
-[here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).
+[here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md)
 * Added links to Architecture and Troubleshooting sections from within the flow of the document
 
 ### Changed
