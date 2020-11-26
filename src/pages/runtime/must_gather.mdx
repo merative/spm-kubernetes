@@ -1,47 +1,30 @@
 ---
-title: MustGather
-description: MustGather
+title: MustGather data for SPM
+description: MustGather data for SPM
 ---
 
 ## Collecting MustGather data for SPM on Kubernetes
 
-* [Collecting MustGather data for SPM on Kubernetes](#collecting-mustgather-data-for-spm-on-kubernetes)
-* [Introduction](#introduction)
-* [Collecting MustGather data](#collecting-mustgather-data)
-* [Basic MustGather information](#basic-mustgather-information)
-  * [Platform and version information](#platform-and-version-information)
-* [Build systems](#build-systems)
-  * [Operating system and platform](#operating-system-and-platform)
-  * [SPM and base third party software versions](#spm-and-base-third-party-software-versions)
-* [Runtime systems](#runtime-systems)
-  * [Operating systems and platforms](#operating-systems-and-platforms)
-  * [Kubernetes and related software versions](#kubernetes-and-related-software-versions)
-* [Kubernetes deployment information](#kubernetes-deployment-information)
-  * [Verify Helm Chart correctness](#verify-helm-chart-correctness)
-  * [Helm Chart rendering](#helm-chart-rendering)
-  * [Helm Chart installation](#helm-chart-installation)
-  * [Verify Helm Chart installation](#verify-helm-chart-installation)
-  * [Enquiring a Kubernetes environment](#enquiring-a-kubernetes-environment)
-* [Detailed MustGather for logs and other artifacts](#detailed-mustgather-for-logs-and-other-artifacts)
-  * [Externalizing logs and artifacts inside a Kubernetes pod](#externalizing-logs-and-artifacts-inside-a-kubernetes-pod)
-  * [Minikube logs](#minikube-logs)
-  * [stdout logs from pods](#stdout-logs-from-pods)
-  * [Third party software logs and artifacts](#third-party-software-logs-and-artifacts)
-* [Additional log files and artifacts](#additional-log-files-and-artifacts)
-  * [WebSphere Liberty stdout logs](#websphere-liberty-stdout-logs)
-  * [WebSphere Liberty configuration information](#websphere-liberty-configuration-information)
-  * [MQ logs and artifacts](#mq-logs-and-artifacts)
-  * [Cúram XML Server logs and artifacts](#curam-xml-server-logs-and-artifacts)
-  * [Cúram batch logs and artifacts](#curam-batch-logs-and-artifacts)
-  * [HTTP Server logs and artifacts](#http-server-logs-and-artifacts)
-  * [LDAP](#ldap)
+<AnchorLinks>
+  <AnchorLink>Introduction</AnchorLink>
+  <AnchorLink>Collecting MustGather data guidelines</AnchorLink>
+  <AnchorLink>General SPM MustGather</AnchorLink>
+  <AnchorLink>Runtime systems</AnchorLink>
+  <AnchorLink>Helm information</AnchorLink>
+  <AnchorLink>Kubernetes deployment information</AnchorLink>
+  <AnchorLink>Detailed MustGather for logs and other artifacts</AnchorLink>
+</AnchorLinks>
 
 ## Introduction
 
 The information laid out in this section details the information needed when raising a support case. Note that not all information detailed is necessary when
 raising an issue on [GitHub](https://github.com/IBM/spm-kubernetes/issues).
 
+### Question
+
 What information should I collect for issues with IBM® Cúram Social Program Management (SPM) in a Kubernetes environment to assist IBM Support with their investigations?
+
+### Answer
 
 First, a comprehensive description of the problem along with answers to the following questions:
 
@@ -49,6 +32,21 @@ First, a comprehensive description of the problem along with answers to the foll
 * What is the impact of the issue; for instance, frequency of occurrence and pervasiveness?
 * Have you identified any workarounds or mitigations?
 * What investigation have you already performed; for example, via the IBM Support site, Google, etc.?
+
+## Collecting MustGather data guidelines
+
+Outlines below are must gather data guidelines that we recommend are followed.
+
+* Do not provide any unanonymized data or information.
+* Save all output to text files or files of appropriate formats. Include the command that created the output file.
+* Logs and other artifacts can only be obtained from a Kubernetes pod if the pod is running; the two exceptions are:
+  * stdout is still available via `kubectl logs` (see [stdout logs from pods](#stdout-logs-from-pods) for detail) even if the pod is in a non-running state such as completed
+  * logs that are stored persistently are available over the lifetime of that storage medium
+* Regarding command examples that follow:
+  * In commands with variable information, such as namespaces, these are represented in the example commands by angle brackets, which you must replace.
+  * Commands where additional options are possible are indicated by an ellipses: ...
+
+## General SPM MustGather
 
 Beyond the answers to these questions, you need to collect general third party software information (for example, versions) and more specific diagnostic, log, and other information for the areas where you are seeing the issue.
 This general information is described in the sections that follow.
@@ -60,42 +58,6 @@ For issues with the following third party software you should consult their exte
 * [MQ](https://www.ibm.com/support/pages/read-first-collect-ibm-mq-mustgather-data-linux-unix-windows-and-ibm-i)
 
 The following sections describe how to gather information specific to SPM running on Kubernetes and provide information relating to where logs and traces reside relating to the MustGather.
-
-## Collecting MustGather data
-
-In general:
-
-* Do not provide any unanonymized data or information.
-* Save all output to text files or files of appropriate formats. Include the command that created the output file.
-* Logs and other artifacts can only be obtained from a Kubernetes pod if the pod is running; the two exceptions are:
-  * stdout is still available via `kubectl logs` (see [stdout logs from pods](#stdout-logs-from-pods) for detail) even if the pod is in a non-running state such as completed
-  * logs that are stored persistently are available over the lifetime of that storage medium
-* Regarding command examples that follow:
-  * In commands with variable information, such as namespaces, these are represented in the example commands by angle brackets, which you must replace.
-  * Commands where additional options are possible are indicated by an ellipses: ...
-
-## Basic MustGather information
-
-The sections that follow identify basic information that should be obtained for any issue.
-However, you only need to follow the sections insofar as they apply to the issue you are encountering.
-For instance, if you are having a problem building then deployment or runtime information would not apply.
-
-### Platform and version information
-
-This section identifies the commands to use to obtain platform and version information.
-Because there are many layers of software and interdependencies the following reflects only the most important, basic information.
-
-## Build systems
-
-### Operating system and platform
-
-Include this information for the relevant platform where you build SPM.
-
-On most systems the following command provides basic platform and operating system information:
-
-```
-uname -a
-```
 
 ### SPM and base third party software versions
 
@@ -146,15 +108,15 @@ The following commands display the relevant versions for Docker, Helm, the IBM C
   kubectl version    # Applies to Minikube, IKS, and CRC environments
 ```
 
+## Helm information
+
+For deployments, gather information relevant or appropriate to your environment and the issue faced.
+
 For Helm use the command appropriate to your Helm version to list the deployments in the environment, which provides the release and chart names needed in later Helm commands:
 
 ```
 helm list -a --namespace <name_space>
 ```
-
-## Kubernetes deployment information
-
-For deployments, gather information relevant or appropriate to your environment and the issue faced.
 
 ### Verify Helm Chart correctness
 
@@ -211,6 +173,8 @@ The `helm get all` command provides information equivalent to `helm install --de
 helm get all <release-name> ...
 ```
 
+## Kubernetes deployment information
+
 ### Enquiring a Kubernetes environment
 
 If running in a Minikube environment use the following command to confirm its status:
@@ -250,7 +214,7 @@ for p in $pods ; do kubectl describe $p --namespace <name_space> > $p.txt ; done
 
 The results will be in the `pod` folder created using the `kubectl` command.
 
-## Detailed MustGather for logs and other artifacts
+## MustGather to collect logs and other artifacts
 
 The following sections identify how to obtain logs and artifacts for specific areas of Kubernetes.
 
@@ -305,9 +269,7 @@ Further, the specific logs, artifacts, and their locations vary depending on the
 
 The following sections identify these various locations.
 
-## Additional log files and artifacts
-
-### WebSphere Liberty stdout logs
+#### WebSphere Liberty stdout logs
 
 WebSphere Liberty pods are identified by the pod naming pattern beginning with: `<helm_release_name>-apps-` or `<helm_release_name>-uawebapp-`.
 
@@ -337,7 +299,7 @@ which would produce output like:
 
 When using IKS cloud object storage the WebSphere Liberty logs, JVM dumps and garbage collection logs, and Cúram JMX statistics are symbolically linked to the pod's file system in `/tmp/logs` and available in your COS bucket.
 
-### WebSphere Liberty configuration information
+#### WebSphere Liberty configuration information
 
 WebSphere Liberty configuration information can be found in the pod's file system in `/liberty/wlp/usr/servers/defaultServer`, which contains:
 
@@ -351,7 +313,7 @@ adc_conf/
 
 The WebSphere Liberty `server package` command can be used to zip up the server; but, the logs folder, being stored separately, must be handled directly from the `/logs` folder.
 
-### MQ logs and artifacts
+#### MQ logs and artifacts
 
 MQ pods are identified by the pod naming pattern beginning with: `<helm_release_name>-mqserverapps-`.
 
@@ -369,7 +331,7 @@ You can interrogate the various log, error, and trace locations identified in th
 kubectl exec --namespace <name_space> -it <mq_pod_name> -- /bin/bash
 ```
 
-### Cúram XML Server logs and artifacts
+#### Cúram XML Server logs and artifacts
 
 Cúram XML Server pods are identified by the pod naming pattern beginning with: `<helm_release_name>-xmlserver-`.
 
@@ -391,7 +353,7 @@ There are additional XML Server tracing and logging options identified in
 [Configuring the XML server](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/XMLInfrastructure/c_XMLINF_Server1ConfiguringXmlServer1.html),
 but gathering this data is beyond the scope of this document.
 
-### Cúram batch logs and artifacts
+#### Cúram batch logs and artifacts
 
 Cúram batch pods are identified by the pod naming pattern beginning with: `<helm_release_name>-batch-`.
 
@@ -403,7 +365,7 @@ where the number of pods may vary depending on the number of replicas specified.
 
 Use the `kubctl logs` command to view the batch pod's stdout.
 
-### HTTP Server logs and artifacts
+#### HTTP Server logs and artifacts
 
 The Apache HTTP Server is only used for hosting SPM static content this information would only be of interest for issues relating specifically to static content.
 

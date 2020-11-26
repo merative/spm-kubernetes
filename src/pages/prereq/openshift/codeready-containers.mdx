@@ -92,9 +92,9 @@ This procedure also creates the ~/.crc directory if it does not already exist.
 crc setup
 ```
 
-Now that the basic configuration is complete, edit the configuration to change the memory limit and add the path to the pull secret file downloaded previously.
+Now that the basic configuration is complete, you need to edit the configuration to change the memory limit and add the path to the pull secret file downloaded previously.
 
-To set the CPUs to 6, run the following command:
+To change the memory limit, set the CPUs to 6, and add the path to the pull secret file downloaded previously. Run the following commands:
 
 ```shell
 crc config set memory 32768
@@ -183,7 +183,7 @@ Create a project for the SPM deployment, again use an environment variable for y
 Create the environment variable, you can set to value to anything you like, but it should consist of lower case alphanumeric characters or `-`, and must start and end with an alphanumeric character (e.g. `my-name`,  or `123-abc`):
 
 ```shell
-export releasename="spm-deploy"
+export PROJECT="ocp"
 ```
 
 Log in as kubeadmin:
@@ -195,13 +195,13 @@ oc login -u kubeadmin -p $KUBEADMN_PSWD https://api.crc.testing:6443
 Create the project:
 
 ```shell
-oc adm new-project $releasename
+oc adm new-project $PROJECT
 ```
 
 Switch kubernetes context to the new project:
 
 ```shell
-kubectl config set-context --current --namespace $releasename
+kubectl config set-context --current --namespace $PROJECT
 ```
 
 ## Deployment Process
@@ -216,26 +216,22 @@ oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"
 Add relevant roles to user:
 
 ```shell
-oc get pods -n openshift-image-registry
-oc policy add-role-to-user registry-viewer kube:admin
 oc adm policy add-cluster-role-to-user registry-viewer kube:admin
 ```
-
-<InlineNotification>
-
-**Note:**  This step overwrites any existing policy that has the same name.
-
-If policy already exists, add `system:serviceaccount:${releasename}:default` to the users array in the policy by editing the policy YAML or by running the following command:
-
-`oc adm policy add-scc-to-user spm-dev-scc -z system:serviceaccount:${releasename}:default`
-
-</InlineNotification>
 
 Log in to the OpenShift registry:
 
 ```shell
-docker login -u kubeadmin -p $(oc whoami -t) default-route-openshift-image-registry.apps-crc.testing
+docker login -u kubeadmin -p $(oc whoami -t) $(oc registry info --public)
 ```
+
+<InlineNotification>
+
+`oc registry info --public` should return a URL like `default-route-openshift-image-registry.apps-crc.testing` which is used for publishing images into the internal image registry.
+
+The image registry URL for use in Helm override values can be retrieved using `oc registry info --internal`: `image-registry.openshift-image-registry.svc:5000`
+
+</InlineNotification>
 
 ## Hostname configuration for CRC
 

@@ -81,16 +81,13 @@ kubectl create job --from=cronjob/${release_name}-batch-queued \
        -n $namespace -o yaml --dry-run=client process_name > process_name.yaml
 ```
 
-<InlineNotification>
-
-Where,
+Where:
 
 * `namespace` is the namespace where you want to run the batch processing
 * `release_name` is the name of the release you are using
 * `process_name` is the name of the batch process you are creating
-  * You should create a new file for each process, for example `stream_foodassistance.yaml`, and `chunker_foodassistance.yaml`.
 
-</InlineNotification>
+You should also create a new file for each process, for example `stream_foodassistance.yaml`, and `chunker_foodassistance.yaml`
 
 A corresponding YAML file is created. Open it with your preferred editor and add the following lines to the `spec.template.spec.containers[0]` section:
 

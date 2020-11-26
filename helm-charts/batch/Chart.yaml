@@ -17,9 +17,21 @@ apiVersion: v2
 kubeVersion: ">=1.16"
 appVersion: "7.0.11.0"
 name: batch
-description: Batch Chart for SPM Batch within a Kubernetes Cluster
+description: |- 
+  Helm Chart for SPM Batch within a Kubernetes Cluster
+  
+  Documentation
+  For complete documentation please see the chart README
+
+  License
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
 version: 2.1.0
 maintainers:
+  - name: IBM
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
 sources:
@@ -37,6 +49,7 @@ keywords:
   - DevOps
   - Commercial
   - Limited
+  - Other
 home: https://www.ibm.com/watson-health/solutions/social-program-management
 icon: https://avatars2.githubusercontent.com/u/1459110
 dependencies:

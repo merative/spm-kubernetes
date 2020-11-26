@@ -56,6 +56,7 @@ data:
           exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"
+          enable_saml="{{ .Values.global.isam.enabled }}"
         />
       </jaasLoginModule>
 
@@ -65,6 +66,7 @@ data:
           exclude_usernames="${env.WebSphereUsername},${env.SYSTEM_USER}"
           login_trace="{{ .Values.loginConfig.trace }}"
           check_identity_only="{{ .Values.loginConfig.identityOnly }}"
+          enable_saml="{{ .Values.global.isam.enabled }}"
         />
       </jaasLoginModule>
 

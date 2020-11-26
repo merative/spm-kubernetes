@@ -46,3 +46,18 @@ There are a number of limitations associated with the Minikube none driver that 
 You must evaluate the impacts of these limitations for your implementation.
 
 However, the unavailability of the `minikube ssh` command might make it difficult to analyze and resolve problems and issues. For example, switching to the kvm2 driver enables the use of `minikube ssh` and resolves issues with the Docker Registry.
+
+## Storage initialized using a runbook version older than 20.9.0
+
+If storage has been initialized using a version of the runbook older than 20.9.0, you will need to update your
+override values to include a supplementary group:
+
+```yaml
+global:
+  mq:
+    security:
+      context:
+        supplementalGroups: [888]
+```
+
+This is due to a update in IBM MQ, the details of which can be found [here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).

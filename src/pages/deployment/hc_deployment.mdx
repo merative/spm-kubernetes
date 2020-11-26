@@ -9,21 +9,15 @@ description: Deploying Helm charts
 
 </InlineNotification>
 
-When the Helm charts are uploaded to the repository, you can deploy the application by using one of the following commands:
+In the following `helm install` command, we are using `releasename` as the value for the `helm release name`. A release name is an arbitrary name that you choose for your
+deployment. It must be all lowercase. All kubernetes objects in your deployment will be prefixed with whatever value you provide.
+
+For now you could just use `releasename` and for more information see [the helm documentation](https://helm.sh/docs/intro/using_helm/).
 
 ```shell
 # Helm v3 ('releasename' is mandatory for Helm v3)
 helm install releasename local-development/spm
 ```
-
-<InlineNotification>
-
-**Note**: releasename should contain no capital letters.
-
-</InlineNotification>
-
-Where `releasename` is the name of this Helm release. For example, MyRelease-1.0.
-If you do not specify a name, Helm auto generates one. All the names of the Kubernetes objects are created with `releasename-` as prefix.
 
 The `helm install` command installs the Helm charts in the order in which they were loaded in the repository, with all the values defined in the files.
 However, as described in [Setting up the Docker® context](/build-images/setup_docker_context), you can override the configuration value by running the following shell script:
@@ -35,7 +29,9 @@ helm install releasename local-development/spm -f override-values.yaml
 
 ### Sample `override-values.yaml` files
 
-Here are three sample override files for deploying.
+The following three override files for Minikube, IKS, and CRC are intended to be used with the config options listed in the
+[Configuration Reference](../config-reference) topic. The minimum details that need to be filled out for a successful deployment
+are the registry, database, and ingress details.
 
 * [Minikube](/resources/minikube-values.yaml)
 * [CodeReady Containers](/resources/crc-values.yaml)
@@ -50,6 +46,23 @@ Here are three sample override files for deploying.
   * With the given values, the resulting image name will look like this: `us.icr.io/foo-library/test_curam:latest`
 * IAM credentials for the [IBM Container Registry](https://cloud.ibm.com/docs/containers?topic=containers-registry) (`global.imagePullSecret`) must be provided.
 * The [Application Load Balancer IDs](https://cloud.ibm.com/docs/containers?topic=containers-ingress_annotation#alb-id) (`ingress.annotations."ingress.bluemix.net/ALB-ID"`) must be provided for the Ingress resource to be created correctly.
+
+</InlineNotification>
+
+<InlineNotification>
+
+**Note**: If storage has been initialized using a version of the runbook older than 20.9.0, you will need to update your
+override values to include a supplementary group:
+
+```yaml
+global:
+  mq:
+    security:
+      context:
+        supplementalGroups: [888]
+```
+
+This is due to a update in IBM MQ, the details of which can be found [here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).
 
 </InlineNotification>
 

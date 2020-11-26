@@ -1,6 +1,44 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file
+
+## v20.11.0
+
+### Added
+
+* Activate SAML when using single sign-on (SSO)
+* Add a route in OpenShift to allow connections to SSO, when enabled
+* Updated the `ServerEAR.Dockerfile` to reduce layers
+* Added note with fix needed for an update in IBM MQ, the details of which can be found
+[here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).
+* Added links to Architecture and Troubleshooting sections from within the flow of the document
+
+### Changed
+
+* Updated SPM 7.0.10.0 Supported Prereqs.
+  * Kubernetes version 1.18 supported introduced.
+  * Kubernetes version 1.16 is now in a state of deprecated.
+* Clarified MQ configuration reference for container or VM.
+* Moved IKS and OpenShift considerations into Architecture
+* Updated Nav items for considerations. *Note:* any bookmarked pages will no longer work
+* Replaced inline links with anchor links in "MustGather"
+* Provided rationale for building own images
+* Provided clarification on use of `$PROJECT` environment variable
+* Link to helm defect for the need to repush docker images
+* Provided clarification on the use of helm releasename
+* Provided clarification on the use of subnet
+* Restructure command examples so that required additional information is before the command
+* Update dev workstation archtitecture diagram to differentiate the cluster content
+
+### Fixed
+
+* Updated sample override values to have minimal install highlighted and specifically for CRC to not include image registry credentials
+* Fixed the SPM OpenShift Reference Architecture diagram regarding the IBM MQ statefulset.
+
+### Removed
+
+* Removed custom `SecurityContextConstraint` as it is no longer required for running SPM in OpenShift
+
 
 ## v20.10.2
 
@@ -12,14 +50,10 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-* Fixed the SPM IKS Reference Architecture diagram.
+* Fixed the SPM IKS Reference Architecture diagram
 * Fixed line duplication in mq-secret.yaml file
 
 ## v20.10.0 ![SPM 7.0.11.0](https://img.shields.io/badge/-SPM_7.0.11.0-green)
-
-### Removed
-
-* Remove hard requirement on OpenLDAP for elasticity.
 
 ### Added
 
@@ -33,20 +67,26 @@ All notable changes to this project will be documented in this file.
 * Added Consideration section to runbook
   * Section on IKS: Security, Networking Authentication, Container Registry, Storage
   * Section on OpenShift: Security, Networking Authentication, Container Registry, Storage
-* Updated documentation to include target to precompile SPM ear files.
+* Updated documentation to include target to precompile SPM ear files
 * Added OpenShift Overview page to runbook
 * Add a reference implementation for Batch streaming jobs
+* Update the charts to internal content verification linter standards
 * Updated some inpage navigation
 
 ### Changed
 
-* Implemented accessibility recommendations on the runbook content.
-* Refactored and reorganised the architecture pages. Added Architecture Overview diagram.
+* Implemented accessibility recommendations on the runbook content
+* Refactored and reorganised the architecture pages. Added Architecture Overview diagram
 * Add `operatorsEnabled` if clause to `mqserver` deployment, statefulset, and service objects
-* Correcting product name on first use to "IBM® Cúram Social Program Management (SPM)" and "SPM" thereafter.
+* Correcting product name on first use to "IBM® Cúram Social Program Management (SPM)" and "SPM" thereafter
 * Reduced default backoff limit for Batch jobs to 1
 * Updated MQ on VM reference configuration to use `SHA256WithRSA` signature algorithm
 * Clarified CRC minimum system requirements
+
+### Removed
+
+* Remove hard requirement on OpenLDAP for elasticity
+
 
 ## v20.9.0
 
@@ -57,10 +97,6 @@ All notable changes to this project will be documented in this file.
 * Add detailed guide of available values for configuring the `spm` Helm chart
 * Add JDBC configuration for persistent EJB timers
 * Add page "Monitoring performance using JMX statistics"
-
-### Fixed
-
-* Use common `CuramCacheInvalidationTopic` across all applications to correctly invalidate the SPM property cache
 
 ### Changed
 
@@ -73,12 +109,12 @@ All notable changes to this project will be documented in this file.
 * Included list of supported software requirements
 * Updated WebSphere Liberty version to 20.0.0.9
 
+### Fixed
+
+* Use common `CuramCacheInvalidationTopic` across all applications to correctly invalidate the SPM property cache
+
 
 ## v20.8.0
-
-### Removed
-
-* Removed initContainers from statefulset.yaml in MQ chart
 
 ### Added
 
@@ -102,14 +138,11 @@ All notable changes to this project will be documented in this file.
 * Missing Batch debug-file configmap ([#29](https://github.com/IBM/spm-kubernetes/issues/29))
 * Fixed Helm Chart syntax for enabling JMX Stats
 
-
-## v20.7.0
-
 ### Removed
 
-* `configmaps` chart (ConfigMaps are now part of `apps` chart)
-* Dockerfile for IBM MQ (custom image not required anymore - use `ibmcom/mq` directly)
-* Removed Helm v2, and related tiller documentation and commands
+* Removed initContainers from statefulset.yaml in MQ chart
+
+## v20.7.0
 
 ### Added
 
@@ -147,6 +180,12 @@ All notable changes to this project will be documented in this file.
 * Db2 dependency in `spm/requirements.yaml` ([#23](https://github.com/IBM/spm-kubernetes/issues/23))
 * Duplicate `ihs` elements in `spm/values.yaml` ([#15](https://github.com/IBM/spm-kubernetes/issues/15))
 
+### Removed
+
+* `configmaps` chart (ConfigMaps are now part of `apps` chart)
+* Dockerfile for IBM MQ (custom image not required anymore - use `ibmcom/mq` directly)
+* Removed Helm v2, and related tiller documentation and commands
+
 
 ## v20.6.1
 
@@ -181,8 +220,8 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-* Document how to build and push images to IBM Cloud Container Registry.
-* Add documentation on repositories, runbook URLS, and release process.
+* Document how to build and push images to IBM Cloud Container Registry
+* Add documentation on repositories, runbook URLS, and release process
 
 ### Fixed
 
@@ -192,4 +231,4 @@ All notable changes to this project will be documented in this file.
 * [Helm dependency for ce-app needs conditional adding.](https://github.com/IBM/spm-kubernetes/issues/13)
 * [CE Ingress controller Rules created when the Application isn't deployed.](https://github.com/IBM/spm-kubernetes/issues/14)
 * [Duplicate ihs elements in spm/values.yaml.](https://github.com/IBM/spm-kubernetes/issues/15)
-* Addition of heapSize parameter in batch chart to allow for custom heap size specification.
+* Addition of heapSize parameter in batch chart to allow for custom heap size specification

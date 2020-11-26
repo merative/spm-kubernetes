@@ -11,6 +11,10 @@
 
 # Version History
 
+## v2.2.0
+
+* Add a route in OpenShift to allow connections to SSO, when enabled
+
 ## v2.1.0
 
 * Remove hard requirement on OpenLDAP for elasticity.
