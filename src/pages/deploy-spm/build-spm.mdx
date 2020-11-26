@@ -68,6 +68,12 @@ To enable static content, create a file called `curam-config.xml` in the followi
 
 Add the following to `curam-config.xml`:
 
+<InlineNotification>
+
+**Note:** The guidelines assume that the relative URL `/CuramStatic/` is being used.
+
+</InlineNotification>
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <APP_CONFIG>
@@ -76,12 +82,6 @@ Add the following to `curam-config.xml`:
   </STATIC_CONTENT_SERVER>
 </APP_CONFIG>
 ```
-
-<InlineNotification>
-
-**Note:** The guidelines assume that the relative URL /CuramStatic/ is being used
-
-</InlineNotification>
 
 <InlineNotification>
 
@@ -154,7 +154,7 @@ To improve initial page load performance, use the `precompile` target to precomp
 
 **Note:**  The precompile target can take up to several hours to complete. Ensure that your environment is not significantly restricted regarding available CPU, memory, and free space in the `$CURAMSDEJ` file system.
 
-**Note:** It is not required to run he `precompile` target on the `CuramServerCode.ear`, `CuramWebServices.ear` or `Rest.ear`.
+**Note:** It is not required to run the `precompile` target on the `CuramServerCode.ear`, `CuramWebServices.ear` or `Rest.ear`.
 
 </InlineNotification>
 
@@ -175,10 +175,10 @@ The .zip file that is created is in the `$SERVER_DIR/release` folder and is need
 
 <InlineNotification>
 
-**Note:** Please check the zip file in later stages that its integrity or size are un affected when copying to different directorys or machines.
+**Note:** Check the zip file in later stages to ensure that its integrity or size are unchanged when copying to different directories or machines.
 
-On OSX and Red Hat a zip file will end with .zip and look like a white file.
+On OSX and Red Hat, a zip file ends with `.zip` and looks like a white file.
 
-On Windows a zip file is end with .zip and look like a folder.
+On Windows, a zip file ends with `.zip` and looks like a folder.
 
 </InlineNotification>

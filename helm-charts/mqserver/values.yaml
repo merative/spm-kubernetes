@@ -21,10 +21,6 @@ global:
     enabled: true
   timezone: 'UTC'
   apps:
-    common:
-      persistence:
-        ## Persistence volume to store data
-        enabled: false
     config:
       curam:
         enabled: true
@@ -53,8 +49,6 @@ global:
     # Licensing reference for mq.ibm.com/v1beta1
     license: "L-APIG-BM7GDH"
     use: "Development"
-    # Set to True if running MQ in HA mode
-    useConnectionNameList: false
     tlsSecretName: mq-secret
     queueManager:
       name: "QM1"
@@ -69,7 +63,6 @@ global:
         appPasswordKey: 'appPasswordKey'
     metrics:
       enabled: false
-    resources: {}
     multiInstance:
       operatorsEnabled: false
       # availabilityType to be used for deployments via Operators only. Alternatives: MultiInstance or SingleInstance.
@@ -88,11 +81,6 @@ global:
         fsGroup:
         supplementalGroups: []
 
-# Name of an existing ServiceAccount for the application runtime
-serviceAccountName: ""
-# Name of an existing ServiceAccount for use by the hooks
-hookServiceAccountName: ""
-
 # livenessProbe section specifies setting for the MQ liveness probe, which checks for a running Queue Manager
 livenessProbe:
   # initialDelaySeconds should be raised if your system cannot start the Queue Manager in 60 seconds
@@ -100,6 +88,7 @@ livenessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 1
+  
 
 # readinessProbe section specifies setting for the MQ readiness probe, which checks when the MQ listener is running
 readinessProbe:
@@ -116,3 +105,12 @@ log:
 # weight 100 for nodes labelled as worker-type:application
 affinityKey: worker-type
 affinityValue: application
+
+# Resource limits
+resources:
+  requests:
+    cpu: 0.5
+    memory: 0.5Gi
+  limits:
+    cpu: 1
+    memory: 1Gi

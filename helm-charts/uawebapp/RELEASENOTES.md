@@ -37,6 +37,10 @@
 
 # Version History
 
+## v3.0.3
+
+* Update the chart to internal content verification linter standards.
+
 ## v3.0.2
 
 * Specify `TZ` environment variable for managing timezone in pods

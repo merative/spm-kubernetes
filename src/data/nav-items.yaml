@@ -7,6 +7,10 @@
       path: /architecture/kubernetes/spm-on-kubernetes-101
     - title: Architecture Overview
       path: /architecture/arch-overview/architecture-overview
+    - title: IKS Consideration
+      path: /architecture/iks-consideration/security
+    - title: OpenShift Consideration
+      path: /architecture/openshift-consideration/security
   hasDivider: true
 - title: Prerequisites
   pages:
@@ -24,12 +28,6 @@
       path: /prereq/chartmuseum
     - title: GitHub repo
       path: /prereq/git
-- title: IKS and OpenShift Considerations
-  pages:
-    - title: IKS
-      path: /consideration/iks/security
-    - title: OpenShift
-      path: /consideration/openshift/security
 - title: IBM Cúram Social Program Management application
   pages:
     - title: Installing SPM software

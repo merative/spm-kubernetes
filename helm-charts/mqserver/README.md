@@ -16,6 +16,22 @@
 * A configured NFS server (for use with NFS)
 * A populated OpenShift Cluster (for use with Ceph)
 
+### PodSecurityPolicy Requirements
+
+Custom PodSecurityPolicy definition:
+
+```
+Not required as the underlying db2 instance runs with the default restricted policy
+```
+
+### SecurityContextConstraints Requirements
+
+Custom SecurityContextConstraints definition:
+
+```
+Not required as the underlying db2 instance runs with the default restricted policy
+```
+
 ## Configuration
 
 See [Configuration reference](https://ibm.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.

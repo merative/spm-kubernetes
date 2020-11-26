@@ -22,7 +22,8 @@ You must be logged in to the following registries:
 
 <InlineNotification>
 
-If you do not have an active RedHat subscription, or prefer to build these images from source, see [building Base images](../base_images).
+**Note:** As covered in [building Base images](/build-images/base_images), if you do not have an active RedHat subscription you will need to build your own base images from
+source following the steps there.
 
 Should you opt to build your own base images, the `BASE_REGISTRY` argument in the following commands may be omitted, if the base images are built in the same environment.
 
@@ -34,12 +35,22 @@ Now that all the elements are in place, build the images as follows:
 
 * We will use a `$DOCKER_REGISTRY` for the following commands. Please select based on the container environment you are deploying:
   * CRC will be `default-route-openshift-image-registry.apps-crc.testing`
+    * This URL can be retrieved using `oc registry info --public`
   * Minikube will be `minikube.local:5000`
   * IKS will be `us.icr.io`
 
 * To build the XML server image, run the following commands:
 
-In the following commands, `$PROJECT` refers to the name of the project in use:
+<InlineNotification>
+
+**Note:** In the following commands, the value of `$PROJECT` will change depending on deployment type:
+  
+* For a Minikube deployment the value of `$PROJECT` is arbitrary.
+* For an IKS deployment the value of `$PROJECT` must equate to a valid namespace in the customer’s account.
+* For an OpenShift deployment the value of `$PROJECT` must equate to a valid project.
+For this runbook it is best to stick with the value chosen for `$PROJECT` in [Creating a CRC project](/prereq/openshift/codeready-containers#creating-a-crc-project)
+
+</InlineNotification>
 
 <Tabs>
 
@@ -340,7 +351,7 @@ curl http://$DOCKER_REGISTRY/v2/_catalog
 <Column>
 
 ```shell
-curl -k -ukubeadmin:$(oc whoami -t) https://default-route-openshift-image-registry.apps-crc.testing/v2/_catalog
+curl -k -ukubeadmin:$(oc whoami -t) https://$(oc registry info --public)/v2/_catalog
 ```
 
 </Column>
@@ -357,7 +368,8 @@ The command returns the following result:
 
 <InlineNotification>
 
-**Note:** When you shut down Minikube, you might need to repush the Docker images to the registry.
+**Note:** Due to an issue with [Minikube](https://github.com/kubernetes/minikube/issues/2365) you will need to repush the Docker images to the registry
+each time you shut down.
 
 </InlineNotification>
 

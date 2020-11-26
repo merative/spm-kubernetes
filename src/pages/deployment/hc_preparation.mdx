@@ -3,9 +3,9 @@ title: Preparing Helm charts
 description: Preparing Helm charts
 ---
 
-<InlineNotification>
+<InlineNotification kind="info">
 
-**Note:** As of Release 20.7.0, the Helm version used to verify this runbook is 3.2. All the Helm commands that are used in this runbook are based on Helm v3.
+**Troubleshooting** If you need help troubleshooting problems, see [Troubleshooting problems](../../runtime/troubleshoot).
 
 </InlineNotification>
 
@@ -27,10 +27,9 @@ YAML is a human-readable structured data format. It provides powerful configurat
 
 ## Preparing to run the Helm charts
 
-Before you run the charts, you must configure the database, configure IBM MQ, and test the charts.
+Before you run the charts, you must configure the database, configure IBM MQ, resolve all chart dependencies, and test the charts.
 You may also optionally integrate your deployment with an ISAM server for SSO enablement,
-to do so please complete the steps on the [Enabling ISAM](/supporting-infrastructure/ISAM) page under Supporting Infrastructure before returning here.
-Before you run the charts, you must configure the database, configure IBM MQ, and resolve all chart dependencies.
+to do so complete the steps on the [Enabling ISAM](/supporting-infrastructure/ISAM) page under Supporting Infrastructure before returning here.
 
 Many of the Helm charts that make up a deployment of SPM depend on the [IBM Shared Configuration Helpers](https://github.com/IBM/charts/tree/master/samples/ibm-sch) chart, so an extra Helm repository must be added using the following command:
 
@@ -47,7 +46,9 @@ While you may change the values in your local copy of `helm-charts/spm/values.ya
 
 <InlineNotification>
 
-Sample override files for Minikube, IKS, and CRC are also available in the `$SPM_HOME/static/resources` folder.
+Sample override files for Minikube, IKS, and CRC are also available in the `$SPM_HOME/static/resources` folder. We have provided a minimum
+spec required for a successful deployment in these files, with more options for overriding commented out. The config options from the
+before mentioned [Configuration Reference](../config-reference) topic should be used with these files.
 
 </InlineNotification>
 
@@ -72,7 +73,7 @@ For each chart, its dependencies must be resolved before it can be loaded into a
 
 Due to an internal Helm [defect](https://github.com/helm/helm/issues/5780), conditional subchart enablement does not work in Helm 3.
 As a result of this, `uawebapp` needs to be packaged and pushed, irrespective of whether you are deploying it or not.
-It is possible to remove the dependency from the spm chart.yaml, if you do not wish to package and push it to the repo.
+It is possible to remove the dependency from the spm `chart.yaml`, if you do not wish to package and push it to the repo.
 
 </InlineNotification>
 

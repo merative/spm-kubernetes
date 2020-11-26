@@ -1,3 +1,4 @@
+{{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
@@ -23,27 +24,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "mqserver.fullname" $ }}-{{ $name }}
+  name: {{ include "sch.names.fullCompName" (list $ $name) }}
   namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "mqserver.labels" $ | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
 spec:
-  # replicas: {{ .replicaCount | default 1 }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "mqserver.fullname" $ }}-{{ $name }}
-      app.kubernetes.io/instance: {{ $.Release.Name }}
+      {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "mqserver.fullname" $ }}-{{ $name }}
-        app.kubernetes.io/instance: {{ $.Release.Name }}
+        {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 8 }}
+      annotations:
+        {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
     spec:
+      {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 6 }}
+      affinity:
+        {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | nindent 8 }}
       restartPolicy: {{ .restartPolicy | default "Always" }}
       volumes:
         - name: mqsc-cmds
           configMap:
-            name: {{ $.Release.Name }}-mq-config
+            name: {{ include "sch.names.fullCompName" (list $ "cm") }}
         {{- if $.Values.global.mq.tlsSecretName }}
         - name: service-certs
           secret:
@@ -110,7 +113,7 @@ spec:
             capabilities:
               drop:
                 - ALL
-          {{- with $.Values.global.mq.resources }}
+          {{- with $.Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}

@@ -18,9 +18,21 @@ apiVersion: v2
 kubeVersion: ">=1.16"
 appVersion: "7.0.11.0"
 name: spm
-description: Umbrella Helm Chart for Full Curam Deployment of SPM within a Kubernetes Cluster
-version: 2.1.0
+description: |- 
+  Umbrella Helm Chart for Full Curam Deployment of SPM within a Kubernetes Cluster
+  
+  Documentation
+  For complete documentation please see the chart README
+
+  License
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+version: 2.2.0
 maintainers:
+  - name: IBM
   - name: Cúram SPM Dev Team
     url: https://github.com/IBM/spm-kubernetes
 sources:
@@ -38,27 +50,28 @@ keywords:
   - DevOps
   - Commercial
   - Limited
+  - Other
 home: https://www.ibm.com/watson-health/solutions/social-program-management
 icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~3.2.0"
+    version: "~3.2.1"
     repository: "@local-development"
   - name: batch
     version: "~2.1.0"
     repository: "@local-development"
   - name: uawebapp
-    version: "~3.0.2"
+    version: "~3.0.3"
     repository: "@local-development"
   - name: web
-    version: "~3.0.2"
+    version: "~3.0.3"
     repository: "@local-development"
   - name: mqserver
-    version: "~1.7.0"
+    version: "~1.7.1"
     repository: "@local-development"
   - name: xmlserver
-    version: "~2.0.2"
+    version: "~2.0.3"
     repository: "@local-development"
   - name: ibm-sch
     repository: "@sch"

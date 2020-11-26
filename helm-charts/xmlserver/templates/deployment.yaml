@@ -32,7 +32,9 @@ spec:
   template:
     metadata:
       labels:
-{{ include "sch.metadata.labels.standard" (list . "") | indent 8 }}
+        {{ include "sch.metadata.labels.standard" (list . "") | nindent 8 }}
+      annotations:
+        {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
     spec:
 {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | indent 6 }}
       affinity:

@@ -29,17 +29,21 @@ Minikube installation steps are described in the official documentation for your
 
 ## Starting Minikube
 
+<InlineNotification kind="info">
+
+**Note:** In the following example we set the `--insecure-registry` option passing in a subnet of `192.168.0.0/16`.
+The IP address on your machine _may_ not be on the appropriate network for this subnet to work.
+Therefore, start a Minikube instance to verify the IP address begins with 192.168.0.X. You need only do this once.
+See the note in [Specifying the insecure registry](#specifying-the-insecure-registry).
+
+</InlineNotification>
+
 Minikube can be started with a command as simple as `minikube start` without any additional parameters. However, the resulting VM will be too small to deploy an instance of IBM® Cúram Social Program Management (SPM),
 so several other parameters are required:
 
 ```shell
 minikube start --vm-driver=virtualbox --cpus 4 --memory 8G --insecure-registry "192.168.0.0/16" --disk-size='30G' --kubernetes-version v1.18.6
 ```
-
-Where `192.168.0.0/16` is the subnet that contains the IP address that is assigned to the Minikube VM. You can verify the IP address by using the `minikube ip` command.
-
-The IP address might vary depending on your development environment. Therefore, start a Minikube instance to get the IP address and then delete it
-and restart it with the start command. See the note in [Specifying the insecure registry](#specifying-the-insecure-registry).
 
 ### Specifying the resource allocation
 
@@ -104,6 +108,8 @@ The containers don't mount any volumes, so stopping Minikube deletes the registr
 This runbook uses a generic hostname of `minikube.local` as an example in commands and the configuration files.
 You should add the Minikube IP address to the `hosts` file by using the generic hostname, or else modify the usage of `minikube.local` in this runbook to reflect your local hostname.
 
+Specifying `minikube ip` in the following command returns the Minikube VM's IP address that is accessible from your workstation:
+
 <Tabs>
 
 <Tab label="Mac/Linux">
@@ -131,8 +137,6 @@ Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "$(minikube ip)`t
 </Tab>
 
 </Tabs>
-
-Where `minikube ip` is the command that returns the Minikube VM's IP address that is accessible from your workstation.
 
 The local Docker client configuration must be also be updated with the corresponding IP address.
 

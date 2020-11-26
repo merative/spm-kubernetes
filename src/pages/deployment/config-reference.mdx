@@ -12,6 +12,7 @@ The following tables list the configurable parameters of the `spm` chart and the
   <AnchorLink>Global properties</AnchorLink>
   <AnchorLink>Liberty runtime</AnchorLink>
   <AnchorLink>Batch jobs</AnchorLink>
+  <AnchorLink>IBM MQ</AnchorLink>
   <AnchorLink>Static Content Server</AnchorLink>
   <AnchorLink>XML Server</AnchorLink>
   <AnchorLink>Universal Access React App - optional</AnchorLink>
@@ -115,7 +116,11 @@ In the following properties, `<progID>` is a placeholder for the name of the bat
 
 The default batch configuration runs any queued jobs every 30 minutes (equivalent of running `build.sh runbatch` without any parameters).
 
-Additional batch jobs may be added with additional keys under `batch.programs`:
+Additional batch jobs may be added with additional keys under `batch.programs`.
+
+The following `batch.programs` example adds the
+[bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
+batch job to be run at 2AM every Sunday night:
 
 ```yaml
 batch:
@@ -149,9 +154,6 @@ batch:
             memory: "2.5Gi"
 ```
 
-The `batch.programs` example above adds the [bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
-batch job to be run at 2AM every Sunday night.
-
 <InlineNotification>
 
 **Note:** Kubernetes by default has limits set on resources such as memory and CPU usage. SPM containers require more resources than the default values that we have set.
@@ -175,20 +177,20 @@ We only support containerised MQ on Openshift.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.1.5.0-r2` |
-| ![VM based only](https://img.shields.io/badge/-IKS_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode | `false` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.queueManager.name` | Name of the queue manager to be created in the MQ container | `QM1` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.1.5.0-r2` |
+| ![VM based only](https://img.shields.io/badge/-VM_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode | `false` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.name` | Name of the queue manager to be created in the MQ container | `QM1` |
 | `global.mq.queueManager.secret.name` | Name of a pre-created secret containing credentials of the MQ client and admin users (see [Handling Secrets](/deployment/secrets) topic) | `''` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.queueManager.secret.adminPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ admin user | `adminPasswordKey` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.secret.adminPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ admin user | `adminPasswordKey` |
 | `global.mq.queueManager.secret.appUsernameKey` | The key in the Kubernetes Secret containing the username for the MQ client user | `appUsername` |
 | `global.mq.queueManager.secret.appPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ client user | `appPasswordKey` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.cephEnabled` | Deploy MQ as a StatefulSet using Ceph storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.storageClassName` | Storage class used for dynamic provisioning on the Ceph backend | `''` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsEnabled` | Deploy MQ as a StatefulSet using NFS storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsIP` | IP address or hostname of the NFS server | `''` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.multiInstance.nfsFolder` | Path on the NFS server, where MQ data should be stored | `''` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.security.context.fsGroup` | Primary user group for any filesystem mounts, if required by the storage provisioner | `''` |
-| ![Container only](https://img.shields.io/badge/-OpenShift_only-red) `global.mq.security.context.supplementalGroups` | Supplemental user groups for any filesystem mounts, if required by the storage provisioner | `[]` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.cephEnabled` | Deploy MQ as a StatefulSet using Ceph storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.storageClassName` | Storage class used for dynamic provisioning on the Ceph backend | `''` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsEnabled` | Deploy MQ as a StatefulSet using NFS storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsIP` | IP address or hostname of the NFS server | `''` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsFolder` | Path on the NFS server, where MQ data should be stored | `''` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.fsGroup` | Primary user group for any filesystem mounts, if required by the storage provisioner | `''` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.supplementalGroups` | Supplemental user groups for any filesystem mounts, if required by the storage provisioner | `[]` |
 
 ### Static Content Server
 

@@ -27,7 +27,8 @@ The following sections show you how to download and install WebSphere Liberty.
 
 ### IBM Installation Manager
 
-To install the WebSphere Liberty fix pack by using Installation Manager, download and install Installation Manager 1.9 or later from [IBM Installation Manager and Packaging Utility](https://www.ibm.com/support/pages/installation-manager-and-packaging-utility-download-documents).
+After installing WebSphere Liberty you will need to apply a fix pack using Installation Manager. You can download and install Installation Manager
+1.9 or later from [IBM Installation Manager and Packaging Utility](https://www.ibm.com/support/pages/installation-manager-and-packaging-utility-download-documents).
 
 ### IBM WebSphere Liberty licensing
 
@@ -36,7 +37,7 @@ If you are not an existing WebSphere customer, you can download a 60-day trial o
 
 ### Install IBM WebSphere Liberty
 
-WebSphere Liberty 20.0.0.9 is the only application server that supports IBM® Cúram Social Program Management (SPM) on Kubernetes and is therefore required.
+WebSphere Liberty 20.0.0.9 is the only application server supported by SPM on Kubernetes and is therefore required.
 
 #### Download and install WebSphere Liberty.
 
@@ -62,11 +63,21 @@ WLP_HOME=/opt/IBM/WebSphere/Liberty
 
 ## Java
 
+<InlineNotification kind="info">
+
+**Java Vendor**:
+
+The runbook suggests the use of IBM SDK Java. However IBM's SDK is not available on MacOS.
+
+If you are following this runbook on a developer Mac, we suggest you use [Oracle SDK  Java](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)
+instead. All steps will be the same apart from the SDK installation procedure.
+You should still set up the environment variables as described in this section.
+
+</InlineNotification>
+
 Java version 8 is required. See
 [IBM SDK Java Technology Edition Version 8.0](https://www.ibm.com/support/pages/ibm-sdk-java-technology-edition-version-80-websphere-application-server-using-installation-manager)
 for download and installation information.
-
-Base the installation folder for Java in the WebSphere Liberty installation folder; for example: `$WLP_HOME/java`
 
 When installed, create the following environment variable:
 

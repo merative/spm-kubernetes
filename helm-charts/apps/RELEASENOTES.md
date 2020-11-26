@@ -12,6 +12,12 @@
 
 # Version History
 
+
+## v3.2.1
+
+* Activate SAML when using single sign-on (SSO)
+
+
 ## v3.2.0
 
 * Remove hard requirement on OpenLDAP for elasticity.

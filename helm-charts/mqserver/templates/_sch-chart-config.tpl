@@ -17,10 +17,11 @@ sch:
           operator: In
           weight: 100
     labelType: "prefixed"
+    metering:
+      productName: "IBM MQ Advanced for Developers"
+      productID: "2f886a3eefbe4ccb89b2adb97c78b9cb"
+      productVersion: "9.1.5"
     podSecurityContext:
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
       securityContext:
         runAsNonRoot: true
     containerSecurityContext:

@@ -3,7 +3,17 @@ title: Prerequisite software
 description: Prerequisite software
 ---
 
-IBM® Cúram Social Program Management (SPM) was enhanced in version 7.0.10.0 to enable it to be deployed on cloud native hosting platforms.
+<InlineNotification kind="warning">
+
+**Ready to jump right in?**
+
+Please note that the preceding section provides an introduction to the architecture of IBM® Cúram Social Program Management (SPM) on Kubernetes and to concepts you will encounter throughout the rest of the runbook.
+If you have already read through the [Architecture](/architecture/kubernetes/spm-on-kubernetes-101) section please continue.
+If not, it's the place to start.
+
+</InlineNotification>
+
+SPM was enhanced in version 7.0.10.0 to enable it to be deployed on cloud native hosting platforms.
 
 Further enhancements have been introduced in version 7.0.11.0 to enable deployment on OpenShift.
 
@@ -62,8 +72,8 @@ The technologies listed are fixed version support only, unless stated otherwise.
 
 | Supported Software            | Version                   | Prerequisite Minimum | Notes  |
 | ----------------------------- | ------------------------- | -------------------- | -------|
-| WebSphere Liberty             | 20.0.0.9                  | 20.0.0.9             | 1,8    |
-| Kubernetes                    | 1.16 and future fix packs | 1.16                 | 2,8    |
+| WebSphere Liberty             | 20.0.0.9                  | 19.0.0.12            | 1,8    |
+| Kubernetes                    | 1.18 and future fix packs | 1.16                 | 2,8,9  |
 | IBM MQ                        | 9.1                       | 9.1.0.4              | 3      |
 | Docker Community Edition (CE) | 19.03                     | 19.03.5              | 4,5,6  |
 | Helm                          | v3                        | v3.3.4               | 7      |
@@ -78,6 +88,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services.|
 |`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS).|
 |`(8)` &#124; For SPM 7.0.10.0 there is still a hard requirement on an external identity provider (e.g. OpenLDAP) for elasticity. This code is no longer available in the latest version of the runbook. This can be found in the [September 2020 release](https://github.com/IBM/spm-kubernetes/releases/tag/20.9.0).|
+|`(9)` &#124; As part of the Kubernetes release 1.19, Kubernetes version 1.16 is now in a state of depreciated. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
 
 </AccordionItem>
 

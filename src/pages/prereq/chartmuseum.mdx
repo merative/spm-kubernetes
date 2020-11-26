@@ -36,6 +36,12 @@ docker logs chartmuseum
 
 Run the following command to test connectivity. `127.0.0.1` is the localhost IP address.
 
+<InlineNotification>
+
+**Note:** On Windows, the Docker Engine can run in a dedicated `docker-machine`, or can be reused from the Minikube VM.
+
+</InlineNotification>
+
 <Tabs>
 
 <Tab label="Mac/Linux">
@@ -66,12 +72,6 @@ Invoke-RestMethod http://$(docker-machine ip):8080/index.yaml
 
 </Tabs>
 
-<InlineNotification>
-
-**Note:** On Windows, the Docker Engine can run in a dedicated `docker-machine`, or can be reused from the Minikube VM
-
-</InlineNotification>
-
 You will see something like the following example:
 
 ```yaml
@@ -85,15 +85,15 @@ serverInfo: {}
 
 When ChartMuseum is running, you can copy the compressed `tgz` files that are produced by Helm, or by using the [Helm Push](https://github.com/chartmuseum/helm-push) plugin (recommended approach).
 
-```shell
-helm plugin install https://github.com/chartmuseum/helm-push
-```
-
 <InlineNotification>
 
 **Note:** On Windows, the Helm Push plugin must be installed from a Git Bash window.
 
 </InlineNotification>
+
+```shell
+helm plugin install https://github.com/chartmuseum/helm-push
+```
 
 Creating the chart files is covered later in the runbook when you run the `helm package` command. For more information, see [Preparing Helm Charts](/deployment/hc_preparation).
 

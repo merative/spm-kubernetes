@@ -46,16 +46,15 @@ RUN rpm -e --nodeps tzdata \
     && yum install -y tzdata \
     && yum install -y wget \
     && yum clean all \
-    && rm -rf /var/cache/yum
-RUN ln -s /opt/ibm/wlp/usr/shared/resources /shared_resources \
+    && rm -rf /var/cache/yum \
+    && ln -s /opt/ibm/wlp/usr/shared/resources /shared_resources \
     && chown -R 1001:0 /config/configDropins \
     && chown -R 1001:0 /opt/ibm/wlp/usr/shared \
     && chmod -R g=u /opt/ibm/wlp/usr/shared \
     && chmod -R g=u /output \
-    && rm -f /config/configDropins/defaults/*
-
-# Prometheus JMX Exporter
-RUN wget -O /config/configDropins/overrides/jmx_prometheus_javaagent.jar -o /tmp/wget.txt $JMX_EXPORTER_URL \
+    && rm -f /config/configDropins/defaults/* \
+    # Prometheus JMX Exporter
+    && wget -O /config/configDropins/overrides/jmx_prometheus_javaagent.jar -o /tmp/wget.txt $JMX_EXPORTER_URL \
     && touch /config/configDropins/overrides/config.yaml \
     && chown 1001:0 /config/configDropins/overrides/config.yaml /config/configDropins/overrides/jmx_prometheus_javaagent.jar \
     && rm -f /tmp/wget.txt
