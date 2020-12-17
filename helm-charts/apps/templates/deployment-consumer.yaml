@@ -40,6 +40,9 @@ spec:
         {{- include "sch.metadata.labels.standard" (list $ (printf "%s-consumer" $name)) | nindent 8 }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | indent 8 }}
+        {{- with $.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | indent 6 }}
       affinity:
@@ -93,6 +96,11 @@ spec:
         - name: ltpa-secret
           secret:
             secretName: {{ default (printf "%s-ltpa-keys" $.Release.Name) $.Values.ltpaKeys.secretName }}
+        {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled }}
+        - name: jmx-exporter-config
+          configMap:
+            name: {{ $.Release.Name }}-jmx-exporter-config
+        {{- end }}
         - name: keystore-volume
           emptyDir: {}
         - name: env-volume
@@ -109,15 +117,13 @@ spec:
           secret:
             secretName: {{ $.Values.global.database.ssl.secretName }}
         {{- end }}
-        {{- if $.Values.global.mq.tlsSecretName }}
         - name: mq-certs
           secret:
             {{- if $.Values.global.mq.useConnectionNameList }}
-            secretName: {{ $.Values.global.mq.tlsSecretName }}
+            secretName: {{ required "Name of secret containing IBM MQ certificates not provided! (global.mq.tlsSecretName)" $.Values.global.mq.tlsSecretName }}
             {{- else }}
-            secretName: {{ $.Release.Name }}-mq-secret
+            secretName: {{ $.Values.global.mq.tlsSecretName | default (printf "%s-mq-secret" $.Release.Name) }}
             {{- end }}
-        {{- end}}
         {{- if $.Values.global.apps.common.persistence.enabled }}
         - name: {{ $.Release.Name }}-persistence-volume
           persistentVolumeClaim:
@@ -148,7 +154,7 @@ spec:
                 echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
                 sleep 2;
               done;
-            {{- else }}            
+            {{- else }}
             - >
               until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }} 1414; do
                 echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}:1414 to be reachable;
@@ -207,7 +213,6 @@ spec:
               mountPath: /mnt/envvol
             - name: service-certs
               mountPath: /mnt/svcCertificates
-        {{- if $.Values.global.mq.tlsSecretName }}
         - name: import-certs-for-mq
           {{- include "utilities.definition" $ | indent 10 }}
           env:
@@ -227,7 +232,7 @@ spec:
               {{- if $.Values.global.mq.useConnectionNameList }}
               keytool -import -trustcacerts -noprompt -alias {{ $qmgrName | lower }} -file $mqCrtDir/key_{{ $qmgrName }}.arm -keystore $truststore -storepass $password -storetype pkcs12;
               {{- else }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremq{{ $.Values.global.mq.queueManager.name | lower }} -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
               {{- end }}
               keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
           volumeMounts:
@@ -235,7 +240,6 @@ spec:
               mountPath: /mnt/keystores
             - name: mq-certs
               mountPath: /mnt/mqCertificates
-        {{- end }}
       containers:
         - name: {{ $.Chart.Name }}-consumer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
@@ -282,7 +286,7 @@ spec:
             - name: MQ_HOST_NAME
             {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
               value: {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq
-            {{- else }}            
+            {{- else }}
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
             {{- end }}
             - name: MQ_QMGR_NAME
@@ -359,6 +363,11 @@ spec:
             - name: ltpa-secret
               mountPath: /opt/ibm/wlp/output/defaultServer/resources/security/{{ $.Values.ltpaKeys.secretKey }}
               subPath: {{ $.Values.ltpaKeys.secretKey }}
+            {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled }}
+            - name: jmx-exporter-config
+              mountPath: /config/configDropins/overrides/config.yaml
+              subPath: config.yaml
+            {{- end }}
             - name: keystore-volume
               mountPath: /output/resources/security
             {{- if $.Values.global.apps.common.persistence.enabled }}

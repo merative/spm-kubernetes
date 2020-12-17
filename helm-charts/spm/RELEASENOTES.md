@@ -11,6 +11,10 @@
 
 # Version History
 
+## v2.3.0
+
+* Patch verb tampering vulnerability in `uawebapp` and `web` charts' configmaps
+
 ## v2.2.0
 
 * Add a route in OpenShift to allow connections to SSO, when enabled

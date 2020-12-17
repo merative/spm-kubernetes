@@ -79,6 +79,7 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | `apps.systemUser.credsSecretName` | Name of a pre-created secret containing credentials of the system user (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `SYSTEM` |
 | `apps.wlpAdmin.secretName` | Name of a pre-created secret containing WebSphere Liberty administration credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
 | `apps.wlpAdmin.enableAdminCenter` | Toggle whether the WebSphere Liberty Admin Center should be enabled | `false` |
+| `apps.podAnnotations` | Annotations to be applied during deployment | `{}` |
 
 ### Batch jobs
 
@@ -178,7 +179,8 @@ We only support containerised MQ on Openshift.
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.1.5.0-r2` |
-| ![VM based only](https://img.shields.io/badge/-VM_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode | `false` |
+| ![VM based only](https://img.shields.io/badge/-VM_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode outside the cluster | `false` |
+| `global.mq.tlsSecretName` | Name of a pre-created Secret containing TLS certificates for IBM MQ (required if running MQ outside the cluster, optional for MQ containers - certificates are auto-generated if not provided) | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.name` | Name of the queue manager to be created in the MQ container | `QM1` |
 | `global.mq.queueManager.secret.name` | Name of a pre-created secret containing credentials of the MQ client and admin users (see [Handling Secrets](/deployment/secrets) topic) | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.secret.adminPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ admin user | `adminPasswordKey` |
@@ -189,6 +191,7 @@ We only support containerised MQ on Openshift.
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsEnabled` | Deploy MQ as a StatefulSet using NFS storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsIP` | IP address or hostname of the NFS server | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsFolder` | Path on the NFS server, where MQ data should be stored | `''` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsMountOptions` | Additional mount options that may be added | `[]` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.fsGroup` | Primary user group for any filesystem mounts, if required by the storage provisioner | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.supplementalGroups` | Supplemental user groups for any filesystem mounts, if required by the storage provisioner | `[]` |
 

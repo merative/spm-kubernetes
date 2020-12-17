@@ -34,8 +34,5 @@ data:
     {{- if and (not $app.excludeJmxStats) ($.Values.global.apps.common.persistence.enabled) ($.Values.global.apps.common.persistence.jmxstats.enabled) -}}
     {{- include "persistence.jmxStats" $ | nindent 4 -}}
     {{- end -}}
-    {{- if ($.Values.global.apps.common.jmxExporter.enabled) -}}
-    {{- include "jmxExporter.config" $ | nindent 4 -}}
-    {{- end -}}
 {{- end }}
 {{- end }}

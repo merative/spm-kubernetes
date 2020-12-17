@@ -47,11 +47,9 @@ spec:
         - name: mqsc-cmds
           configMap:
             name: {{ include "sch.names.fullCompName" (list $ "cm") }}
-        {{- if $.Values.global.mq.tlsSecretName }}
         - name: service-certs
           secret:
-            secretName: {{ $.Release.Name }}-{{ $.Values.global.mq.tlsSecretName }}
-        {{- end}}
+            secretName: {{ $.Values.global.mq.tlsSecretName | default (printf "%s-mq-secret" $.Release.Name) }}
       containers:
         - name: {{ $.Chart.Name }}-{{ $name }}
           image: ibmcom/mq:{{ $.Values.global.mq.version }}
@@ -124,11 +122,9 @@ spec:
             - name: mqsc-cmds
               mountPath: /etc/mqm/30-channel.mqsc
               subPath: channel_{{$name}}.mqsc
-            {{- if $.Values.global.mq.tlsSecretName }}
             - name: service-certs
               mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
               readOnly: true
-            {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

@@ -75,7 +75,7 @@ To integrate with SPM, we will need to:
         enabled: true
     ```
 
-4. Return to the helm chart prepartion page and continue the [installation of of SPM](/deployment/hc_preparation)
+4. Return to [Preparing Helm charts](/deployment/hc_preparation) and continue the installation of SPM.
 
     <InlineNotification>
 
@@ -88,10 +88,10 @@ To integrate with SPM, we will need to:
 5. After the completion of the helm install, complete the federation steps.
 Detailed instructions for the following steps can be found in the Federation Cookbook.
 
-    First, add the Service Provider Signer Certificate to the ISAM server's trust store.
+6. First, add the Service Provider Signer Certificate to the ISAM server's trust store.
 
-6. Next import the Service Provider XML to ISAM server.
+7. Next import the Service Provider XML to ISAM server.
 
     This XML can be obtained from `https://<hostname>/ibm/saml20/defaultSP/samlmetadata`.
 
-7. Reload the applicances on the ISAM server.
+8. Reload the applicances on the ISAM server.

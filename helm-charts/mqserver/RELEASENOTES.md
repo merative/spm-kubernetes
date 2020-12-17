@@ -10,6 +10,11 @@
 
 # Version History
 
+## v1.7.2
+
+* Added `mountOptions` value configuration to PVs and `values` file.
+* Synchronise logic for handling TLS certificate secrets with `apps` chart.
+
 ## v1.6.1
 
 * Updated `CuramCacheInvalidationTopic` to only be defined for the `Curam` application.

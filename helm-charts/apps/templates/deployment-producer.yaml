@@ -39,6 +39,9 @@ spec:
         {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name) ) | nindent 8 }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
+        {{- with $.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
@@ -105,6 +108,11 @@ spec:
           configMap:
             name: {{ $.Release.Name }}-federated-metadata-cm
         {{- end }}
+        {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled }}
+        - name: jmx-exporter-config
+          configMap:
+            name: {{ $.Release.Name }}-jmx-exporter-config
+        {{- end }}
         - name: keystore-volume
           emptyDir: {}
         - name: env-volume
@@ -121,15 +129,13 @@ spec:
           secret:
             secretName: {{ $.Values.global.database.ssl.secretName }}
         {{- end }}
-        {{- if $.Values.global.mq.tlsSecretName }}
         - name: mq-certs
           secret:
             {{- if $.Values.global.mq.useConnectionNameList }}
-            secretName: {{ $.Values.global.mq.tlsSecretName }}
+            secretName: {{ required "Name of secret containing IBM MQ certificates not provided! (global.mq.tlsSecretName)" $.Values.global.mq.tlsSecretName }}
             {{- else }}
-            secretName: {{ $.Release.Name }}-mq-secret
+            secretName: {{ $.Values.global.mq.tlsSecretName | default (printf "%s-mq-secret" $.Release.Name) }}
             {{- end }}
-        {{- end}}
         {{- if $.Values.global.apps.common.persistence.enabled }}
         - name: {{ $.Release.Name }}-persistence-volume
           persistentVolumeClaim:
@@ -211,7 +217,6 @@ spec:
               mountPath: /mnt/keystores
             - name: service-certs
               mountPath: /mnt/svcCertificates
-        {{- if $.Values.global.mq.tlsSecretName }}
         - name: import-certs-for-mq
           {{- include "utilities.definition" $ | indent 10 }}
           env:
@@ -236,7 +241,7 @@ spec:
               {{- if $.Values.global.mq.useConnectionNameList }}
               keytool -import -trustcacerts -noprompt -alias {{ $qmgrName | lower }} -file $mqCrtDir/key_{{ $qmgrName }}.arm -keystore $truststore -storepass $password -storetype pkcs12;
               {{- else }}
-              keytool -import -trustcacerts -noprompt -alias ibmwebspheremqqm1 -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
+              keytool -import -trustcacerts -noprompt -alias ibmwebspheremq{{ $.Values.global.mq.queueManager.name | lower }} -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
               {{- end }}
               keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
               echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env
@@ -247,7 +252,6 @@ spec:
               mountPath: /mnt/envvol
             - name: mq-certs
               mountPath: /mnt/mqCertificates
-        {{- end }}
       containers:
         - name: {{ $.Chart.Name }}-producer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
@@ -407,6 +411,11 @@ spec:
             - name: federated-metadata-cm
               mountPath: /output/resources/security/federation_metadata.xml
               subPath: federation_metadata.xml
+            {{- end }}
+            {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled }}
+            - name: jmx-exporter-config
+              mountPath: /config/configDropins/overrides/config.yaml
+              subPath: config.yaml
             {{- end }}
             - name: keystore-volume
               mountPath: /output/resources/security

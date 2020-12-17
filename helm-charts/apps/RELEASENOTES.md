@@ -12,11 +12,14 @@
 
 # Version History
 
+## v3.2.2
+
+* Adds values from `podAnnotations` at deployment
+* Synchronise logic for handling MQ TLS certificate secrets with `mqserver` chart.
 
 ## v3.2.1
 
 * Activate SAML when using single sign-on (SSO)
-
 
 ## v3.2.0
 

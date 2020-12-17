@@ -44,6 +44,7 @@ data:
 
   20-rewriteRules.conf: |
     RewriteEngine On
+    RewriteOptions Inherit
     RewriteCond %{REQUEST_URI} !(.+)/$
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_FILENAME} !-f
     RewriteCond %{HTTP_HOST}:%{SERVER_PORT} ^(.+):8443$ [NC]

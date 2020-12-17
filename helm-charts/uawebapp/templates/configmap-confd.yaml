@@ -91,5 +91,11 @@ data:
     <IfModule !mod_rewrite.c>
         LoadModule rewrite_module modules/mod_rewrite.so
     </IfModule>
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteOptions Inherit
+        RewriteCond %{REQUEST_METHOD} !^(GET|POST|PUT|DELETE|OPTIONS)$
+        RewriteRule .* - [PT,F]
+    </IfModule>
 
 {{- end }}

@@ -1,5 +1,5 @@
-{{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
-{{- if not .Values.global.mq.tlsSecretName }}
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+{{- if and .Values.global.useBetaFeatures .Values.jmxExporter.enabled }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -16,16 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-{{- $cert := genSelfSignedCert (printf "%s-%s" .Release.Name .Chart.Name) nil nil 365 }}
+
 apiVersion: v1
-kind: Secret
+kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-mq-secret
+  name: {{ .Release.Name }}-jmx-exporter-config
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
-type: kubernetes.io/tls
 data:
-  tls.crt: {{ $cert.Cert | b64enc }}
-  tls.key: {{ $cert.Key | b64enc }}
+  config.yaml: |-
+    {{- .Values.jmxExporter.configYaml | default "" | nindent 4 -}}
 {{- end }}

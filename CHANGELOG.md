@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file
 
+
+## v20.12.0
+
+### Changed
+
+* Limit allowed HTTP verbs as detailed in the [Knowledge Center](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.11/com.ibm.curam.content.doc/Security/t_SECHAND_httpverbperms.html)
+* Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/IBM/spm-kubernetes/issues/51))
+* Adds values from `podAnnotations` at deployment of `apps` chart
+
+### Fixed
+
+* Added clarification that NFS folders must be configured prior to using MQ with NFS ([#31](https://github.com/IBM/spm-kubernetes/issues/31))
+* Added `mountOptions` configuration to `mqserver` PVs ([#30](https://github.com/IBM/spm-kubernetes/issues/30))
+* Synchronised handling of MQ TLS certificate secrets between `apps` and `mqserver` charts ([#28](https://github.com/IBM/spm-kubernetes/issues/28))
+
 ## v20.11.0
 
 ### Added
