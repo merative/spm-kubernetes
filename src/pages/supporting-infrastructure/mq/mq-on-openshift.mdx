@@ -27,7 +27,10 @@ This occurs seamlessly, with persistent storage allowing for minimal downtime. T
 deployment. These values are those located under the MQ `multiInstance` section within the relevant values file. There, NFS or Ceph can be chosen as the desired
 multi-instance delivery method.
 
-* **NFS** - In order to deploy with NFS, an NFS server and NFS folder must be available and configured; the supplementalGroups may need to be provided depending on the NFS server security setup.
+* **NFS** - In order to deploy with NFS, an NFS server and NFS folder must be available and configured; i.e. the destination directory `global.mq.multiInstance.nfsFolder` must exist;
+the folder must be configured to have a `data` and `logs` subdirectory for each applicable application (i.e. if `global.mq.multiInstance.nfsFolder` is set to `/MQHA`, the folder must
+contain the directories `/MQHA/curam/data`, `/MQHA/curam/logs` etc).
+The supplementalGroups may need to be provided depending on the NFS server security setup.
 * **Ceph** - In order to deploy with Ceph, the desired Storage Class must be provided.
 
 ## Persistent Volumes & Persistent Volume Claims

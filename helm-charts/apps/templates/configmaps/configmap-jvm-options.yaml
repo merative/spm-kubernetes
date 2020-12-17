@@ -36,3 +36,6 @@ data:
     -verbose:gc
     -Xverbosegclog:verbosegc.log
     {{- end }}
+    {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled -}}
+    {{- include "jmxExporter.configJvm" . | nindent 4 -}}
+    {{- end -}}

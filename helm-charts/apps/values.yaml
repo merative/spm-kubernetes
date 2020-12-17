@@ -17,6 +17,7 @@
 global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
+  useBetaFeatures: false
   images:
     registry: &imageRegistry minikube.local:5000
     imageLibrary: ''
@@ -72,12 +73,6 @@ global:
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
           enabled: false
           timerPeriod: 60000
-      jmxExporter:
-        # Enable use of Prometheus JMX Exporter javaagent in Liberty
-        enabled: false
-        agent:
-          host: localhost
-          port: 8080
     config:
       curam:
         enabled: true
@@ -216,8 +211,8 @@ global:
   mq:
     # Set to True if running MQ in HA mode
     useConnectionNameList: false
-    objectSuffix: minikube
-    tlsSecretName: mq-secret
+    objectSuffix: ''
+    tlsSecretName: ''
     multiInstance:
       operatorsEnabled: false
     queueManager:
@@ -228,7 +223,7 @@ global:
         # appUsernameKey is the secret key that contains the username for client connections between Liberty and MQ
         appUsernameKey: 'appUsername'
   ingress:
-    hostname: minikube.local
+    hostname: ''
 
 # Name of an existing ServiceAccount for the application runtime
 serviceAccountName: ""
@@ -293,3 +288,12 @@ defaultResources:
   limits:
     cpu: 0.75
     memory: 1Gi
+
+# Pods Annotations
+podAnnotations: {}
+
+# JMX Exporter configuration (Beta Feature)
+jmxExporter:
+  enabled: false
+  port: 8080
+  configYaml: ''

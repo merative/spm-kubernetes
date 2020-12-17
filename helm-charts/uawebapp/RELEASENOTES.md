@@ -37,6 +37,10 @@
 
 # Version History
 
+## v3.1.0
+
+* Add rewrite rule and condition to configmaps to fix verb tampering vulnerability.
+
 ## v3.0.3
 
 * Update the chart to internal content verification linter standards.

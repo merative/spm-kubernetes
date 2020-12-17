@@ -38,6 +38,7 @@ CMD ["runbatch"]
 ARG ANT_VERSION
 ENV ANT_HOME=/opt/apache-ant-${ANT_VERSION} \
     ANT_OPTS='-Xmx1400m -Dcmp.maxmemory=1400m' \
+    IBM_JAVA_OPTIONS='-Xshareclasses:none -XX:+UseContainerSupport' \
     JAVA_HOME=/opt/ibm/java \
     JAVAMAIL_HOME=/opt/javamail \
     WLP_HOME=/opt/ibm/wlp

@@ -37,6 +37,12 @@ spec:
   claimRef:
     namespace: {{ $.Release.Namespace }}
     name: {{ $.Release.Namespace }}-{{ $name }}-pvc-data
+  {{- if $.Values.global.mq.multiInstance.nfsMountOptions }}
+  mountOptions:
+    {{- range $.Values.global.mq.multiInstance.nfsMountOptions }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

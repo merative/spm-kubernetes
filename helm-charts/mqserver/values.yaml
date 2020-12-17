@@ -49,7 +49,7 @@ global:
     # Licensing reference for mq.ibm.com/v1beta1
     license: "L-APIG-BM7GDH"
     use: "Development"
-    tlsSecretName: mq-secret
+    tlsSecretName: ''
     queueManager:
       name: "QM1"
       secret:
@@ -71,10 +71,11 @@ global:
       cephEnabled: false
       # storageClassName'required when availabilityType is provided or cephEnabled is true.
       storageClassName: ''
-      # nfsEnabled / nfsIP / nfsFolder applies only 
+      # nfsEnabled / nfsIP / nfsFolder applies only
       nfsEnabled: false
       nfsIP: ''
       nfsFolder: ''
+      nfsMountOptions: []
     security:
       context:
         # fsGroup / supplementalGroups may be required when using NFS.
@@ -88,7 +89,7 @@ livenessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 1
-  
+
 
 # readinessProbe section specifies setting for the MQ readiness probe, which checks when the MQ listener is running
 readinessProbe:

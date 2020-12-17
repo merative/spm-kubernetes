@@ -79,10 +79,10 @@ JMX Stats Persistence enablement options
 {{- end -}}
 
 {{/*
-Prometheus JMX Exporter
+Prometheus JMX Exporter JVM Config
 */}}
-{{- define "jmxExporter.config" -}}
-{{- printf "-javaagent:/config/configDropins/overrides/jmx_prometheus_javaagent.jar=%s:%d:/config/configDropins/overrides/config.yaml"  .Values.global.apps.common.jmxExporter.agent.host ( .Values.global.apps.common.jmxExporter.agent.port | default 8080 | int ) -}}
+{{- define "jmxExporter.configJvm" -}}
+{{- printf "-javaagent:/config/configDropins/overrides/jmx_prometheus_javaagent.jar=%d:/config/configDropins/overrides/config.yaml" ( .Values.jmxExporter.port | default 8080 | int ) -}}
 {{- end -}}
 
 {{/*

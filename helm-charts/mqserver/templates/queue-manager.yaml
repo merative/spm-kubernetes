@@ -1,8 +1,8 @@
 {{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
 {{ $apps := .Values.global.apps.config }}
+{{- if .Values.global.mq.multiInstance.operatorsEnabled }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
-{{- if ($.Values.global.mq.multiInstance.operatorsEnabled) }}
 ---
 ###############################################################################
 # Copyright 2019,2020 IBM Corporation
@@ -33,11 +33,11 @@ spec:
       - name: ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
         secret:
           secretName: {{ $.Release.Name }}-mq-secret
-          items: 
+          items:
           - tls.key
           - tls.crt
   license:
-    accept: true
+    accept: {{ eq (required "License must be accepted to use this operator (global.license)" $.Values.global.license) "accept" }}
     license: {{ $.Values.global.mq.license }}
     use: {{ $.Values.global.mq.use }}
   queueManager:
@@ -46,7 +46,7 @@ spec:
     mqsc:
       - configMap:
           name: {{ include "sch.names.fullCompName" (list $ "cm")  }}
-          items: 
+          items:
           - config.mqsc
           - channel_{{$name}}.mqsc
     availability:
