@@ -47,6 +47,26 @@ spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | indent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list $ $.sch.chart.nodeAffinity) | indent 8 }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ (printf "%s-consumer" $name) }}
+              topologyKey: topology.kubernetes.io/zone
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - {{ (printf "%s-consumer" $name) }}
+              topologyKey: kubernetes.io/hostname
       {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
       imagePullSecrets:
         - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}

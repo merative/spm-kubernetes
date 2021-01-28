@@ -20,6 +20,7 @@ the Shared Configurable Helpers overridden for this chart.
 */ -}}
 {{- define "web.sch.chart.config.values" -}}
 sch:
+  appName: web
   chart:
     nodeAffinity:
       nodeAffinityRequiredDuringScheduling:

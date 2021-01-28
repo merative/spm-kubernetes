@@ -20,7 +20,21 @@ the Shared Configurable Helpers overridden for this chart.
 */ -}}
 {{- define "uawebapp.sch.chart.config.values" -}}
 sch:
+  appName: uawebapp
   chart:
+    podAntiAffinity:
+      preferredDuringScheduling:
+        uawebapp:
+          weight: 100
+          key: app.kubernetes.io/name
+          operator: In
+          topologyKey: topology.kubernetes.io/zone
+      preferredDuringScheduling:
+        uawebapp:
+          weight: 100
+          key: app.kubernetes.io/name
+          operator: In
+          topologyKey: kubernetes.io/hostname
     nodeAffinity:
       nodeAffinityRequiredDuringScheduling:
         key: beta.kubernetes.io/arch
