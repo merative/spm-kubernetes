@@ -10,6 +10,10 @@
 
 # Version History
 
+## v2.1.0
+
+* Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.
+
 ## v2.0.3
 
 * Update the charts to internal content verification linter standards.

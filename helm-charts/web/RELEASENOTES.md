@@ -11,6 +11,10 @@
 
 # Version History
 
+## v3.2.0
+
+* Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.
+
 ## v3.1.0
 
 * Add rewrite rule and condition to configmaps to fix verb tampering vulnerability.
