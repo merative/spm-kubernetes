@@ -30,7 +30,7 @@ description: |-
   You may obtain a copy of the License at
   
   http://www.apache.org/licenses/LICENSE-2.0
-version: 2.0.3
+version: 2.1.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team

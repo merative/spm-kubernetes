@@ -10,6 +10,10 @@
 
 # Version History
 
+## v1.8.0
+
+* Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.
+
 ## v1.7.2
 
 * Added `mountOptions` value configuration to PVs and `values` file.

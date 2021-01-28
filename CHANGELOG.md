@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.1.0
+
+### Added
+
+* Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.
+* Activate logout for SAML when using single sign-on (SSO)
 
 ## v20.12.0
 

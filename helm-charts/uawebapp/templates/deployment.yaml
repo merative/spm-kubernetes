@@ -39,6 +39,7 @@ spec:
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
         {{- include "sch.affinity.nodeAffinity" (list . .sch.chart.nodeAffinity) | nindent 8 }}
+        {{- include "sch.affinity.podAntiAffinity" (list .) | nindent 8 }}
       {{- if or .Values.global.imagePullSecret.secretName .Values.global.imagePullSecret.username }}
       imagePullSecrets:
         - name: {{ default (printf "%s-pull-secret" .Release.Name) .Values.global.imagePullSecret.secretName }}

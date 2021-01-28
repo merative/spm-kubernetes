@@ -4,6 +4,7 @@ the Shared Configurable Helpers overridden for this chart.
 */ -}}
 {{- define "mqserver.sch.chart.config.values" -}}
 sch:
+  appName: mqserver
   chart:
     nodeAffinity:
       nodeAffinityRequiredDuringScheduling:

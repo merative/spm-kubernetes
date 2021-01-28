@@ -20,6 +20,7 @@ the Shared Configurable Helpers overridden for this chart.
 */ -}}
 {{- define "xmlserver.sch.chart.config.values" -}}
 sch:
+  appName: xmlserver
   chart:
     nodeAffinity:
       nodeAffinityRequiredDuringScheduling:
