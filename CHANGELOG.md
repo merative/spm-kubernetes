@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.2.0
+
+### Added
+
+* Introduced support for Docker 20.10
+
+### Changed
+
+* Clarified steps on Remote Debug process
+* Updated Third party Prerequisite software
+  * Extended support for Docker, Helm, IBM MQ LTS and IBM MQ CD to include future fix packs
+  * Added note for Docker version 19.03. `Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management`
+* Clarified memory allocation for CRC
+* Removed errant apostrophe when setting ANT_HOME
+
+### Fixed
+
+* Certificate Error when logging in to the Open Shift Registry. Added clarification on enabling Docker trust certificates ([#58](https://github.com/IBM/spm-kubernetes/issues/58))
+* Supporting the rotation of the `apps` logs
+
 ## v21.1.0
 
 ### Added

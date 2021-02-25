@@ -328,9 +328,9 @@ spec:
           readinessProbe:
             exec:
               command:
-                - /bin/grep
-                - "Application CuramServerCode started"
-                - {{ include "apps.logsDir" $ }}/messages.log
+                - /bin/sh
+                - -c
+                - /bin/grep "Application CuramServerCode started" {{ include "apps.logsDir" $ }}/messages*.log
             initialDelaySeconds: 90
             periodSeconds: 10
           livenessProbe:

@@ -44,7 +44,7 @@ The following tables list the configurable parameters of the `spm` chart and the
 | `global.apps.common.persistence.bucketName` | Name of the Cloud Object Storage bucket to use | `''` |
 | `global.apps.common.persistence.bucketRegion` | Region (`ibm.io/region`) of the Cloud Object Storage bucket, if required by your storage provisioner | `''` |
 | `global.apps.common.persistence.storageClassName` | Name of the Storage Class to use | `''` |
-| `global.apps.common.persistence.mountPoint` | Path, where the persistent volume should be mounted in pods | `''` |
+| `global.apps.common.persistence.mountPoint` | Path, where the `Persistent Volume` should be mounted in pods | `''` |
 | `global.apps.common.persistence.subDir` | Subdirectory inside the mount point, where logs should be stored. If blank, defaults to the Helm release name | `''` |
 | `global.apps.config.<applicationID>.enabled` | Enable/disable SPM applications in the Helm release, where `applicationID` is the lower-cased name of the EAR file deployed | `true` for `curam`, `false` for all others |
 | `global.ingress.enabled` | Toggle creation of Ingress/Route resources | `false` |

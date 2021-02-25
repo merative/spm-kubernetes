@@ -19,7 +19,21 @@ Edit the deployment spec for the Cúram Producer deployment.
 
 ```kubectl edit deployment release-apps-curam-producer```
 
-Add the following lines under containers:
+Add the following lines under `.spec.template.spec.containers`:
+
+<InlineNotification>
+
+**Note:** Under `.spec.template.spec.containers` we can define multiple containers. The top level indented hyphen character preceding args
+signifies the start of *a* container definition, remove the `-` at the same indentation level before env section or they will be treated
+as two separate container definitions, with one being invalid.
+
+</InlineNotification>
+
+<Tabs>
+
+<Tab label="Correct Example">
+<Row>
+<Column>
 
 ```
 containers:
@@ -27,7 +41,35 @@ containers:
   - /opt/ibm/wlp/bin/server
   - debug
   - defaultServer
+  env:
+  ...
+  ...
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Incorrect Example">
+<Row>
+<Column>
+
+```
+containers:
+- args:
+  - /opt/ibm/wlp/bin/server
+  - debug
+  - defaultServer
+- env:
+  ...
+  ...
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 The Cúram Producer deployment will terminate its pod and start a new one with the debug configuration.
 
@@ -37,17 +79,11 @@ Next, forward the WebSphere® Liberty server's debug port to make it available t
 
 ```kubectl port-forward release-apps-curam-producer-XXXX 7777:7777```
 
-### View the logs in real-time
-
-In order to tail the logs while you debug use the following command:
-
-```kubectl logs -f release-apps-curam-producer-XXXX```
-
-Note, WebSphere® Liberty will not start SPM until the remote debugger attaches to the listener. Therefore, the log will not be populated before you launch the remote debugger.
-
 ### Create the remote debug configuration
 
 From the Eclipse debug view, create a Java Remote Application. Attach an appropriate source code project, and attach the Java Remote Application to the port you forwarded in [Forward the debugging port](#forward-the-debugging-port).
+The `Host` field in the debug configuration will be `localhost` even if you are using a remote cluster because the port forwarding
+relies on the local loopback device.
 
 ![Figure 1: Example Debugger Config](../../images/remote_debugger.png)
 <Caption>

@@ -357,9 +357,9 @@ spec:
           readinessProbe:
             exec:
               command:
-                - /bin/grep
-                - {{ .readinessString | quote }}
-                - {{ include "apps.logsDir" $ }}/messages.log
+                - /bin/sh
+                - -c
+                - /bin/grep {{ .readinessString | quote }} {{ include "apps.logsDir" $ }}/messages*.log
             initialDelaySeconds: 90
             periodSeconds: 10
           {{- end }}

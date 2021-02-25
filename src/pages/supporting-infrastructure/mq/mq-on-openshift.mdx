@@ -33,10 +33,10 @@ contain the directories `/MQHA/curam/data`, `/MQHA/curam/logs` etc).
 The supplementalGroups may need to be provided depending on the NFS server security setup.
 * **Ceph** - In order to deploy with Ceph, the desired Storage Class must be provided.
 
-## Persistent Volumes & Persistent Volume Claims
+## PersistentVolumes and PersistentVolumeClaims
 
-A **PersistentVolume** (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
-It is a resource in the cluster just like a node is a cluster resource. A **PersistentVolumeClaim** (PVC) is a request for storage by a user. It is similar to
+A `PersistentVolume` (PV) is a piece of storage in the cluster that has been provisioned by an administrator or dynamically provisioned using Storage Classes.
+It is a resource in the cluster just like a node is a cluster resource. A `PersistentVolumeClaim` (PVC) is a request for storage by a user. It is similar to
 a Pod. Pods consume node resources and PVCs consume PV resources. Pods can request specific levels of resources (CPU and Memory). Claims can request specific
 size and access modes.
 

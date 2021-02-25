@@ -56,7 +56,7 @@ icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~3.3.0"
+    version: "~3.4.0"
     repository: "@local-development"
   - name: batch
     version: "~2.1.0"
