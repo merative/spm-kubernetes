@@ -12,6 +12,10 @@
 
 # Version History
 
+## v3.4.0
+
+* Fixes readiness probe when messages.log are being rotated
+
 ## v3.3.0
 
 * Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.

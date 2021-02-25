@@ -11,6 +11,10 @@
 
 # Version History
 
+## v2.4.0
+
+* Update `apps` dependency to version 3.4.0
+
 ## v2.3.0
 
 * Patch verb tampering vulnerability in `uawebapp` and `web` charts' configmaps

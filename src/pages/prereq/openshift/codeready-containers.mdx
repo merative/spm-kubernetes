@@ -94,33 +94,41 @@ crc setup
 
 Now that the basic configuration is complete, you need to edit the configuration to change the memory limit and add the path to the pull secret file downloaded previously.
 
-To change the memory limit, set the CPUs to 6, and add the path to the pull secret file downloaded previously. Run the following commands:
+To change the memory limit, set the CPUs, and add the path to the pull secret file downloaded previously. Run the following commands:
 
 ```shell
-crc config set memory 32768
-crc config set cpus 6
+crc config set memory <number-in-MiB>
+crc config set cpus <whole-number>
 crc config set pull-secret-file $CRC_HOME/pull-secret.txt
 ```
 
 <InlineNotification>
 
-**Note:**  While CRC's minimum memory allocation requirement is 8GB, only a single replica SPM deployment can be achieved using this.
+CRC's minimum memory allocation requirement is 8GB, only a single replica SPM deployment can be achieved using this.
 
 You should allocate as many resources as are available.
 
-The greater the workload the greater the memory and processor requirements.
+**Note:** Values for available memory are set in mebibytes (MiB). Below are some sample values.
 
-Any changes to the crc config require you to delete the cluster and start a new one.
+Example memory values:
+
+* 32768 (MiB) is equilivant to 34.4GB
+* 20480 (MiB) is equilivant to 21.5GB
+* 15120 (MiB) is equilivant to 15.9GB
+
+**Note:** The greater the workload the greater the memory and processor requirements. Any changes to the CRC config require you to delete the cluster and start a new one.
+
+**Note:** CPU limits must not exceed the physical resources.
 
 </InlineNotification>
 
-You can always check the configured options of ’crc’, run the following command:
+You can always check the configured options of `crc`, run the following command:
 
 ```shell
 crc config view
 ```
 
-After setup is complete, start the cluster with 6 CPUs, run the following command:
+After setup is complete, start the cluster, run the following command:
 
 ```shell
 crc start
@@ -147,13 +155,16 @@ Note the `kubeadmin` and `developer` credentials for later use.
 **Note:**  For the rest of the guide you can substitute the credentials you received when you started your cluster for `$KUBEADMN_PSWD` and `$KUBEDEVEL_PSWD`.
 
 Alternatively, these credentials are returned by the `crc console --credentials` command.
+
 This guide uses `$KUBEDEVEL_PSWD` and `$KUBEADMN_PSWD` environment variables.
 
 You may find it convenient to to the same, so you can copy and paste commands without having to switch values:
 
-`export KUBEADMN_PSWD=yourKubeAdminPassword`
+```
+export KUBEADMN_PSWD=yourKubeAdminPassword
 
-`export KUBEDEVEL_PSWD=yourKubeDeveloperPassword`
+export KUBEDEVEL_PSWD=yourKubeDeveloperPassword
+```
 
 </InlineNotification>
 
@@ -204,25 +215,15 @@ Switch kubernetes context to the new project:
 kubectl config set-context --current --namespace $PROJECT
 ```
 
-## Deployment Process
+## Configuring the Image Registry
 
-Enable the Image Registry default route:
+In order to push docker images into the crc internal registry the default route needs to be enabled.
+
+Enable the Enable the Image Registry default route:
 
 ```shell
 oc patch configs.imageregistry.operator.openshift.io/cluster --type merge -p '{"spec":{"defaultRoute":true}}'
 
-```
-
-Add relevant roles to user:
-
-```shell
-oc adm policy add-cluster-role-to-user registry-viewer kube:admin
-```
-
-Log in to the OpenShift registry:
-
-```shell
-docker login -u kubeadmin -p $(oc whoami -t) $(oc registry info --public)
 ```
 
 <InlineNotification>
@@ -232,6 +233,33 @@ docker login -u kubeadmin -p $(oc whoami -t) $(oc registry info --public)
 The image registry URL for use in Helm override values can be retrieved using `oc registry info --internal`: `image-registry.openshift-image-registry.svc:5000`
 
 </InlineNotification>
+
+Add relevant roles to user:
+
+```shell
+oc adm policy add-cluster-role-to-user registry-viewer kube:admin
+```
+
+The default route signs the certificate by the OpenShift internal CA, which Docker does not trust by default.
+
+Docker loads all `*.crt` files under `/etc/docker/certs.d/<registryHost[:port]>` directories and uses them for verifying any self-signed certificates.
+
+More information can be found in the Docker Documentation [Use self-signed certificates](https://docs.docker.com/registry/insecure/#use-self-signed-certificates).
+
+Enable Docker trust certificate:
+
+```shell
+CERT_PATH="/etc/docker/certs.d/$(oc registry info --public)"
+sudo mkdir -p $CERT_PATH
+oc extract secret/router-ca -n openshift-ingress-operator --keys=tls.crt
+sudo cp tls.crt $CERT_PATH
+```
+
+Log in to the OpenShift registry:
+
+```shell
+docker login -u kubeadmin -p $(oc whoami -t) $(oc registry info --public)
+```
 
 ## Hostname configuration for CRC
 
