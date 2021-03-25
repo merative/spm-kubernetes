@@ -18,9 +18,9 @@ apiVersion: v2
 kubeVersion: ">=1.16"
 appVersion: "7.0.11.0"
 name: uawebapp
-description: |- 
-  Helm Chart for deploying the Universal Access React application. 
-  
+description: |-
+  Helm Chart for deploying the Universal Access React application.
+
   Documentation
   For complete documentation please see the chart README
 
@@ -28,9 +28,9 @@ description: |-
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
   http://www.apache.org/licenses/LICENSE-2.0
-version: 3.2.0
+version: 3.2.1
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team

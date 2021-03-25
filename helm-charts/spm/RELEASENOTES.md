@@ -11,6 +11,15 @@
 
 # Version History
 
+## v2.5.0
+
+* Update `apps` dependency to version 3.4.1
+* Update `batch` dependency to version 2.1.1
+* Update `mqserver` dependency to version 1.9.0
+* Update `uawebapp` dependency to version 3.2.1
+* Update `web` dependency to version 3.2.1
+* Update `xmlserver` dependency to version 2.1.1
+
 ## v2.4.0
 
 * Update `apps` dependency to version 3.4.0

@@ -52,6 +52,7 @@ spec:
               /opt/bitnami/kubectl/bin/kubectl delete configmap {{ include "sch.names.fullCompName" (list . "hook-customsql") }} --ignore-not-found;
               /opt/bitnami/kubectl/bin/kubectl delete secret {{ include "sch.names.fullCompName" (list . "hook-dbcreds") }} --ignore-not-found;
               /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-ltpa-keys --ignore-not-found;
-              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-wlpadm --ignore-not-found
+              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-wlpadm --ignore-not-found;
+              /opt/bitnami/kubectl/bin/kubectl delete secret {{ .Release.Name }}-hook-pullsecret --ignore-not-found
           {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
           {{- include "initContainer.resources" . | nindent 10 }}

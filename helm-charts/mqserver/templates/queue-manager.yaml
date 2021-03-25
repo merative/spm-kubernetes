@@ -76,6 +76,8 @@ spec:
         enabled: true
         class: {{ $.Values.global.mq.multiInstance.storageClassName }}
         size: 2Gi
+    metrics:
+      enabled: {{ $.Values.global.mq.metrics.enabled | default false }}
   template:
     pod:
       containers:

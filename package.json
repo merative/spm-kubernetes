@@ -1,7 +1,7 @@
 {
   "name": "spm-kubernetes",
   "private": true,
-  "version": "20.10.0",
+  "version": "21.3.0",
   "license": "Apache 2.0",
   "scripts": {
     "dev": "gatsby develop -H 0.0.0.0",
@@ -16,10 +16,10 @@
   },
   "dependencies": {
     "carbon-icons": "^7.0.7",
-    "gatsby": "^2.32.4",
-    "gatsby-cli": "^2.19.1",
-    "gatsby-theme-carbon": "^1.26.13",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "gatsby": "^2.32.11",
+    "gatsby-cli": "^2.19.2",
+    "gatsby-theme-carbon": "^1.27.3",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   }
 }

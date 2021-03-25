@@ -20,6 +20,7 @@ module.exports = {
         background_color: '#ffffff',
         theme_color: '#0062ff',
         display: 'browser',
+        icon: 'node_modules/gatsby-theme-carbon/src/images/favicon.svg'
       },
     },
     {

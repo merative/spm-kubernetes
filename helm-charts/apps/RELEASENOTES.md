@@ -12,6 +12,11 @@
 
 # Version History
 
+## v3.4.1
+
+* Cleanup hook pull secret on deletion
+* Remove reference to a non-existent pull secret for service account
+
 ## v3.4.0
 
 * Fixes readiness probe when messages.log are being rotated

@@ -11,6 +11,10 @@
 
 # Version History
 
+## v3.2.1
+
+* Remove reference to a non-existent pull secret for service account
+
 ## v3.2.0
 
 * Adds pod Anti-affinity rules to distribute a replica across the availability zones, and nodes within them.

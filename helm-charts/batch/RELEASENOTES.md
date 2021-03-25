@@ -12,6 +12,10 @@
 
 # Version History
 
+## v2.1.1
+
+* Remove reference to a non-existent pull secret for service account
+
 ## v2.1.0
 
 * Add reference implementation for Batch streaming jobs
