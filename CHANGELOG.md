@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.3.0
+
+### Added
+
+* Adds values from `podAnnotations` at deployment of `mqserver` chart
+* Pass parameter to MQ Operators to enable or disable the metrics
+
+### Changed
+
+* Clarify instructions for building base images
+* Clarify initial setup of CodeReady Containers
+* Update recommended drivers for running Minikube
+
+## Fixed
+
+* Remove references to a non-existent pull secret for service accounts
+
 ## v21.2.0
 
 ### Added

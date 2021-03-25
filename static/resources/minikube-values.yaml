@@ -3,7 +3,7 @@ global:
   license: '' # Set to 'accept' after reviewing all license agreements
   images:
     registry: minikube.local:5000
-    imageLibrary: 'ocp'
+    imageLibrary: 'dev'
     imagePrefix: ''
     imageTag: latest
     pullPolicy: Always

@@ -2,13 +2,16 @@
 
 * Updated the topic structure to correctly invalidate the SPM properties cache.
 
-### Fixes
-
 ## Prerequisites
 
 * For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v1.9.0
+
+* Adds values from `podAnnotations` at deployment
+* Pass parameter to MQ Operators to enable or disable the metrics
 
 ## v1.8.0
 
@@ -37,6 +40,7 @@
 * Remove unused pull secret definition.
 
 ## v1.5.0
+
 * Added a check before creating deployment to see if multi-instance MQ is desired.
 * Added values for use in multi-instance MQ, with both static and dynamic storage.
 * Added a stateful set YAML file for use in multi-instance MQ.

@@ -3,8 +3,6 @@
 * Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
 
-### Fixes
-
 # Breaking Changes
 
 * The structure of values for specifying the Universal Access image has changed:
@@ -36,6 +34,10 @@
 * For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v3.2.1
+
+* Remove reference to a non-existent pull secret for service account
 
 ## v3.2.0
 

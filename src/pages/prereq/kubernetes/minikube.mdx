@@ -5,14 +5,8 @@ tabs: ['Kubernetes Overview','Minikube','IBM Cloud Kubernetes Service']
 ---
 
 Minikube runs a single-node Kubernetes cluster inside a virtual machine (VM) on your laptop, for users who want to try out Kubernetes or develop with it.
-Minikube documentation is available at [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/minikube/).
+Minikube documentation is available at [Installing Kubernetes with Minikube](https://minikube.sigs.k8s.io/docs/start/).
 The following sections are not a substitute for the official documentation but they get you started in a classic configuration.
-
-<InlineNotification>
-
-**Note:** Minikube version used to verify this runbook: 1.12
-
-</InlineNotification>
 
 The following installation steps are described:
 
@@ -25,7 +19,7 @@ The following installation steps are described:
 
 ## Minikube installation
 
-Minikube installation steps are described in the official documentation for your preferred Operating System: [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/).
+Minikube installation steps are described in the official documentation for your preferred Operating System: [Install Minikube](https://minikube.sigs.k8s.io/docs/start/).
 
 ## Starting Minikube
 
@@ -42,7 +36,10 @@ Minikube can be started with a command as simple as `minikube start` without any
 so several other parameters are required:
 
 ```shell
-minikube start --vm-driver=virtualbox --cpus 4 --memory 8G --insecure-registry "192.168.0.0/16" --disk-size='30G' --kubernetes-version v1.18.6
+minikube start --driver=virtualbox --cpus 4 --memory 8G \
+               --insecure-registry "192.168.0.0/16" \
+               --disk-size='30G' \
+               --kubernetes-version v1.18.16
 ```
 
 ### Specifying the resource allocation
@@ -55,13 +52,14 @@ You can add properties to specify the resource allocation. For example:
 
 ### Specifying the VM driver
 
-Add the `--vm-driver=` option to the `minikube start` command to specify the underlying virtual machine driver. The following drivers were tested:
+Add the `--driver=` option to the `minikube start` command to specify the underlying virtual machine driver. The following drivers were tested:
 
-* `--vm-driver=virtualbox` - VirtualBox on OSX and Windows
-* `--vm-driver=vmware` - VMware Fusion on OSX
-* `--vm-driver=none` - Minikube running directly on a Linux® node without virtualization (this is not recommended on personal workstations)
+* `--driver=virtualbox` - [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) on OSX, Linux, and Windows
+* `--driver=vmware` - [VMware Fusion](https://minikube.sigs.k8s.io/docs/drivers/vmware/) on OSX
+* `--driver=docker` - [Docker](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
+* `--driver=kvm2` - [KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
 
-The [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) page gives you more information on available VM driver options.
+The [Install Minikube](https://minikube.sigs.k8s.io/docs/start/) page gives you more information on available VM driver options.
 
 ### Specifying the insecure registry
 
@@ -85,6 +83,63 @@ If you override the Kubernetes version, ensure that you download and install the
 **Note:** The `kubectl` version running locally and on Minikube should be compatible, so it's possible to use the `--kubernetes-version` flag to keep them consistent.
 
 </InlineNotification>
+
+## Docker Hub download rate limit and Minikube
+
+In November 2020, Docker introduced [download rate limits](https://docs.docker.com/docker-hub/download-rate-limit/) on Docker Hub.
+Normally, this can be mitigated by providing an Image Pull Secret to the deployment.
+
+For Minikube addons these pull secrets are not exposed, so the solution involves providing a `config.json` file containing the credentials to the Kubelet process running inside the Minikube environment.
+
+1. Authenticate your local Docker client with Docker Hub: `docker login`
+    * You can register for a free account on the [Docker Hub website](https://hub.docker.com/signup)
+2. Copy the contents of your local Docker secrets:
+
+    ```shell
+    cat ~/.docker/config.json && echo
+    ```
+
+    * The output should look something like below:
+
+    ```json
+    {
+      "auths": {
+        "https://index.docker.io/v1/": {
+          "auth": "<base64 of username:password>"
+        }
+      }
+    }
+    ```
+
+3. Open a terminal in your Minikube VM:
+
+    ```shell
+    minikube ssh
+    ```
+
+4. Paste the contents of the file from step 2 into `/var/lib/kubelet/config.json`:
+
+    * Edit the command to include the contents of your `config.json` file first
+
+    ```shell
+    cat << EOS | sudo tee /var/lib/kubelet/config.json
+    {
+      "auths": {
+        "https://index.docker.io/v1/": {
+          "auth": "<base64 of username:password>"
+        }
+      }
+    }
+    EOS
+    ```
+
+5. Restart the `kubelet` process in the Minikube VM:
+
+    ```shell
+    sudo systemctl restart kubelet
+    ```
+
+6. Exit the Minikube terminal.
 
 ## Docker registry
 
@@ -144,6 +199,9 @@ The local Docker client configuration must be also be updated with the correspon
   * `~/.docker/daemon.json` on OSX
   * `/etc/docker/daemon.json` on Linux
   * `C:\ProgramData\Docker\config\daemon.json` on Windows
+* Restart the Docker daemon:
+  * On Linux - run: `sudo systemctl restart docker`
+  * On Mac and Windows - use the "Restart Docker" menu option in the Docker Desktop application.
 
 Example of `daemon.json`:
 
@@ -174,6 +232,28 @@ To enable Ingress for Minikube, you must enable the `ingress` add-on.
 minikube addons enable ingress
 ```
 
+## Create a namespace
+
+Create a namespace for the SPM deployment, again use an environment variable for your convenience when following the guide.
+
+Create the environment variable, you can set to value to anything you like, but it should consist of lower case alphanumeric characters or `-`, and must start and end with an alphanumeric character (e.g. `my-name`,  or `123-abc`):
+
+```shell
+export PROJECT="dev"
+```
+
+Create the namespace:
+
+```shell
+kubectl create namespace $PROJECT
+```
+
+Switch to the new namespace:
+
+```shell
+kubectl config set-context --current --namespace $PROJECT
+```
+
 ## Useful Minikube commands
 
 Some useful Minikube commands are as follows:
@@ -190,4 +270,4 @@ minikube delete       # Delete the Minikube VM
 minikube ip           # Show the Minikube IP
 ```
 
-For a full list of commands, see [Installing Kubernetes with Minikube](https://kubernetes.io/docs/setup/minikube/).
+For a full list of commands, see [Installing Kubernetes with Minikube](https://minikube.sigs.k8s.io/docs/start/).
