@@ -56,6 +56,7 @@ Add the `--driver=` option to the `minikube start` command to specify the underl
 
 * `--driver=virtualbox` - [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) on OSX, Linux, and Windows
 * `--driver=vmware` - [VMware Fusion](https://minikube.sigs.k8s.io/docs/drivers/vmware/) on OSX
+  * **Note**: There is an [issue](https://github.com/kubernetes/minikube/issues/9720) running Minikube on macOS Big Sur with VMware Fusion 12. If you are using Big Sur, use an alternative driver.
 * `--driver=docker` - [Docker](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
 * `--driver=kvm2` - [KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
 

@@ -4,7 +4,7 @@
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,15 +26,17 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
+    app: {{ $name }}-{{ include "sch.names.appName" (list $) }}
+    version: v{{ $.Release.Revision }}
 spec:
   type: NodePort
   ports:
     - port: 9443
-      name: console-https
+      name: https-console
     - port: 1414
-      name: qmgr
+      name: tcp-qmgr
   selector:
-      {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 6 }}
+    {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
 {{- end }}
 {{- end }}
 {{- end }}

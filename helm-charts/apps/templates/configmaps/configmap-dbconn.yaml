@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ data:
       <dataSource id="curamdb" jndiName="jdbc/curamdb"
         isolationLevel="TRANSACTION_READ_COMMITTED"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
+        statementCacheSize="${env.DS_CACHE_SIZE}"
       >
         {{- include "apps.dsprops.fragment" . | nindent 8 }}
       </dataSource>
@@ -47,14 +48,15 @@ data:
       <dataSource id="curamsib" jndiName="jdbc/curamsib"
         isolationLevel="TRANSACTION_READ_COMMITTED"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
+        statementCacheSize="${env.DS_CACHE_SIZE}"
       >
         {{- include "apps.dsprops.fragment" . | nindent 8 }}
       </dataSource>
 
-      <dataSource id="DefaultDataSource"
+      <dataSource id="DefaultDataSource" jndiName="jdbc/curamtimerdb"
         isolationLevel="TRANSACTION_READ_COMMITTED"
-        jdbcDriverRef="CuramJdbcDriver" jndiName="jdbc/curamtimerdb"
-        type="javax.sql.XADataSource"
+        jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
+        statementCacheSize="${env.DS_CACHE_SIZE}"
       >
         {{- include "apps.dsprops.fragment" . | nindent 8 }}
       </dataSource>

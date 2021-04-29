@@ -11,6 +11,15 @@
 
 # Version History
 
+## v2.6.0
+
+* Update `apps` dependency to version 3.5.0
+* Update `batch` dependency to version 2.1.2
+* Update `uawebapp` dependency to version 3.2.2
+* Update `web` dependency to version 3.2.2
+* Update `xmlserver` dependency to version 2.1.2
+* Update `ibm-sch` dependency to version 1.2.19
+
 ## v2.5.0
 
 * Update `apps` dependency to version 3.4.1

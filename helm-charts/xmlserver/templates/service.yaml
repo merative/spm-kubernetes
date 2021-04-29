@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,12 +22,15 @@ metadata:
   name: {{ include "sch.names.fullName" (list .) }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+    app: {{ include "sch.names.appName" (list .) }}
+    version: v{{ .Release.Revision }}
 spec:
   type: "ClusterIP"
   ports:
     - port: {{ .Values.serverPort | default 1800 }}
       targetPort: {{ .Values.serverPort | default 1800 }}
+      name: tcp
   selector:
     app.kubernetes.io/name: {{ include "sch.names.appName" (list .) | quote }}
     app.kubernetes.io/instance: {{ .Release.Name | quote }}

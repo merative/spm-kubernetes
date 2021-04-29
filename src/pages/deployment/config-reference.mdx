@@ -67,6 +67,8 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | --------- | ----------- | ------- |
 | `global.apps.config.<applicationID>.jvm` | Array of JVM options to be passed to Liberty | Varies by application (see `values.yaml`) |
 | ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
+| `global.apps.config.<applicationID>.consumerTuning` | Dictionary of tuning values specific to the Consumer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
+| `global.apps.config.<applicationID>.producerTuning` | Dictionary of tuning values specific to the Producer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
 | `global.apps.config.<applicationID>.replicaCount` | Number of replicas of the application to be deployed | `1` |
 | `global.apps.config.<applicationID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 | `apps.initialDelaySeconds` | Time in seconds before commencing application readiness probes | `150` |
@@ -77,6 +79,12 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | `apps.sessionConfig.sessionTimeout` | Amount of time a session can go unused before it is no longer valid | `30m` |
 | `apps.sessionConfig.transactionTimeout` | Maximum time allowed for transactions started on this server to complete. Any such transactions that do not complete before this timeout occurs are rolled back. | `3m` |
 | `apps.systemUser.credsSecretName` | Name of a pre-created secret containing credentials of the system user (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `SYSTEM` |
+| `apps.tuningDefaults.coreThreads` | Minimum number of threads to associate with the [executor](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.liberty.autogen.base.doc/ae/rwlp_config_executor.html) | `4` |
+| `apps.tuningDefaults.maxThreads` | Maximum number of threads that can be associated with the [executor](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.liberty.autogen.base.doc/ae/rwlp_config_executor.html) | `4` |
+| `apps.tuningDefaults.maxPoolSize` | Maximum number of physical connections for a [pool](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.liberty.autogen.base.doc/ae/rwlp_config_connectionManager.html) | `8` |
+| `apps.tuningDefaults.numConnectionsPerThreadLocal` | Number of connections to be cached for each thread | `2` |
+| `apps.tuningDefaults.purgePolicy` | Specifies which connections to destroy when a stale connection is detected in a [pool](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.liberty.autogen.base.doc/ae/rwlp_config_connectionManager.html) | `EntirePool` |
+| `apps.tuningDefaults.statementCacheSize` | Maximum number of cached statements per [connection](https://www.ibm.com/support/knowledgecenter/SSEQTP_liberty/com.ibm.websphere.liberty.autogen.base.doc/ae/rwlp_config_dataSource.html) | `1000` |
 | `apps.wlpAdmin.secretName` | Name of a pre-created secret containing WebSphere Liberty administration credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
 | `apps.wlpAdmin.enableAdminCenter` | Toggle whether the WebSphere Liberty Admin Center should be enabled | `false` |
 | `apps.podAnnotations` | Annotations to be applied during deployment | `{}` |

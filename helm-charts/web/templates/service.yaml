@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "web.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,11 +22,13 @@ metadata:
   name: {{ include "sch.names.fullName" (list .) }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
-{{- if .Capabilities.APIVersions.Has "route.openshift.io/v1" }}
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+    app: {{ include "sch.names.appName" (list .) }}
+    version: v{{ .Release.Revision }}
+  {{- if .Capabilities.APIVersions.Has "route.openshift.io/v1" }}
   annotations:
     service.beta.openshift.io/serving-cert-secret-name: {{ include "sch.names.fullName" (list .) }}
-{{- end }}
+  {{- end }}
 spec:
   type: ClusterIP
   ports:
@@ -35,4 +37,4 @@ spec:
       protocol: TCP
       name: https
   selector:
-{{ include "sch.metadata.labels.standard" (list . "") | indent 4 }}
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}

@@ -8,6 +8,11 @@
 
 # Version History
 
+## Unreleased
+
+* Add `app` / `version` pod labels
+* Update `ibm-sch` dependency to version 1.2.19
+
 ## v1.9.0
 
 * Adds values from `podAnnotations` at deployment

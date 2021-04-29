@@ -50,7 +50,12 @@ Liberty Datastore properties fragment
 />
 {{- else -}}
 {{ fail ("Unsupported database type provided: " $dbConfig.type) }}
-{{- end -}}
+{{- end }}
+<connectionManager
+  maxPoolSize="${env.CM_MAX_POOL_SIZE}"
+  numConnectionsPerThreadLocal="${env.CM_CONN_PER_THREAD}"
+  purgePolicy="${env.CM_PURGE_POLICY}"
+/>
 {{- end -}}
 
 {{/*

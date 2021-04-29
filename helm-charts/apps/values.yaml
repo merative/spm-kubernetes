@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,7 +45,6 @@ global:
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
     # Oracle Service name, where applicable
     serviceName: ''
-    initTime: 120
     ssl:
       enabled: false
       # Name of the secret containing the database TLS certificate
@@ -77,6 +76,14 @@ global:
       curam:
         enabled: true
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
+        # consumerTuning:
+        #   replicaCount: 1
+        #   jvm: []
+        #   resources: {}
+        #   # Any keys from tuningDefaults
+        #   maxThreads: 8
         readinessPath: /Curam/
         ingressPath: /Curam
         earName: Curam
@@ -93,6 +100,8 @@ global:
       rest:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         ingressPath: /Rest
         earName: Rest
         warName: RestModule
@@ -110,6 +119,8 @@ global:
       citizenportal:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /CitizenPortal/
         ingressPath: /CitizenPortal
         earName: CitizenPortal
@@ -126,6 +137,8 @@ global:
       curamwebservices:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /CuramWS2/SOAPMonitor
         ingressPath: /CuramWS2
         earName: CuramWebServices
@@ -137,6 +150,8 @@ global:
       curambirtviewer:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessTCPProbe: true
         ingressPath: /CuramBIRTViewer/
         earName: CuramBIRTViewer
@@ -155,6 +170,8 @@ global:
       cpmexternalns:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /CPMExternalNS/
         ingressPath: /CPMExternalNS
         earName: CPMExternalNS
@@ -173,6 +190,8 @@ global:
       navigatorns:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /NavigatorNS/
         ingressPath: /NavigatorNS
         earName: NavigatorNS
@@ -182,6 +201,8 @@ global:
       navigators:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /NavigatorS/
         ingressPath: /NavigatorS
         earName: NavigatorS
@@ -191,6 +212,8 @@ global:
       mdtworkspace:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /MDTWorkspace/
         ingressPath: /MDTWorkspace
         earName: MDTWorkspace
@@ -200,6 +223,8 @@ global:
       samplepublicaccess:
         enabled: false
         replicaCount: 1
+        producerTuning: {}
+        consumerTuning: {}
         readinessPath: /SamplePublicAccess/
         ingressPath: /SamplePublicAccess
         earName: SamplePublicAccess
@@ -281,6 +306,19 @@ httpsPort: 8443
 affinityKey: worker-type
 affinityValue: application
 
+tuningDefaults:
+  # Default Executor
+  coreThreads: 4
+  maxThreads: 4
+  # Connection Manager
+  maxPoolSize: 8
+  numConnectionsPerThreadLocal: 2
+  purgePolicy: EntirePool
+  # Data Sources
+  statementCacheSize: 1000
+
+# Default resources allocated to pods in the absence of
+# application-specific resource allocations
 defaultResources:
   requests:
     cpu: 0.5
