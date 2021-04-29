@@ -4,9 +4,11 @@
 {{- if $app.enabled }}
 {{- $imageData := dict "ImageConfig" $.Values.global.images "ImageName" $name }}
 {{- $qmgrName := printf "%s_%s" (trunc 5 $.Values.global.mq.objectSuffix) (trunc -10 $name) }}
+{{- $tuningParams := $app.producerTuning }}
+
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,14 +31,16 @@ metadata:
   labels:
     {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name)) | nindent 4 }}
 spec:
-  replicas: {{ default $.Values.replicaCount $app.replicaCount }}
+  replicas: {{ default $.Values.replicaCount (default $app.replicaCount $tuningParams.replicaCount) }}
   selector:
     matchLabels:
      {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name) ) | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name) ) | nindent 8 }}
+        {{- include "sch.metadata.labels.standard" (list $ (printf "%s-producer" $name)) | nindent 8 }}
+        app: {{ $name }}-producer
+        version: v{{ $.Release.Revision }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
         {{- with $.Values.podAnnotations }}
@@ -162,18 +166,6 @@ spec:
             claimName: {{ $.Release.Name }}-persistence-pvc
         {{- end }}
       initContainers:
-        - name: wait-for-database
-          {{- include "utilities.definition" $ | indent 10 }}
-          command:
-            - /bin/sh
-            - -c
-            - >
-              until nc -z -w3 {{ $dbHostname }} {{ $.Values.global.database.port }}; do
-                echo waiting for {{ $dbHostname }}:{{ $.Values.global.database.port }} to be reachable;
-                sleep 2;
-              done;
-              echo waiting {{ $.Values.global.database.initTime }} additional seconds...;
-              sleep {{ $.Values.global.database.initTime }};
         {{- if not (hasKey $app "mqConnectionNameList") }}
         - name: wait-for-mq
           {{- include "utilities.definition" $ | indent 10 }}
@@ -249,11 +241,6 @@ spec:
                 secretKeyRef:
                   name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
                   key: KeystorePassword
-            - name: podHostname
-              valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: metadata.name
           command:
             - /bin/sh
             - -c
@@ -264,14 +251,36 @@ spec:
               keytool -import -trustcacerts -noprompt -alias ibmwebspheremq{{ $.Values.global.mq.queueManager.name | lower }} -file $mqCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
               {{- end }}
               keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
-              echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env
           volumeMounts:
             - name: keystore-volume
               mountPath: /mnt/keystores
-            - name: env-volume
-              mountPath: /mnt/envvol
             - name: mq-certs
               mountPath: /mnt/mqCertificates
+        - name: populate-server-env
+          {{- include "utilities.definition" $ | indent 10 }}
+          env:
+            - name: podHostname
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          command:
+            - /bin/sh
+            - -c
+            - >
+              echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env;
+              echo "EX_CORE_THREADS={{ default $.Values.tuningDefaults.coreThreads $tuningParams.coreThreads }}" >> /mnt/envvol/server.env;
+              echo "EX_MAX_THREADS={{ default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads }}" >> /mnt/envvol/server.env;
+              echo "DS_CACHE_SIZE={{ default $.Values.tuningDefaults.statementCacheSize $tuningParams.statementCacheSize }}" >> /mnt/envvol/server.env;
+              echo "CM_CONN_PER_THREAD={{ default $.Values.tuningDefaults.numConnectionsPerThreadLocal $tuningParams.numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
+              echo "CM_MAX_POOL_SIZE={{ default $.Values.tuningDefaults.maxPoolSize $tuningParams.maxPoolSize }}" >> /mnt/envvol/server.env;
+              echo "CM_PURGE_POLICY={{ default $.Values.tuningDefaults.purgePolicy $tuningParams.purgePolicy }}" >> /mnt/envvol/server.env;
+              {{- range (default $app.jvm $tuningParams.jvm) }}
+              echo "{{ . }}" >> /mnt/envvol/jvm.options;
+              {{- end }}
+          volumeMounts:
+            - name: env-volume
+              mountPath: /mnt/envvol
       containers:
         - name: {{ $.Chart.Name }}-producer-{{ $name }}
           image: {{ include "apps.imageFullName" $imageData }}
@@ -381,7 +390,7 @@ spec:
               mountPath: /config/configDropins/overrides/jvm.options
               subPath: jvm.options
             - name: jvm-options-cm
-              mountPath: /config/jvm.options
+              mountPath: /config/configDropins/defaults/jvm.options
               subPath: jvm.options
             - name: messaging-config
               mountPath: /config/adc_conf/server_resources_messaging.xml
@@ -447,5 +456,8 @@ spec:
             - name: env-volume
               mountPath: /config/server.env
               subPath: server.env
+            - name: env-volume
+              mountPath: /config/jvm.options
+              subPath: jvm.options
 {{- end }}
 {{- end }}

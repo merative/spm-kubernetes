@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.4.0
+
+## Added
+
+* Extended WebSphere Liberty tuning options
+
+### Changed
+
+* Changed the OpenShift reference architecture diagram to provide additional clarity regarding the statefulsets
+* Improved pod labels for compatibility with service meshes ([#61](https://github.com/IBM/spm-kubernetes/issues/61))
+* Improved navigation links to avoid 404 errors ([#68](https://github.com/IBM/spm-kubernetes/issues/68))
+
+### Removed
+
+* Removed the `wait-for-database` initContainer from producer and consumer pods
+  * Validation of the database configuration is already handled by the pre-install hook
+
 ## v21.3.0
 
 ### Added

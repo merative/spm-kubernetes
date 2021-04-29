@@ -5,7 +5,7 @@
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ metadata:
   name: {{ $name }}{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
   namespace: {{ $.Release.Namespace }}
   labels:
-{{ include "mqserver.labels" $ | indent 4 }}
+    {{- include "mqserver.labels" $ | nindent 4 }}
+    app: {{ $name }}-{{ include "sch.names.appName" (list $) }}
+    version: v{{ $.Release.Revision }}
 spec:
   version: {{ $.Values.global.mq.version }}
   pki:

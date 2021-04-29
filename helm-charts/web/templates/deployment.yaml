@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "web.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ spec:
     metadata:
       labels:
         {{- include "sch.metadata.labels.standard" (list . "") | nindent 8 }}
+        app: {{ include "sch.names.appName" (list .) }}
+        version: v{{ .Release.Revision }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
     spec:

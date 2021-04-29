@@ -12,6 +12,13 @@
 
 # Version History
 
+## v3.5.0
+
+* Extend WebSphere Liberty tuning options
+* Remove `wait-for-database` initContainer
+* Add `app` / `version` pod labels
+* Update `ibm-sch` dependency to version 1.2.19
+
 ## v3.4.1
 
 * Cleanup hook pull secret on deletion

@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ data:
     <!-- Placed by Kubernetes Configmap. -->
     <server description="Server host configuration">
       <cdi12 enableImplicitBeanArchives="false"/>
+      <webContainer skipMetaInfResourcesProcessing="true"/>
+
       <httpSession
         invalidateOnUnauthorizedSessionRequestException="false" idLength="28"
         invalidationTimeout="{{ .Values.sessionConfig.sessionTimeout }}" securityIntegrationEnabled="false"

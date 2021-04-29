@@ -26,7 +26,6 @@ global:
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
     # Oracle Service name, where applicable
     serviceName: ''
-    initTime: 30
     ssl:
       enabled: false
       # Name of the secret containing the database TLS certificate

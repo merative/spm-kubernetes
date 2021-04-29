@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ global:
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="
     # Oracle Service name, where applicable
     serviceName: ''
-    initTime: 120
     ssl:
       enabled: false
       # Name of the secret containing the database TLS certificate

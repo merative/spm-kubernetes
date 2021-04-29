@@ -1,7 +1,7 @@
 {{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,5 +68,6 @@ data:
 
       <applicationMonitor dropinsEnabled="false" updateTrigger="disabled"/>
       <config updateTrigger="disabled"/>
+      <executor coreThreads="${env.EX_CORE_THREADS}" maxThreads="${env.EX_MAX_THREADS}" />
 
     </server>

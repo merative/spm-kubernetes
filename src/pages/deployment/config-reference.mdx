@@ -67,6 +67,8 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | --------- | ----------- | ------- |
 | `global.apps.config.<applicationID>.jvm` | Array of JVM options to be passed to Liberty | Varies by application (see `values.yaml`) |
 | ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
+| `global.apps.config.<applicationID>.consumerTuning` | Dictionary of tuning values specific to the Consumer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
+| `global.apps.config.<applicationID>.producerTuning` | Dictionary of tuning values specific to the Producer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
 | `global.apps.config.<applicationID>.replicaCount` | Number of replicas of the application to be deployed | `1` |
 | `global.apps.config.<applicationID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 | `apps.initialDelaySeconds` | Time in seconds before commencing application readiness probes | `150` |
@@ -77,6 +79,12 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | `apps.sessionConfig.sessionTimeout` | Amount of time a session can go unused before it is no longer valid | `30m` |
 | `apps.sessionConfig.transactionTimeout` | Maximum time allowed for transactions started on this server to complete. Any such transactions that do not complete before this timeout occurs are rolled back. | `3m` |
 | `apps.systemUser.credsSecretName` | Name of a pre-created secret containing credentials of the system user (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `SYSTEM` |
+| `apps.tuningDefaults.coreThreads` | Minimum number of threads to associate with the [executor](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-executor) | `4` |
+| `apps.tuningDefaults.maxThreads` | Maximum number of threads that can be associated with the [executor](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-executor) | `4` |
+| `apps.tuningDefaults.maxPoolSize` | Maximum number of physical connections for a [pool](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-connectionmanager) | `8` |
+| `apps.tuningDefaults.numConnectionsPerThreadLocal` | Number of connections to be cached for each [thread](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-connectionmanager) | `2` |
+| `apps.tuningDefaults.purgePolicy` | Specifies which connections to destroy when a stale connection is detected in a [pool](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-connectionmanager) | `EntirePool` |
+| `apps.tuningDefaults.statementCacheSize` | Maximum number of cached statements per [connection](https://www.ibm.com/docs/en/was-liberty/base?topic=configuration-datasource) | `1000` |
 | `apps.wlpAdmin.secretName` | Name of a pre-created secret containing WebSphere Liberty administration credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
 | `apps.wlpAdmin.enableAdminCenter` | Toggle whether the WebSphere Liberty Admin Center should be enabled | `false` |
 | `apps.podAnnotations` | Annotations to be applied during deployment | `{}` |
@@ -120,7 +128,7 @@ The default batch configuration runs any queued jobs every 30 minutes (equivalen
 Additional batch jobs may be added with additional keys under `batch.programs`.
 
 The following `batch.programs` example adds the
-[bulk reassessment of all open integrated cases](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/HCRDeveloper/t_HCR_Batch_Runningbulkreassessmentallopenintegratedcases.html)
+[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/7.0.11?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
 batch job to be run at 2AM every Sunday night:
 
 ```yaml
@@ -223,6 +231,6 @@ In a Kubernetes environment, there is only one XML Server from SPM's point of vi
 | `uawebapp.imageConfig.library` | Namespace in the image registry containing your Univeral Access image | `''` |
 | `uawebapp.imageConfig.name` | Name of your Univeral Access image to be used | `''` |
 | `uawebapp.imageConfig.tag` | Image tag of your Univeral Access image to be used | `latest` |
-| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.universalaccess.doc/CitizenEngagement/t_CEINST_WebApp_depl.html) variable when the application was built) | `/universal` |
+| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/7.0.11?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |

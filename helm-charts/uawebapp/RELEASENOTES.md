@@ -35,6 +35,11 @@
 
 # Version History
 
+## v3.2.2
+
+* Add `app` / `version` pod labels
+* Update `ibm-sch` dependency to version 1.2.19
+
 ## v3.2.1
 
 * Remove reference to a non-existent pull secret for service account
