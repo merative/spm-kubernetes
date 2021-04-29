@@ -68,7 +68,7 @@ dependencies:
     version: "~3.2.2"
     repository: "@local-development"
   - name: mqserver
-    version: "~1.9.0"
+    version: "~1.10.0"
     repository: "@local-development"
   - name: xmlserver
     version: "~2.1.2"

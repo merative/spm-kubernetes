@@ -8,7 +8,7 @@
 
 # Version History
 
-## Unreleased
+## v1.10.0
 
 * Add `app` / `version` pod labels
 * Update `ibm-sch` dependency to version 1.2.19
