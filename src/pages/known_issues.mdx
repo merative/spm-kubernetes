@@ -10,6 +10,7 @@ Some issues might require product changes to resolve them.
   <AnchorLink>Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages</AnchorLink>
   <AnchorLink>The logs are filled by repetitions of the ICWWKS4001I message</AnchorLink>
   <AnchorLink>Limitations when using the Minikube none driver</AnchorLink>
+  <AnchorLink>IBM MQ XAER_PROTO issue</AnchorLink>
 </AnchorLinks>
 
 ## Minikube dashboard command on Red Hat
@@ -61,3 +62,23 @@ global:
 ```
 
 This is due to a update in IBM MQ, the details of which can be found [here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).
+
+## IBM MQ XAER_PROTO issue
+
+The following issue has been observed in the JMS Consumer pods when JMS transactions is processed by a newly deployed pod, at the initial JMS transactions. The exception in thrown by the IBM MQ Resource Adapter.
+
+```log
+[INFO    ] FFDC1015I: An FFDC Incident has been created: "javax.transaction.xa.XAException: The method 'xa_start' has failed with errorCode '-6'. com.ibm.tx.jta.impl.JTAXAResourceImpl.start 307" at ...
+[INFO    ] FFDC1015I: An FFDC Incident has been created: "javax.transaction.xa.XAException: The method 'xa_start' has failed with errorCode '-6'. com.ibm.tx.jta.impl.RegisteredResources.startRes 1053" at ...
+[ERROR   ] WTRN0078E: An attempt by the transaction manager to call start on a transactional resource has resulted in an error.
+The error code was XAER_PROTO. The exception stack trace follows: javax.transaction.xa.XAException: The method 'xa_start' has failed with errorCode '-6'.
+	at com.ibm.mq.jmqi.JmqiXAResource.start(JmqiXAResource.java:980)
+	at com.ibm.mq.connector.xa.XARWrapper.start(XARWrapper.java:680)
+	at com.ibm.ws.Transaction.JTA.JTAResourceBase.start(JTAResourceBase.java:121)
+	at [internal classes]
+	at com.ibm.mq.connector.inbound.AbstractWorkImpl.run(AbstractWorkImpl.java:210)
+	at com.ibm.ws.jca.inbound.security.JCASecurityContextService.runInInboundSecurityContext(JCASecurityContextService.java:49)
+	at [internal classes]
+```
+
+The issue does not affect the state of the Queue Manager. It does not disrupt the connection between the JMS Consumer pods and IBM MQ Queue Manager nor the ability of JMS Consumer to process JMS messages.
