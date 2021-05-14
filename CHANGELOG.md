@@ -2,9 +2,15 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.4.1
+
+### Added
+
+* IBM MQ XAER_PROTO reported as a known issue
+
 ## v21.4.0
 
-## Added
+### Added
 
 * Extended WebSphere Liberty tuning options
 
