@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "carbon-icons": "^7.0.7",
-    "gatsby": "^2.32.12",
+    "gatsby": "^3.0.0",
     "gatsby-cli": "^2.19.2",
     "gatsby-theme-carbon": "^1.28.0",
     "react": "^16.14.0",
