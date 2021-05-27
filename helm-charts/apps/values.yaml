@@ -27,6 +27,10 @@ global:
   imagePullSecret:
     secretName: ''
     username: ''
+  hubPullSecret:
+    registry: 'https://index.docker.io/v1/'
+    secretName: ''
+    username: ''
   timezone: 'UTC'
   sch:
     enabled: true
@@ -310,12 +314,30 @@ tuningDefaults:
   # Default Executor
   coreThreads: 4
   maxThreads: 4
-  # Connection Manager
-  maxPoolSize: 8
-  numConnectionsPerThreadLocal: 2
-  purgePolicy: EntirePool
-  # Data Sources
-  statementCacheSize: 1000
+
+  # Connection Manager JMS related params
+  maxJMSConnectionsPerThread: 2
+  mqMaxPoolSize: 12
+  mqNumConnectionsPerThreadLocal: 2
+
+  # Connection Manager per DB params for fine tuning
+  curamdb_maxPoolSize: 8
+  curamdb_numConnectionsPerThreadLocal: 2
+  curamdb_purgePolicy: EntirePool
+
+  curamtimerdb_maxPoolSize: 8
+  curamtimerdb_numConnectionsPerThreadLocal: 2
+  curamtimerdb_purgePolicy: EntirePool
+
+  curamsessdb_maxPoolSize: 8
+  curamsessdb_numConnectionsPerThreadLocal: 2
+  curamsessdb_purgePolicy: EntirePool
+
+  # Data Sources for per DB data source fine tuning
+  curamdb_statementCacheSize: 1000
+  curamtimerdb_statementCacheSize: 1000
+  curamsessdb_statementCacheSize: 1000
+
 
 # Default resources allocated to pods in the absence of
 # application-specific resource allocations
@@ -329,6 +351,9 @@ defaultResources:
 
 # Pods Annotations
 podAnnotations: {}
+
+# Application properties
+properties: {}
 
 # JMX Exporter configuration (Beta Feature)
 jmxExporter:

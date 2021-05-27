@@ -33,4 +33,18 @@ sch:
         capabilities:
           drop:
             - ALL
+    initContainerSecurityContext:
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+        privileged: false
+        capabilities:
+          add:
+            - CHOWN
+            - FOWNER
+            - DAC_OVERRIDE
+          drop:
+            - ALL
 {{- end -}}

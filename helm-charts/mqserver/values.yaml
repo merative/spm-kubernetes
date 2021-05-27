@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ global:
     config:
       curam:
         enabled: true
-      citizenportal:
-        enabled: true
       rest:
-        enabled: true
+        enabled: false
+      citizenportal:
+        enabled: false
       curamwebservices:
         enabled: false
       curambirtviewer:
@@ -69,7 +69,9 @@ global:
       availabilityType: ''
       # cephEnabled to be used for MultiInstance deployment via Helm using Storage Class
       cephEnabled: false
-      # storageClassName'required when availabilityType is provided or cephEnabled is true.
+      # Flag to indicate that a dynamic storage provisioner is to be used, e.g. Ceph, IBM File Storage
+      useDynamicProvisioning: false
+      # storageClassName is required when using a dynamic storage provisioner
       storageClassName: ''
       # nfsEnabled / nfsIP / nfsFolder applies only
       nfsEnabled: false
@@ -77,6 +79,8 @@ global:
       nfsFolder: ''
       nfsMountOptions: []
     security:
+      # Initialise the storage volume as root. May be required depending on the storage backend used.
+      initVolumeAsRoot: false
       context:
         # fsGroup / supplementalGroups may be required when using NFS.
         fsGroup:

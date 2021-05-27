@@ -42,6 +42,14 @@ data:
         <feature>jndi-1.0</feature>
       </featureManager>
 
+      {{- if and $.Values.global.useBetaFeatures $.Values.jmxExporter.enabled }}
+      <!-- Enable Monitor feature -->
+      <featureManager>
+        <feature>monitor-1.0</feature>
+      </featureManager>
+      <monitor filter="JVM,ThreadPool,WebContainer,Session,ConnectionPool"/>
+      {{- end }}
+
       <!-- Server End Point configuration -->
       <include location="adc_conf/server_endpoints.xml" />
 

@@ -12,6 +12,15 @@
 
 # Version History
 
+## v3.6.0
+
+* Add ability to tune K8s resources on an app by app basis
+* Extend database and JMS tuning parameters
+* Add option to provide hub pull secret name created outside the release
+* Apply values from `properties` at deployment
+* Add ability for Prometheus to scrape Liberty metrics from pods
+* Move `HTTPSessionDatabase` default configuration to timer based
+
 ## v3.5.0
 
 * Extend WebSphere Liberty tuning options

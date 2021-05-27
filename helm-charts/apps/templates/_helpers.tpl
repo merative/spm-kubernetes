@@ -208,3 +208,14 @@ JMS Topic Activation Spec properties
   subscriptionDurability="Durable"
 />
 {{- end }}
+
+{{/*
+Value Validation Function
+*/}}
+{{- define "apps.value-validation" -}}
+{{- $value := (.value | toString) -}}
+{{- if or (contains "--" $value) (contains "#" $value) (contains ";" $value) (contains "'" $value) (contains "||" $value) (contains "/*" $value) -}}
+{{- $error :=  print "\n\nERROR: forbidden characters (-- # /* ;) in value: " $value  -}}
+{{- fail $error -}}
+{{- end -}}
+{{- end -}}

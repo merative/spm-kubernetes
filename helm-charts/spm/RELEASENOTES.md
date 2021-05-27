@@ -11,6 +11,11 @@
 
 # Version History
 
+## v2.7.0
+
+* Update `apps` dependency to version 3.6.0
+* Update `mqserver` dependency to version 1.11.0
+
 ## v2.6.0
 
 * Update `apps` dependency to version 3.5.0
