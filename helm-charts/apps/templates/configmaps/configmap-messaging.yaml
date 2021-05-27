@@ -124,9 +124,12 @@ data:
 
         {{- include "jms.queueConnectionFactory" . | nindent 8 }}
       </jmsConnectionFactory>
-      <connectionManager id="ConMgr6" maxPoolSize="${env.CM_MQ_MAXPOOLSIZE}" 
-       numConnectionsPerThreadLocal="${env.CM_JMS_NUM_CONNECTIONS_PER_THREAD_LOCAL}"
-       maxConnectionsPerThread="${env.CM_JMS_MAX_CONNECTIONS_PER_THREAD}" />
+      <connectionManager
+        id="ConMgr6"
+        maxPoolSize="${env.CM_MQ_MAXPOOLSIZE}" 
+        numConnectionsPerThreadLocal="${env.CM_JMS_NUM_CONNECTIONS_PER_THREAD_LOCAL}"
+        maxConnectionsPerThread="${env.CM_JMS_MAX_CONNECTIONS_PER_THREAD}"
+      />
 
       <jmsTopicConnectionFactory
         id="CuramTopicConnectionFactory"
