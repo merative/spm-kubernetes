@@ -22,6 +22,8 @@ ARG WLP_VERSION=20.0.0.9-full-java8-ibmjava-ubi
 FROM alpine AS ExplodedEAR
 ARG EAR_NAME
 
+RUN apk add --no-cache unzip
+
 COPY content/release-stage/ear/WLP/${EAR_NAME}.ear /tmp/
 RUN mkdir -p /work/${EAR_NAME}.ear \
     && unzip -q /tmp/${EAR_NAME}.ear -d /work/${EAR_NAME}.ear \

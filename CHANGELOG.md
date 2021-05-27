@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.5.0
+
+### Added
+
+* Added capability for Prometheus to scrape Liberty metrics from pods
+* Added clarification in the Runbook introduction page regarding the flexibility to modify or develop **Helm Charts** or **Dockerfiles**
+* Added information in the **MustGather** introduction page about Helm Charts and Dockerfiles
+* Added capability to tune various database and JMS tuning parameters for individual producers and consumers
+  * Created tuning-values.yaml as example.
+* Added capability for Docker Hub details to be used to avoid **toomanyrequests** ([#69](https://github.com/IBM/spm-kubernetes/issues/69))
+* Added capability to set applications properties at deployment
+
+### Changed
+
+* Allows for the simultaneous scraping of multiple metrics sources (eg JMX and Liberty) on `apps` charts
+* Moved `HTTPSessionDatabase` default configuration to timer based
+* Update `unzip` when unpacking the client EAR file
+* Ensure MQ directory structure exists, when using NFS ([#31](https://github.com/IBM/spm-kubernetes/issues/31))
+* Upgrade to Gatsby v3 (and associated dependencies)
+
 ## v21.4.1
 
 ### Added
@@ -38,7 +58,7 @@ All notable changes to this project will be documented in this file
 * Clarify initial setup of CodeReady Containers
 * Update recommended drivers for running Minikube
 
-## Fixed
+### Fixed
 
 * Remove references to a non-existent pull secret for service accounts
 

@@ -4,7 +4,7 @@
 {{- if or ($.Values.global.mq.multiInstance.cephEnabled) ($.Values.global.mq.multiInstance.nfsEnabled) }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  {{ if $.Values.global.mq.multiInstance.cephEnabled }}
+  {{ if $.Values.global.mq.multiInstance.useDynamicProvisioning }}
   storageClassName: {{ $.Values.global.mq.multiInstance.storageClassName }}
   {{ else }}
   selector:
-    matchLabels: 
+    matchLabels:
       {{ $.Release.Namespace }}-pv: {{ $.Release.Namespace }}-{{ $name }}-pv-data
   {{ end }}
 {{- end }}

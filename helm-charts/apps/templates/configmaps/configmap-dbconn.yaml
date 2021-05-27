@@ -40,25 +40,15 @@ data:
       <dataSource id="curamdb" jndiName="jdbc/curamdb"
         isolationLevel="TRANSACTION_READ_COMMITTED"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
-        statementCacheSize="${env.DS_CACHE_SIZE}"
-      >
-        {{- include "apps.dsprops.fragment" . | nindent 8 }}
-      </dataSource>
-
-      <dataSource id="curamsib" jndiName="jdbc/curamsib"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
-        jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
-        statementCacheSize="${env.DS_CACHE_SIZE}"
-      >
-        {{- include "apps.dsprops.fragment" . | nindent 8 }}
+        statementCacheSize="${env.DS_CURAMDB_CACHE_SIZE}">
+        {{- include "apps.dsprops.fragment" (list . "CURAMDB") | nindent 8 }}
       </dataSource>
 
       <dataSource id="DefaultDataSource" jndiName="jdbc/curamtimerdb"
         isolationLevel="TRANSACTION_READ_COMMITTED"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
-        statementCacheSize="${env.DS_CACHE_SIZE}"
-      >
-        {{- include "apps.dsprops.fragment" . | nindent 8 }}
+        statementCacheSize="${env.DS_CURAMTIMERDB_CACHE_SIZE}">
+        {{- include "apps.dsprops.fragment" (list . "CURAMTIMERDB") | nindent 8 }}
       </dataSource>
       <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTimer_${env.POD_HOSTNAME}" dataSourceRef="DefaultDataSource" createTables="true" />
       <persistentExecutor id="defaultEJBPersistentTimerExecutor" taskStoreRef="EJBTimerDatabaseStore" missedTaskThreshold="5m"/>

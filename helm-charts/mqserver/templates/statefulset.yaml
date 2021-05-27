@@ -4,6 +4,7 @@
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
 {{- if (or ($.Values.global.mq.multiInstance.cephEnabled) ($.Values.global.mq.multiInstance.nfsEnabled)) }}
+{{ $baseLogDir := (join "/" (list $.Values.global.mq.multiInstance.nfsFolder $name | compact)) }}
 ---
 ###############################################################################
 # Copyright 2019,2021 IBM Corporation
@@ -48,12 +49,18 @@ spec:
       hostNetwork: false
       hostPID: false
       hostIPC: false
+      {{- with $.Values.global.mq.security.context }}
       securityContext:
-        fsGroup: {{ $.Values.global.mq.security.context.fsGroup }}
+        {{- if .fsGroup }}
+        fsGroup: {{ .fsGroup }}
+        {{- end }}
+        {{- if .supplementalGroups }}
         supplementalGroups:
-        {{- range $group := $.Values.global.mq.security.context.supplementalGroups }}
+          {{- range $group := .supplementalGroups }}
           - {{ $group -}}
+          {{ end }}
         {{ end }}
+      {{ end }}
       volumes:
         - name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
           persistentVolumeClaim:
@@ -70,6 +77,30 @@ spec:
         - name: service-certs
           secret:
             secretName: {{ $.Values.global.mq.tlsSecretName | default (printf "%s-mq-secret" $.Release.Name) }}
+      {{- if and $.Values.global.mq.multiInstance.nfsEnabled $.Values.global.mq.security.initVolumeAsRoot }}
+      initContainers:
+        - name: init-pv
+          image: ibmcom/mq:{{ $.Values.global.mq.version }}
+          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+          terminationMessagePath: "/run/termination-log"
+          {{- include "sch.security.securityContext" (list $ $.sch.chart.initContainerSecurityContext) | nindent 10 }}
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - >
+              mkdir -pv -m 2775 /mnt/mqm/{{ $baseLogDir }} /mnt/mqm-log/{{ $baseLogDir }} /mnt/mqm-data/{{ $baseLogDir }};
+              mkdir -pv -m 2775 /mnt/mqm-log/{{ $baseLogDir }}/logs /mnt/mqm-data/{{ $baseLogDir }}/data;
+              chgrp -v {{ $.Values.global.mq.security.context.supplementalGroups | first | default 1001 }} /mnt/mqm/{{ $baseLogDir }} /mnt/mqm-log/{{ $baseLogDir }} /mnt/mqm-data/{{ $baseLogDir }};
+              chgrp -v {{ $.Values.global.mq.security.context.supplementalGroups | first | default 1001 }} /mnt/mqm-log/{{ $baseLogDir }}/logs /mnt/mqm-data/{{ $baseLogDir }}/data;
+          volumeMounts:
+            - mountPath: /mnt/mqm
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-qm
+            - mountPath: /mnt/mqm-log
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
+            - mountPath: /mnt/mqm-data
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-data
+      {{- end }}
       containers:
         - name: {{ $.Chart.Name }}-{{ $name }}
           image: ibmcom/mq:{{ $.Values.global.mq.version }}
@@ -113,34 +144,36 @@ spec:
             - containerPort: 9443
             - containerPort: 9157
           volumeMounts:
-          - mountPath: /mnt/mqm-log
-            name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
-          - mountPath: /mnt/mqm-data
-            name: {{ $.Release.Namespace }}-{{ $name }}-pvc-data
-          - mountPath: /mnt/mqm
-            name: {{ $.Release.Namespace }}-{{ $name }}-pvc-qm
-          - name: mqsc-cmds
-            mountPath: /etc/mqm/20-config.mqsc
-            subPath: config.mqsc
-          - name: mqsc-cmds
-            mountPath: /etc/mqm/30-channel.mqsc
-            subPath: channel_{{$name}}.mqsc
-          - name: service-certs
-            mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
-            readOnly: true
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            runAsNonRoot: true
-            privileged: false
-            capabilities:
-              drop:
-                - ALL
+            - mountPath: /mnt/mqm-log
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-logs
+              {{- if $.Values.global.mq.multiInstance.nfsEnabled }}
+              subPath: "{{ $baseLogDir }}/logs"
+              {{- end }}
+            - mountPath: /mnt/mqm-data
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-data
+              {{- if $.Values.global.mq.multiInstance.nfsEnabled }}
+              subPath: "{{ $baseLogDir }}/data"
+              {{- end }}
+            - mountPath: /mnt/mqm
+              name: {{ $.Release.Namespace }}-{{ $name }}-pvc-qm
+              {{- if $.Values.global.mq.multiInstance.nfsEnabled }}
+              subPath: "{{ $baseLogDir }}"
+              {{- end }}
+            - name: mqsc-cmds
+              mountPath: /etc/mqm/20-config.mqsc
+              subPath: config.mqsc
+            - name: mqsc-cmds
+              mountPath: /etc/mqm/30-channel.mqsc
+              subPath: channel_{{$name}}.mqsc
+            - name: service-certs
+              mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
+              readOnly: true
+          {{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) | nindent 10 }}
           # Set liveness probe to determine if the queue manager is running
           livenessProbe:
             exec:
               command:
-              - chkmqhealthy
+                - chkmqhealthy
             initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
@@ -149,7 +182,7 @@ spec:
           readinessProbe:
             exec:
               command:
-              - chkmqready
+                - chkmqready
             initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}

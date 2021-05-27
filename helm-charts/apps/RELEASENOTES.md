@@ -4,6 +4,17 @@
 * Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
 
+# Breaking Changes
+
+* The structure of values for specifying the tuning defaults for applications has changed:
+
+  | Old property | New property | Default value |
+  | ------------ | ------------ | ------------- |
+  | `apps.tuningDefaults.maxPoolSize` | `apps.tuningDefaults.curamdb_maxPoolSize` | `8` |
+  | `apps.tuningDefaults.numConnectionsPerThreadLocal` | `apps.tuningDefaults.curamdb_numConnectionsPerThreadLocal` | `2` |
+  | `apps.tuningDefaults.purgePolicy` | `apps.tuningDefaults.curamdb_purgePolicy` | `EntirePool` |
+  | `apps.tuningDefaults.statementCacheSize` | `apps.tuningDefaults.curamdb_statementCacheSize` | `1000` |
+
 ### Fixes
 
 ## Prerequisites
@@ -11,6 +22,15 @@
 * For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v3.6.0
+
+* Add ability to tune K8s resources on an app by app basis
+* Extend database and JMS tuning parameters
+* Add option to provide hub pull secret name created outside the release
+* Apply values from `properties` at deployment
+* Add ability for Prometheus to scrape Liberty metrics from pods
+* Move `HTTPSessionDatabase` default configuration to timer based
 
 ## v3.5.0
 

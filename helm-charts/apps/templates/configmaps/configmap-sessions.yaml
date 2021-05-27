@@ -32,20 +32,19 @@ data:
       </featureManager>
 
       <dataSource id="curamsessdb" jndiName="jdbc/curamsessdb"
-        jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource">
+        jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
         isolationLevel="TRANSACTION_READ_COMMITTED"
-      >
-        {{- include "apps.dsprops.fragment" . | nindent 8 }}
+        statementCacheSize="${env.DS_CURAMSESSDB_CACHE_SIZE}">
+        {{- include "apps.dsprops.fragment" (list . "CURAMSESSDB") | nindent 8 }}
       </dataSource>
 
       <httpSessionDatabase
         id="SessionDB"
         dataSourceRef="curamsessdb"
-        {{- if eq (.Values.global.database.type | upper) "DB2" }}
-        db2RowSize="32KB"
-        {{- end }}
         tableName="WLP_SESSION"
-        skipIndexCreation="true"
+        skipIndexCreation="false"
+        writeFrequency="TIME_BASED_WRITE"
+        writeInterval="2m"
       />
       <httpSession
         storageRef="SessionDB"

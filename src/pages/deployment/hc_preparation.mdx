@@ -52,6 +52,13 @@ before mentioned [Configuration Reference](/deployment/config-reference) topic s
 
 </InlineNotification>
 
+<InlineNotification kind="warning">
+
+In November 2020, Docker introduced [download rate limits](https://docs.docker.com/docker-hub/download-rate-limit/) on Docker Hub.
+This can be mitigated by providing an Image Pull Secret to the deployment using the `global.hubPullSecret.secretName` value.
+
+</InlineNotification>
+
 ### Configuring IBM MQ
 
 IBM MQ is already configured to work out of the box with a secure connection with IBM WebSphere Liberty.

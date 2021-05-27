@@ -54,11 +54,11 @@ You can add properties to specify the resource allocation. For example:
 
 Add the `--driver=` option to the `minikube start` command to specify the underlying virtual machine driver. The following drivers were tested:
 
-* `--driver=virtualbox` - [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) on OSX, Linux, and Windows
-* `--driver=vmware` - [VMware Fusion](https://minikube.sigs.k8s.io/docs/drivers/vmware/) on OSX
+* [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) (`virtualbox`) on OSX, Linux, and Windows
+* [VMware Fusion](https://minikube.sigs.k8s.io/docs/drivers/vmware/) (`vmware`) on OSX
   * **Note**: There is an [issue](https://github.com/kubernetes/minikube/issues/9720) running Minikube on macOS Big Sur with VMware Fusion 12. If you are using Big Sur, use an alternative driver.
-* `--driver=docker` - [Docker](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
-* `--driver=kvm2` - [KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) on Linux
+* [Docker](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) (`docker`) on Linux
+* [KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) (`kvm2`) on Linux
 
 The [Install Minikube](https://minikube.sigs.k8s.io/docs/start/) page gives you more information on available VM driver options.
 

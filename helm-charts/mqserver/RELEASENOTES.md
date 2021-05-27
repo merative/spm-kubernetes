@@ -1,12 +1,20 @@
 # What's new
 
-* Updated the topic structure to correctly invalidate the SPM properties cache.
+* Enable use of dynamic storage provisioners, such as IBM Cloud File Storage, by initialising the volumes prior to launching the MQ container.
+  * If using dynamic provisioner, please review the [storage considerations](https://www.ibm.com/docs/en/ibm-mq/9.1?topic=containers-storage-considerations-mq-advanced-certified-container) as you may require a custom storage class to be defined.
+  * In a multi-zone cluster, you may need to create a custom storage class with the `volumeBindingMode` attribute set to `WaitForFirstConsumer`
+  to make sure that the storage is provisioned in the same zone as the node on which the corresponding pod has been scheduled.
 
 ## Prerequisites
 
 * For a full list of any prerequisites please see the [README.md](README.md)
 
 # Version History
+
+## v1.11.0
+
+* Enable use of dynamic storage provisioners
+* Add option to initialise Persistent Volume as `root`
 
 ## v1.10.0
 

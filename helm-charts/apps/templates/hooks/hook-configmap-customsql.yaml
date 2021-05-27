@@ -38,8 +38,18 @@ data:
   {{- if .Values.global.apps.common.persistence.enabled }}
   {{- if .Values.global.apps.common.persistence.jmxstats.enabled }}
   jmxstats.sql: |
-    UPDATE PROPERTIES SET VALUE = '/tmp/jmx' WHERE NAME = 'curam.jmx.output_statistics_timer_folder';
+    {{- $v := dict "value" .Values.global.apps.common.persistence.jmxstats.timerPeriod }}
+    {{- include "apps.value-validation" $v }}
     UPDATE PROPERTIES SET VALUE = '{{ .Values.global.apps.common.persistence.jmxstats.timerPeriod }}' WHERE NAME = 'curam.jmx.output_statistics_timer_period';
+    UPDATE PROPERTIES SET VALUE = '/tmp/jmx' WHERE NAME = 'curam.jmx.output_statistics_timer_folder';
     UPDATE PROPERTIES SET VALUE = 'true'  WHERE NAME = 'curam.jmx.output_statistics_timer_enabled';
   {{- end }}
+  {{- end }}
+  {{- if .Values.properties }}
+  properties.sql: |
+    {{- range $key, $value := .Values.properties }}
+    {{- $v := dict "value" $value }}
+    {{- include "apps.value-validation" $v }}
+    UPDATE PROPERTIES SET VALUE = '{{ $value }}' WHERE NAME = '{{ $key }}';
+    {{- end }}
   {{- end }}

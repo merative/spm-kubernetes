@@ -1,10 +1,10 @@
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
-{{- if and ($.Values.global.mq.multiInstance.nfsEnabled) (not ($.Values.global.mq.multiInstance.cephEnabled)) }}
+{{- if and ($.Values.global.mq.multiInstance.nfsEnabled) (not ($.Values.global.mq.multiInstance.useDynamicProvisioning)) }}
 ---
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ spec:
   capacity:
     storage: 1Gi
   nfs:
-    path: /{{ $.Values.global.mq.multiInstance.nfsFolder }}/{{ $name }}/data
+    path: /
     server: {{ $.Values.global.mq.multiInstance.nfsIP }}
     readOnly: false
   claimRef:

@@ -67,7 +67,7 @@ This is due to a update in IBM MQ, the details of which can be found [here](http
 
 The following issue has been observed in the JMS Consumer pods when JMS transactions is processed by a newly deployed pod, at the initial JMS transactions. The exception in thrown by the IBM MQ Resource Adapter.
 
-```log
+```
 [INFO    ] FFDC1015I: An FFDC Incident has been created: "javax.transaction.xa.XAException: The method 'xa_start' has failed with errorCode '-6'. com.ibm.tx.jta.impl.JTAXAResourceImpl.start 307" at ...
 [INFO    ] FFDC1015I: An FFDC Incident has been created: "javax.transaction.xa.XAException: The method 'xa_start' has failed with errorCode '-6'. com.ibm.tx.jta.impl.RegisteredResources.startRes 1053" at ...
 [ERROR   ] WTRN0078E: An attempt by the transaction manager to call start on a transactional resource has resulted in an error.

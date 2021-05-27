@@ -32,7 +32,10 @@ SSL properties for JDBC connection in Liberty. If global.db2.ssl.secretName is p
 Liberty Datastore properties fragment
 */}}
 {{- define "apps.dsprops.fragment" -}}
-{{- $dbConfig := .Values.global.database -}}
+{{- $params := . -}}
+{{- $root := first $params -}}
+{{- $connMgrSuffix := (include "sch.utils.getItem" (list $params 1 "")) -}}
+{{- $dbConfig := $root.Values.global.database -}}
 {{- if eq ($dbConfig.type | upper) "DB2" -}}
 <properties.db2.jcc databaseName="{{ $dbConfig.dbName }}"
   fullyMaterializeLobData="false"
@@ -52,9 +55,9 @@ Liberty Datastore properties fragment
 {{ fail ("Unsupported database type provided: " $dbConfig.type) }}
 {{- end }}
 <connectionManager
-  maxPoolSize="${env.CM_MAX_POOL_SIZE}"
-  numConnectionsPerThreadLocal="${env.CM_CONN_PER_THREAD}"
-  purgePolicy="${env.CM_PURGE_POLICY}"
+  maxPoolSize="${env.CM_{{ $connMgrSuffix | upper }}_MAX_POOL_SIZE}"
+  numConnectionsPerThreadLocal="${env.CM_{{ $connMgrSuffix | upper }}_CONN_PER_THREAD}"
+  purgePolicy="${env.CM_{{ $connMgrSuffix | upper }}_PURGE_POLICY}"
 />
 {{- end -}}
 
