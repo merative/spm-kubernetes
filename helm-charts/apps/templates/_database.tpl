@@ -36,7 +36,6 @@ Liberty Datastore properties fragment
 {{- $root := first $params -}}
 {{- $connMgrSuffix := (include "sch.utils.getItem" (list $params 1 "")) -}}
 {{- $dbConfig := $root.Values.global.database -}}
-
 {{- if eq ($dbConfig.type | upper) "DB2" -}}
 <properties.db2.jcc databaseName="{{ $dbConfig.dbName }}"
   fullyMaterializeLobData="false"
