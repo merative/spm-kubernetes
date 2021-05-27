@@ -4,6 +4,17 @@
 * Red Hat OpenShift support introduced
 * Runs with `restricted` (default) pod security policy
 
+# Breaking Changes
+
+* The structure of values for specifying the tuning defaults for applications has changed:
+
+  | Old property | New property | Default value |
+  | ------------ | ------------ | ------------- |
+  | `apps.tuningDefaults.maxPoolSize` | `apps.tuningDefaults.curamdb_maxPoolSize` | `8` |
+  | `apps.tuningDefaults.numConnectionsPerThreadLocal` | `apps.tuningDefaults.curamdb_numConnectionsPerThreadLocal` | `2` |
+  | `apps.tuningDefaults.purgePolicy` | `apps.tuningDefaults.curamdb_purgePolicy` | `EntirePool` |
+  | `apps.tuningDefaults.statementCacheSize` | `apps.tuningDefaults.curamdb_statementCacheSize` | `1000` |
+
 ### Fixes
 
 ## Prerequisites
