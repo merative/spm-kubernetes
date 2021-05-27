@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file
 
 ## v21.5.0
 
-## Added
+### Added
 
 * Added capability for Prometheus to scrape Liberty metrics from pods
 * Added clarification in the Runbook introduction page regarding the flexibility to modify or develop **Helm Charts** or **Dockerfiles**
@@ -24,13 +24,13 @@ All notable changes to this project will be documented in this file
 
 ## v21.4.1
 
-## Added
+### Added
 
 * IBM MQ XAER_PROTO reported as a known issue
 
 ## v21.4.0
 
-## Added
+### Added
 
 * Extended WebSphere Liberty tuning options
 
@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file
 * Clarify initial setup of CodeReady Containers
 * Update recommended drivers for running Minikube
 
-## Fixed
+### Fixed
 
 * Remove references to a non-existent pull secret for service accounts
 
