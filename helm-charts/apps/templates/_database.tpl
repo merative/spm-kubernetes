@@ -31,7 +31,6 @@ SSL properties for JDBC connection in Liberty. If global.db2.ssl.secretName is p
 {{/*
 Liberty Datastore properties fragment
 */}}
-
 {{- define "apps.dsprops.fragment" -}}
 {{- $params := . -}}
 {{- $root := first $params -}}
@@ -62,8 +61,6 @@ Liberty Datastore properties fragment
   purgePolicy="${env.CM_{{ $connMgrSuffix | upper }}_PURGE_POLICY}"
 />
 {{- end -}}
-
-
 
 {{/*
 Oracle JDBC URL
