@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.5.1
+
+### Fixed
+
+* Fixed reference to Oracle datasource fragment ([#78](https://github.com/IBM/spm-kubernetes/issues/78))
+
 ## v21.5.0
 
 ### Added

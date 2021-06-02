@@ -47,7 +47,7 @@ Liberty Datastore properties fragment
 />
 {{- else if eq ($dbConfig.type | upper) "ORA" -}}
 <properties.oracle
-  URL="{{ include "apps.oracleurl" . }}"
+  URL="{{ include "apps.oracleurl" $root }}"
   password="${env.XOR_DB_PSW}"
   user="${env.SPM_DB_USR}"
 />
