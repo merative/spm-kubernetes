@@ -23,6 +23,10 @@
 
 # Version History
 
+## v3.6.1
+
+* Fix reference to Oracle datasource fragment
+
 ## v3.6.0
 
 * Add ability to tune K8s resources on an app by app basis

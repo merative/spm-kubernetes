@@ -11,6 +11,10 @@
 
 # Version History
 
+## v2.7.1
+
+* Update `apps` dependency to version 3.6.1
+
 ## v2.7.0
 
 * Update `apps` dependency to version 3.6.0
