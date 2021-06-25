@@ -70,6 +70,12 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
 | `global.apps.config.<applicationID>.consumerTuning` | Dictionary of tuning values specific to the Consumer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
 | `global.apps.config.<applicationID>.producerTuning` | Dictionary of tuning values specific to the Producer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
+| `global.apps.config.<applicationID>.producerTuning.maxEndPoints_DPEnactmentAS` | Sets maximum concurrent endpoints for the DPEnactment JMS queue in the producer | `Default derived from maxThreads` |
+| `global.apps.config.<applicationID>.producerTuning.maxEndPoints_WorkflowActivityAS` | Sets maximum concurrent endpoints for the WorkflowActivity JMS queue in the producer | `Default derived from maxThreads` |
+| `global.apps.config.<applicationID>.producerTuning.maxEndPoints_WorkflowEnactmentAS` | Sets maximum concurrent endpoints for the WorkflowEnactment JMS queue in the producer | `Default derived from maxThreads` |
+| `global.apps.config.<applicationID>.consumerTuning.maxEndPoints_DPEnactmentAS` | Sets maximum concurrent endpoints for the DPEnactment JMS queue in the consumer | `Default derived from maxThreads` |
+| `global.apps.config.<applicationID>.consumerTuning.maxEndPoints_WorkflowActivityAS` | Sets maximum concurrent endpoints for the WorkflowActivity JMS queue in the consumer | `Default derived from maxThreads` |
+| `global.apps.config.<applicationID>.consumerTuning.maxEndPoints_WorkflowEnactmentAS` | Sets maximum concurrent endpoints for the WorkflowEnactment JMS queue in the consumer | `Default derived from maxThreads` |
 | `global.apps.config.<applicationID>.replicaCount` | Number of replicas of the application to be deployed | `1` |
 | `global.apps.config.<applicationID>.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 | `apps.initialDelaySeconds` | Time in seconds before commencing application readiness probes | `150` |
@@ -96,7 +102,11 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | `apps.tuningDefaults.curamsessdb_statementCacheSize` | Maximum number of cached statements per connection on curamsessdb | `1000` |
 | `apps.tuningDefaults.maxJMSConnectionsPerThread` | Limits the number of open JMS connections on each thread. | `2` |
 | `apps.tuningDefaults.mqMaxPoolSize` | Maximum number of physical connections for a pool. A value of 0 means unlimited. | `12` |
+| `apps.tuningDefaults.mqMinPoolSize` | Minimum number of physical connections for a pool. A value of 0 means unlimited. | `12` |
 | `apps.tuningDefaults.mqNumConnectionsPerThreadLocal` | Caches the specified number of connections for each thread. | `2` |
+| `apps.tuningDefaults.maxEndPoints_DPErrorAS` | Sets maximum concurrent endpoints for the DPError JMS queue | `1` |
+| `apps.tuningDefaults.maxEndPoints_WorkflowErrorAS` | Sets maximum concurrent endpoints for the WorkflowError JMS queue | `1` |
+| `apps.tuningDefaults.maxEndPoints_CuramDeadMessageQueueAS` | Sets maximum concurrent endpoints for the CuramDeadMessageQueue JMS queue | `1` |
 | `apps.tuningDefaults.resources` | yaml stanza to allow fine tuning of resource config for an app. Overrides global.apps.config.APPLICATION_NAME.resources if set | `''` |
 | `apps.wlpAdmin.secretName` | Name of a pre-created secret containing WebSphere Liberty administration credentials (see [Handling Secrets](/deployment/secrets) topic for expected secret content) | `''` |
 | `apps.wlpAdmin.enableAdminCenter` | Toggle whether the WebSphere Liberty Admin Center should be enabled | `false` |
@@ -220,6 +230,22 @@ We only support containerised MQ on Openshift.
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.initVolumeAsRoot` | Initialise storage volume as `root` user | `false` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `mqserver.podAnnotations` | Annotations to be applied during deployment | `{}` |
 
+### MQ Metrics (optional)
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+|  `global.mq.metrics.enabled` | Enable/disable the MQ metrics | `false` |
+|  `global.mq.metrics.additionalMetrics` | Enable/disable the IBM MQ Queue Depth Events metrics (only valid if `global.mq.metrics.enabled` is set to `true`) | `false` |
+|  `mqserver.metricsImage.library` | Namespace in the image registry containing your IBM MQ Queue Depth Events image | `{}` |
+|  `mqserver.metricsImage.name` | Name of your IBM MQ Queue Depth Events image to be used | `{}` |
+|  `mqserver.metricsImage.tag` | Image tag of your IBM MQ Queue Depth Events image to be used | `{}` |
+
+### MQ tuning (optional)
+
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `global.apps.config.<applicationID>.mqTuning` | MQ Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition per application | Varies by application (see `values.yaml`) |
+
 ### Static Content Server
 
 | Parameter | Description | Default |
@@ -227,12 +253,19 @@ We only support containerised MQ on Openshift.
 | `web.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match [what had been defined](/deploy-spm/build-spm#set-up-static-content) when the application was built) | `/CuramStatic` |
 | `web.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/CuramStatic/` |
 | `web.replicaCount` | Number of replicas to be deployed | `1` |
+| `web.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 
 ### XML Server
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `xmlserver.replicaCount` | Number of replicas to be deployed | `1` |
+| `xmlserver.jvm.maxMemory` | The maximum Java heap for the XML server | `-Djava.maxmemory=768m` |
+| `xmlserver.jvm.threadStackSize` | The Java thread stack size for the XML server | `-Djava.thread.stack.size=-Xss4m` |
+| `xmlserver.config.threadPoolSize` | The XML server thread pool size | `5` |
+| `xmlserver.config.threadPoolQueueSize` | The XML server thread pool queue size | `200` |
+| `xmlserver.config.socketTimeout` | The XML server socket timeout (milliseconds) | `60000` |
+| `xmlserver.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 
 <InlineNotification>
 
@@ -250,3 +283,4 @@ In a Kubernetes environment, there is only one XML Server from SPM's point of vi
 | `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/7.0.11?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |
+| `uawebapp.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |

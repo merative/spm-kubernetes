@@ -318,6 +318,7 @@ tuningDefaults:
   # Connection Manager JMS related params
   maxJMSConnectionsPerThread: 2
   mqMaxPoolSize: 12
+  mqMinPoolSize: 12
   mqNumConnectionsPerThreadLocal: 2
 
   # Connection Manager per DB params for fine tuning
@@ -338,6 +339,10 @@ tuningDefaults:
   curamtimerdb_statementCacheSize: 1000
   curamsessdb_statementCacheSize: 1000
 
+  # Endpoint tuning for queues in producer/consumer
+  maxEndPoints_DPErrorAS: 1
+  maxEndPoints_WorkflowErrorAS: 1
+  maxEndPoints_CuramDeadMessageQueueAS: 1
 
 # Default resources allocated to pods in the absence of
 # application-specific resource allocations

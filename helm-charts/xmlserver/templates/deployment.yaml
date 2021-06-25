@@ -67,8 +67,11 @@ spec:
         - name: {{ default (printf "%s-pull-secret" .Release.Name) .Values.global.imagePullSecret.secretName }}
       {{- end }}
       serviceAccountName: {{ default (include "sch.names.fullName" (list .)) .Values.serviceAccountName }}
-      {{- if .Values.global.apps.common.persistence.enabled }}
       volumes:
+        - name: xmlserverconfig-template-file
+          configMap:
+            name: {{ .Release.Name }}-xmlserverconfig-template-cm
+      {{- if .Values.global.apps.common.persistence.enabled }}
         - name: {{ .Release.Name }}-persistence-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-persistence-pvc
@@ -84,13 +87,22 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
 {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | indent 10 }}
-          {{- if .Values.global.apps.common.persistence.enabled }}
           env:
             - name: TZ
               value: {{ .Values.global.timezone }}
+            - name: JVM_MAX_MEM
+              value: {{ .Values.jvm.maxMemory | quote }}
+            - name: JVM_THREAD_STACK_SIZE
+              value: {{ .Values.jvm.threadStackSize | quote }}
+          {{- if .Values.global.apps.common.persistence.enabled }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
+          {{- end }}
           volumeMounts:
+            - name: xmlserverconfig-template-file
+              mountPath: /opt/ibm/Curam/xmlserver/xmlserverconfig.xml.template
+              subPath: xmlserverconfig.xml.template
+          {{- if .Values.global.apps.common.persistence.enabled }}
             - name: {{ .Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
               subPath: {{ include "persistence.subDir" $ }}

@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.6.0
+
+### Added
+
+* Added capability to tune Kubernetes resources for MQ pods for individual applications
+* Added clarification regarding sample values files.
+* Added JVM garbage collection and tuning settings for XML server pods
+  * Updated sample override files to include example settings
+* Added capability to specify thread pool size, thread queue size, and socket timeout value for XML server pods
+* Added capability to tune various JMS tuning parameters for producers and consumers
+  * Extended jmsActivationSpec to include maxEndpoints parameter for the following JMS queues:
+    * DPError
+    * WorkflowError
+    * CuramDeadMessageQueue
+    * DPEnactment
+    * WorkflowEnactment
+    * WorkflowActivity
+* Added capability to tune the minPoolSize setting of the JMS connection manager
+* Documented how to tune the resources for the uawebapp, web and xmlserver pods
+
+### Changed
+
+* Upgrade to latest Gatsby library
+* Updated the minimum supported version of Kubernetes to `1.19`
+
+### Removed
+
+* Removed support for Kubernetes `1.18`
+
 ## v21.5.1
 
 ### Fixed
@@ -146,7 +175,6 @@ All notable changes to this project will be documented in this file
 
 * Removed custom `SecurityContextConstraint` as it is no longer required for running SPM in OpenShift
 
-
 ## v20.10.2
 
 ### Fixed
@@ -194,7 +222,6 @@ All notable changes to this project will be documented in this file
 
 * Remove hard requirement on OpenLDAP for elasticity
 
-
 ## v20.9.0
 
 ### Added
@@ -219,7 +246,6 @@ All notable changes to this project will be documented in this file
 ### Fixed
 
 * Use common `CuramCacheInvalidationTopic` across all applications to correctly invalidate the SPM property cache
-
 
 ## v20.8.0
 
@@ -293,13 +319,11 @@ All notable changes to this project will be documented in this file
 * Dockerfile for IBM MQ (custom image not required anymore - use `ibmcom/mq` directly)
 * Removed Helm v2, and related tiller documentation and commands
 
-
 ## v20.6.1
 
 ### Changed
 
 * Updated URL format to match path prefix used by Gatsby build
-
 
 ## v20.6.0
 
@@ -321,7 +345,6 @@ All notable changes to this project will be documented in this file
 ### Fixed
 
 * [Broken Links in Prerequisites.](https://github.com/IBM/spm-kubernetes/issues/18)
-
 
 ## v20.5.0 ![SPM 7.0.10.0](https://img.shields.io/badge/-SPM_7.0.10.0-green)
 

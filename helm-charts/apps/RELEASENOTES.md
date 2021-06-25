@@ -23,6 +23,11 @@
 
 # Version History
 
+## v3.7.0
+
+* Added capability to tune various JMS tuning parameters for producers and consumers
+* Added capability to tune the minPoolSize setting of the JMS connection manager
+
 ## v3.6.1
 
 * Fix reference to Oracle datasource fragment

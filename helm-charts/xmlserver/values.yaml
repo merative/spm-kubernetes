@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,3 +65,14 @@ serviceAccountName: ""
 # weight 100 for nodes labelled as worker-type:application
 affinityKey: worker-type
 affinityValue: application
+
+# XML server JVM configuration settings
+jvm:
+  maxMemory: '-Djava.maxmemory=768m'
+  threadStackSize: '-Djava.thread.stack.size=-Xss4m'
+
+# XML server configuration settings
+config:
+  threadPoolSize: 5
+  threadPoolQueueSize: 200
+  socketTimeout: 60000

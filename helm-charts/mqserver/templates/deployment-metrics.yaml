@@ -1,13 +1,11 @@
+{{- if and ($.Values.global.mq.metrics.enabled) ($.Values.global.mq.metrics.additionalMetrics) }}
 {{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
-{{- if (not ($.Values.global.mq.multiInstance.operatorsEnabled)) }}
-{{- if  (and (not ($.Values.global.mq.multiInstance.cephEnabled)) (not ($.Values.global.mq.multiInstance.nfsEnabled))) }}
-{{- $tuningParams := $app.mqTuning }}
 ---
 ###############################################################################
-# Copyright 2019,2021 IBM Corporation
+# Copyright 2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,29 +19,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sch.names.fullCompName" (list $ $name) }}
+  name: {{ include "sch.names.fullCompName" (list $ (printf "%s-metrics" $name)) }}
   namespace: {{ $.Release.Namespace }}
   labels:
-    {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
+    {{- include "sch.metadata.labels.standard" (list $ (printf "%s-metrics" $name)) | nindent 4 }}
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 6 }}
+      {{- include "sch.metadata.labels.standard" (list $ (printf "%s-metrics" $name)) | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 8 }}
-        app: {{ $name }}-{{ include "sch.names.appName" (list $) }}
+        {{- include "sch.metadata.labels.standard" (list $ (printf "%s-metrics" $name)) | nindent 8 }}
+        app: {{ include "sch.names.fullCompName" (list $ $name) }}-metrics
         version: v{{ $.Release.Revision }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
         {{- with $.Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9157"
+        prometheus.io/scrape: "true"
     spec:
       {{- include "sch.security.securityContext" (list $ $.sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
@@ -69,91 +70,86 @@ spec:
                   - mqserver
               topologyKey: kubernetes.io/hostname
       restartPolicy: {{ .restartPolicy | default "Always" }}
-      volumes:
-        - name: mqsc-cmds
-          configMap:
-            name: {{ include "sch.names.fullCompName" (list $ "cm") }}
-        - name: service-certs
-          secret:
-            secretName: {{ $.Values.global.mq.tlsSecretName | default (printf "%s-mq-secret" $.Release.Name) }}
       containers:
-        - name: {{ $.Chart.Name }}-{{ $name }}
-          image: ibmcom/mq:{{ $.Values.global.mq.version }}
-          imagePullPolicy: {{ $.Values.global.pullPolicy }}
+        - name: {{ $.Chart.Name }}-mq-metric-prometheus
+          image: {{ include "mqMetrics.imageFullName" $ }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "sch.names.fullCompName" (list $ "metrics-cm") }}
           env:
-            - name: LICENSE
-              value: {{ $.Values.global.license }}
-            - name: MQ_QMGR_NAME
-              value: {{ $.Values.global.mq.queueManager.name }}
-            - name: LOG_FORMAT
-              value: {{ $.Values.log.format | default "basic" }}
-            - name: MQ_ENABLE_METRICS
-              value: {{ $.Values.global.mq.metrics.enabled | default false | quote }}
-            - name: DEBUG
-              value: {{ $.Values.log.debug | default false | quote }}
-            - name: MQ_EPHEMERAL_PREFIX
-              value: /run/mqm
-            - name: MQ_DEV
-              value: "false"
-            - name: MQ_ADMIN_PASSWORD
+            - name: IBMMQ_CONNECTION_USER
+              value: "admin"
+            - name: IBMMQ_CONNECTION_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
                   key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
-            - name: MQ_APP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
-                  key: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
-            - name: TZ
-              value: {{ $.Values.global.timezone }}
+            - name: IBMMQ_CONNECTION_CONNNAME
+            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+              value: {{ printf "%s%s-ibm-mq(1414)" $name $.Values.global.mq.queueManager.name | lower }}
+            {{- else }}
+              value: {{ printf "%s(1414)" (include "sch.names.fullCompName" (list $ $name)) }}
+            {{- end }}
           ports:
-            - containerPort: 1414
-            - containerPort: 9443
-            - containerPort: 9157
+            - name: client
+              containerPort: 9157
+              protocol: TCP
           # Set liveness probe to determine if the queue manager is running
           livenessProbe:
-            exec:
-              command:
-              - chkmqhealthy
+            tcpSocket:
+              port: client
             initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
             failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
           # Set readiness probe to determine if the MQ listener is running
           readinessProbe:
-            exec:
-              command:
-              - chkmqready
+            httpGet:
+              path: /metrics
+              port: client
+              scheme: HTTP
             initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ $.Values.readinessProbe.periodSeconds }}
             timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
             failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+          # Set security context
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: false
-            runAsNonRoot: true
+            runAsNonRoot: false
             privileged: false
             capabilities:
               drop:
                 - ALL
+          {{- with $.Values.resources }}
           resources:
-            {{- if $tuningParams.resources }}
-            {{- toYaml ($tuningParams.resources) | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      initContainers:
+        {{- if not (hasKey $app "mqConnectionNameList") }}
+        - name: wait-for-mq
+          {{- include "mqutilities.definition" $ | nindent 10 }}
+          command:
+            - /bin/sh
+            - -c
+            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+            - >
+              until nc -z -w3 {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq 1414; do
+                echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
+                sleep 2;
+              done;
             {{- else }}
-            {{- toYaml ($.Values.resources) | nindent 12 }}
-            {{- end }}            
-          volumeMounts:
-            - name: mqsc-cmds
-              mountPath: /etc/mqm/20-config.mqsc
-              subPath: config.mqsc
-            - name: mqsc-cmds
-              mountPath: /etc/mqm/30-channel.mqsc
-              subPath: channel_{{$name}}.mqsc
-            - name: service-certs
-              mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
-              readOnly: true
-{{- end }}
+            - >
+              until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }} 1414; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}:1414 to be reachable;
+                sleep 2;
+              done;
+            {{- end }}
+        {{- end }}
+      {{- if or $.Values.global.imagePullSecret.secretName $.Values.global.imagePullSecret.username }}
+      imagePullSecrets:
+        - name: {{ default (printf "%s-pull-secret" $.Release.Name) $.Values.global.imagePullSecret.secretName }}
+      {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

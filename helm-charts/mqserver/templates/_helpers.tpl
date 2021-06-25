@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019,2020 IBM Corporation
+Copyright 2019,2021 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ Create chart name and version as used by the chart label.
 {{/*
 Create the image pull secret
 */}}
-{{- define "imagePullSecret" }}
+{{- define "mqserver.imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
 
@@ -58,15 +58,36 @@ Create the image pull secret
 Build up full image path
 */}}
 {{- define "mqserver.imageFullName" -}}
-{{- .registry -}}/
-{{- if .imageLibrary -}}
-{{- .imageLibrary -}}/
+{{- .ImageConfig.registry -}}/
+{{- if .ImageConfig.imageLibrary -}}
+{{- .ImageConfig.imageLibrary -}}/
 {{- end -}}
-{{- if .imagePrefix -}}
-{{- .imagePrefix -}}
+{{- if .ImageConfig.imagePrefix -}}
+{{- .ImageConfig.imagePrefix -}}
 {{- end -}}
-mqserver:{{- .imageTag -}}
+{{- .ImageName -}}:{{- .ImageConfig.imageTag -}}
 {{- end -}}
+
+{{/*
+Build up full image path for MQ Metrics image
+*/}}
+{{- define "mqMetrics.imageFullName" -}}
+{{- $imageConfig := .Values.metricsImage -}}
+{{- .Values.global.images.registry -}}/
+{{- if $imageConfig.library -}}
+{{- $imageConfig.library -}}/
+{{- end -}}
+{{ $imageConfig.name }}:{{- $imageConfig.tag -}}
+{{- end -}}
+
+{{/*
+ibmjava image
+*/}}
+{{- define "mqutilities.definition" }}
+image: {{ include "mqserver.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
+{{- include "mqinitContainer.resources" $ }}
+{{- include "sch.security.securityContext" (list $ $.sch.chart.containerSecurityContext) }}
+{{- end }}
 
 {{/*
 Common labels
@@ -84,7 +105,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 InitContainer resources
 */}}
-{{- define "initContainer.resources" }}
+{{- define "mqinitContainer.resources" }}
 resources:
   limits:
     memory: 256Mi
