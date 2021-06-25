@@ -11,6 +11,11 @@
 
 # Version History
 
+## v1.12.0
+
+* Add ability to tune K8s resources for MQ pods related to each app on an app by app basis
+* Add facility to deploy pod to report metrics for MQ Queue Depths Events
+
 ## v1.11.0
 
 * Enable use of dynamic storage provisioners

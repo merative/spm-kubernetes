@@ -1,0 +1,52 @@
+{{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
+---
+###############################################################################
+# Licensed Materials - Property of IBM
+# Copyright IBM Corporation 2012,2021. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure
+# restricted by GSA ADP Schedule Contract with IBM Corp.
+###############################################################################
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-xmlserverconfig-template-cm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+data:
+  xmlserverconfig.xml.template: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!-- Placed by Kubernetes Configmap. -->
+    <XML_SERVER_CONFIG>
+      <CLEAR_TEMPLATE_CACHE>false</CLEAR_TEMPLATE_CACHE>
+      <DEFAULT_EMAIL></DEFAULT_EMAIL>
+      <DEFAULT_PRINTER></DEFAULT_PRINTER>
+      <DEFAULT_TRAY></DEFAULT_TRAY>
+      <DEFAULT_USERNAME></DEFAULT_USERNAME>
+      <FOP_CONFIG_FILE>#FOP_CONFIG_FILE#</FOP_CONFIG_FILE>
+      <RENDERX_CONFIG_FILE>#RENDERX_CONFIG_FILE#</RENDERX_CONFIG_FILE>
+      <RENDERX_LOGGING>off</RENDERX_LOGGING>
+      <SERVER_COMMAND>#SERVER_COMMAND#</SERVER_COMMAND>
+      <SERVER_PORT>#SERVER_PORT#</SERVER_PORT>
+      <TEMPLATE_CACHE_DIR>./template</TEMPLATE_CACHE_DIR>
+      <TMP_DIRECTORY>./tmp</TMP_DIRECTORY>
+      <TMP_FILE_ROOT>doc</TMP_FILE_ROOT>
+      <TRACE_TRAFFIC>false</TRACE_TRAFFIC>
+      <USE_PIPE>false</USE_PIPE>
+      <USE_STDERR_SINK>false</USE_STDERR_SINK>
+      <USE_STDOUT_SINK>false</USE_STDOUT_SINK>
+      <USE_TEMPLATE_CACHE>#USE_TEMPLATE_CACHE#</USE_TEMPLATE_CACHE>
+      <USE_TMP_FILE>true</USE_TMP_FILE>
+      <THREAD_POOL_SIZE>{{ .Values.config.threadPoolSize}}</THREAD_POOL_SIZE>
+      <THREAD_POOL_QUEUE_SIZE>{{ .Values.config.threadPoolQueueSize}}</THREAD_POOL_QUEUE_SIZE>
+      <SO_TIMEOUT>{{ .Values.config.socketTimeout}}</SO_TIMEOUT>
+      <STATISTICS_FOLDER>./stats</STATISTICS_FOLDER>
+      <JOBS>
+        <JOB type="html" class="curam.util.xmlserver.HTMLDocumentGenerator"/>
+        <JOB type="rtf"  class="curam.util.xmlserver.RTFDocumentGenerator"/>
+        <JOB type="text" class="curam.util.xmlserver.TEXTDocumentGenerator"/>
+        <JOB type="customTEXT" class="#CUSTOM_TEXT_GENERATOR_CLASS#"/>
+        <JOB type="pdf" direction="RTL" class="#RTL_GENERATOR_CLASS#"/>
+        <JOB type="pdf" direction="LTR" class="curam.util.xmlserver.PDFDocumentGenerator"/>
+      </JOBS>
+    </XML_SERVER_CONFIG>

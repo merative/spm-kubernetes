@@ -1,0 +1,86 @@
+---
+title: MQ Queue Depth Events monitoring
+description: MQ Queue Depth Events monitoring
+---
+
+## What are MQ Queue Depth Events?
+
+A wide variety of metrics for the IBM MQ queue manager exist
+such as documented in the
+[Knowledge Center](https://www.ibm.com/docs/en/ibm-mq/9.2?topic=containers-metrics-published-by-mq-certified).
+However, these metrics do not currently cover the queue or the topic level attributes such as
+the queue depth, that is the number of messages on the queue.
+This data are valuable for more successful monitoring.
+
+## Enabling monitoring
+
+To operate correctly, the queues must not become full as, if they do, the applications can no longer
+put messages on the queue that they specify. Although the message is not
+lost if this occurs, a full queue can cause considerable inconvenience.
+With IBM MQ Prometheus monitor, a wide variety of statistics
+about that queue manager are published.
+
+The following information describes how to enable Prometheus monitoring agent that connects to an IBM MQ server.
+This monitor is based on the open-source project [MQ Metrics Sample](https://github.com/ibm-messaging/mq-metric-samples)
+which provides the monitor `mq_prometheus` to be compiled and the image `mq-metric-prometheus` to be built.
+
+Together, they will expose metrics about the following queue depth events
+which permit to understand what is happening in the queues:
+
+* **Queue Depth High events**
+Indicate that the queue depth has increased to a predefined threshold
+called the Queue Depth High limit.
+* **Queue Depth Low events**
+Indicate that the queue depth has decreased to a predefined threshold
+called the Queue Depth Low limit.
+* **Queue Full events**
+Indicate that the queue has reached its maximum depth, that is, the queue
+is full.
+
+More details are available in the
+[IBM MQ Queue Depth Events](https://www.ibm.com/docs/en/ibm-mq/9.2?topic=events-enabling-queue-depth)
+documentation.
+
+## Building MQ Metric Pod
+
+The following commands show how to build the MQ Metrics Pod which contains the monitor `mq_prometheus`.
+
+```
+# Clone repository locally
+git clone https://github.com/ibm-messaging/mq-metric-samples.git
+
+# Build code and image
+cd mq-metric-samples/scripts
+./buildRuntime.sh mq_prometheus
+
+# Retrieve current latest image tag
+DIST_TAG_LATEST=`git tag -l | sort | tail -1 | sed "s/^v//g"`
+echo "The current latest image tag is: $DIST_TAG_LATEST"
+
+# Show built image(s)
+docker images
+```
+
+## Pushing Image
+
+The following commands are illustrating how to tag and push the MQ Metric Pod to a typical IBM Cloud Container Registry.
+
+```
+# Tagging image
+docker tag mq-metric-prometheus:$DIST_TAG_LATEST us.icr.io/icr-ns/mq-metric-prometheus:$DIST_TAG_LATEST
+
+# Push images to registry
+docker push --all-tags us.icr.io/icr-ns/mq-metric-prometheus:$DIST_TAG_LATEST
+```
+
+## Deploy
+
+To enable the deployment of the MQ Metric Pod, the values `global.mq.metrics.enabled` and
+`global.mq.metrics.additionalMetrics` are required to be toggled to `true`.
+
+Additionally, the values `mqserver.metricsImage.library`, `mqserver.metricsImage.name`, and `mqserver.metricsImage.tag`
+are required to be set with the details of the image registry containing your IBM MQ Queue Depth Events image.
+
+More details about the configuration values are provided in the
+[Configuration Reference](/deployment/config-reference)
+under the [MQ Metrics](/deployment/config-reference#mq-metrics-(optional)) topic.

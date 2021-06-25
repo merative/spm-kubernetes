@@ -1,4 +1,10 @@
 ---
+###############################################################################
+# The tuning values listed are for demonstration purposes only. 
+# These values are a suggested starting point and are not definitive. 
+# Customers should perform their own testing, to validate and verify their own
+# settings, in order to meet their system needs.
+###############################################################################
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
   images:
@@ -60,8 +66,15 @@ global:
     #       statementCacheSize: 1000
     #       # MQ Settings for Curam Producer
     #       mqMaxPoolSize: 8
+    #       mqMinPoolSize: 8
     #       mqNumConnectionsPerThreadLocal: 2
     #       maxJMSConnectionsPerThread: 2
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 100
+    #       maxEndPoints_WorkflowActivityAS: 101
+    #       maxEndPoints_WorkflowEnactmentAS: 102
     #       # Curam Producer Database Settings
     #       curamdb_maxPoolSize: 16
     #       curamdb_numConnectionsPerThreadLocal: 2
@@ -94,8 +107,15 @@ global:
     #       statementCacheSize: 1000
     #       # MQ Settings for Curam Consumer
     #       mqMaxPoolSize: 12
+    #       mqMinPoolSize: 12
     #       mqNumConnectionsPerThreadLocal: 2
     #       maxJMSConnectionsPerThread: 2
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 100
+    #       maxEndPoints_WorkflowActivityAS: 101
+    #       maxEndPoints_WorkflowEnactmentAS: 102
     #       # Curam Consumer Database Settings
     #       curamdb_maxPoolSize: 24
     #       curamdb_numConnectionsPerThreadLocal: 2
@@ -117,6 +137,14 @@ global:
     #         limits:
     #           cpu: 2v
     #           memory: 2850Mi
+    #       mqTuning:
+    #         resources:
+    #           requests:
+    #             cpu: 1
+    #             memory: 2300Mi
+    #           limits:
+    #             cpu: 1.5
+    #             memory: 2500Mi
     #   rest:
     #     enabled: true
     #     resources:
@@ -133,8 +161,15 @@ global:
     #       maxThreads: 8
     #       # MQ Settings for Rest Producer
     #       mqMaxPoolSize: 8
+    #       mqMinPoolSize: 8
     #       mqNumConnectionsPerThreadLocal: 2
     #       maxJMSConnectionsPerThread: 2
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 100
+    #       maxEndPoints_WorkflowActivityAS: 101
+    #       maxEndPoints_WorkflowEnactmentAS: 102
     #       # Rest Producer Database Settings
     #       curamdb_maxPoolSize: 16
     #       curamdb_numConnectionsPerThreadLocal: 2
@@ -163,8 +198,15 @@ global:
     #       maxThreads: 12
     #       # MQ Settings for Rest Consumer
     #       mqMaxPoolSize: 12
+    #       mqMinPoolSize: 12
     #       mqNumConnectionsPerThreadLocal: 2
     #       maxJMSConnectionsPerThread: 2
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 100
+    #       maxEndPoints_WorkflowActivityAS: 101
+    #       maxEndPoints_WorkflowEnactmentAS: 102
     #       # Rest Consumer Database Settings
     #       curamdb_maxPoolSize: 24
     #       curamdb_numConnectionsPerThreadLocal: 2
@@ -226,6 +268,13 @@ uawebapp: {}
 #   readinessProbe:
 #     path: /universal/
 #   ingressPath: /universal
+#   resources:
+#     requests:
+#       cpu: 2
+#       memory: 1000Mi
+#     limits:
+#       cpu: 2
+#       memory: 1000Mi
 
 # Override values in 'web' Chart
 web: {}
@@ -233,7 +282,28 @@ web: {}
 #   readinessProbe:
 #     path: /CuramStatic/
 #   ingressPath: /CuramStatic
+#   resources:
+#     requests:
+#       cpu: 2
+#       memory: 1000Mi
+#     limits:
+#       cpu: 2
+#       memory: 1000Mi
 
 # Override values in 'xmlserver' Chart
 xmlserver: {}
 #   replicaCount: 1
+#   jvm:
+#      maxMemory: '-Djava.maxmemory=768m'
+#      threadStackSize: '-Djava.thread.stack.size=-Xss4m'
+#   config:
+#      socketTimeout: 60000
+#      threadPoolQueueSize: 200
+#      threadPoolSize: 6
+#   resources:
+#     requests:
+#       cpu: 2
+#       memory: 1000Mi
+#     limits:
+#       cpu: 2
+#       memory: 1000Mi

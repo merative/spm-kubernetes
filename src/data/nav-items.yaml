@@ -73,22 +73,26 @@
       path: /supporting-infrastructure/batch/batch-processing/
     - title: Enabling ISAM
       path: /supporting-infrastructure/ISAM/
-- title: Monitoring and troubleshooting
+- title: Monitoring
   pages:
     - title: Monitoring the application
-      path: /runtime/interrogate_runtime/
+      path: /monitoring/interrogate_runtime/
     - title: Monitoring JMX statistics
-      path: /runtime/jmx-statistics-performance-monitoring/
+      path: /monitoring/jmx-statistics-performance-monitoring/
+    - title: Monitoring MQ Queue Depth Events
+      path: /monitoring/mq_queue_depth_events_monitoring/
+- title: Troubleshooting
+  pages:
     - title: XML server
-      path: /runtime/xmlserver/
+      path: /troubleshooting/xmlserver/
     - title: Handling failed JMS messages on the MQ dead message queue
-      path: /runtime/failed_jms_messages/
+      path: /troubleshooting/failed_jms_messages/
     - title: Remote debugging
-      path: /runtime/Remote-Debugging/
+      path: /troubleshooting/Remote-Debugging/
     - title: Troubleshooting problems
-      path: /runtime/troubleshoot/
+      path: /troubleshooting/troubleshoot/
     - title: MustGather
-      path: /runtime/must_gather/
+      path: /troubleshooting/must_gather/
 - title: Known issues
   pages:
     - path: /known_issues/

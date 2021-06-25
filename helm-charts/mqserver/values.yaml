@@ -16,6 +16,14 @@
 global:
   # Set to 'accept' to accept the license terms of WebSphere Liberty and WebSphere MQ
   license: ''
+  images:
+    registry: &imageRegistry minikube.local:5000
+    imageLibrary: ''
+    imagePrefix: ''
+    imageTag: latest
+  imagePullSecret:
+    secretName: ''
+    username: ''
   pullPolicy: 'Always'
   sch:
     enabled: true
@@ -24,26 +32,37 @@ global:
     config:
       curam:
         enabled: true
+        mqTuning: {}
       rest:
         enabled: false
+        mqTuning: {}
       citizenportal:
         enabled: false
+        mqTuning: {}
       curamwebservices:
         enabled: false
+        mqTuning: {}
       curambirtviewer:
         enabled: false
+        mqTuning: {}
       cpmexternalns:
         enabled: false
+        mqTuning: {}
       cpmexternals:
         enabled: false
+        mqTuning: {}
       navigatorns:
         enabled: false
+        mqTuning: {}
       navigators:
         enabled: false
+        mqTuning: {}
       mdtworkspace:
         enabled: false
+        mqTuning: {}
       samplepublicaccess:
         enabled: false
+        mqTuning: {}
   mq:
     version: 9.1.5.0-r2
     # Licensing reference for mq.ibm.com/v1beta1
@@ -63,6 +82,7 @@ global:
         appPasswordKey: 'appPasswordKey'
     metrics:
       enabled: false
+      additionalMetrics: false
     multiInstance:
       operatorsEnabled: false
       # availabilityType to be used for deployments via Operators only. Alternatives: MultiInstance or SingleInstance.
@@ -86,6 +106,13 @@ global:
         fsGroup:
         supplementalGroups: []
 
+
+# MQ Metrics image details
+metricsImage:
+  library: ''
+  name: ''
+  tag: latest
+
 # livenessProbe section specifies setting for the MQ liveness probe, which checks for a running Queue Manager
 livenessProbe:
   # initialDelaySeconds should be raised if your system cannot start the Queue Manager in 60 seconds
@@ -93,7 +120,6 @@ livenessProbe:
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 1
-
 
 # readinessProbe section specifies setting for the MQ readiness probe, which checks when the MQ listener is running
 readinessProbe:

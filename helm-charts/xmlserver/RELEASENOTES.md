@@ -10,6 +10,11 @@
 
 # Version History
 
+## v2.2.0
+
+* Add JVM garbage collection and tuning settings
+* Add configuration settings for tuning threads and socket timeouts
+
 ## v2.1.2
 
 * Add `app` / `version` pod labels

@@ -30,7 +30,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 2.7.1
+version: 2.8.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
@@ -56,7 +56,7 @@ icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~3.6.0"
+    version: "~3.7.0"
     repository: "@local-development"
   - name: batch
     version: "~2.1.1"
@@ -68,10 +68,10 @@ dependencies:
     version: "~3.2.2"
     repository: "@local-development"
   - name: mqserver
-    version: "~1.11.0"
+    version: "~1.12.0"
     repository: "@local-development"
   - name: xmlserver
-    version: "~2.1.2"
+    version: "~2.2.0"
     repository: "@local-development"
   - name: ibm-sch
     repository: "@sch"

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 ###############################################################################
-# Copyright 2020 IBM Corporation
+# Copyright 2020,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,6 +36,8 @@ if [ -n "$MOUNT_POINT" ]; then
   while [ ! -d "$MOUNT_POINT" ]; do
     sleep 1
   done
+  mkdir -p $MOUNT_POINT/$HOSTNAME/gc
+  mkdir -p $MOUNT_POINT/$HOSTNAME/dump
   mkdir -p $MOUNT_POINT/$HOSTNAME/tmp
   mkdir -p $MOUNT_POINT/$HOSTNAME/template
   mkdir -p $MOUNT_POINT/$HOSTNAME/stats
@@ -43,10 +45,14 @@ if [ -n "$MOUNT_POINT" ]; then
   ln -s $MOUNT_POINT/$HOSTNAME/tmp $XMLSERVER_PATH/tmp
   ln -s $MOUNT_POINT/$HOSTNAME/template  $XMLSERVER_PATH/template
   ln -s $MOUNT_POINT/$HOSTNAME/stats $XMLSERVER_PATH/stats
+  JVM_GC_OPTS="-verbose:gc -Xverbosegclog:$MOUNT_POINT/$HOSTNAME/gc/verbosegc.log -Xdump:directory=$MOUNT_POINT/$HOSTNAME/gc/dump"
+else
+  JVM_GC_OPTS="-verbose:gc -Xverbosegclog:tmp/verbosegc.log"
 fi
 
 trap "stopServer" SIGTERM
 
 # Starts XML Server
 cd $XMLSERVER_PATH
-ant -f xmlserver.xml 2>&1 | tee -a tmp/xmlserver.log
+# The values for JVM_MAX_MEM JVM_THREAD_STACK_SIZE will come from the Helm charts
+ant -f xmlserver.xml $JVM_MAX_MEM $JVM_THREAD_STACK_SIZE -Djava.jvmargs="$JVM_GC_OPTS" 2>&1 | tee -a tmp/xmlserver.log

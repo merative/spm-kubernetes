@@ -271,6 +271,7 @@ spec:
               echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env;
               echo "EX_CORE_THREADS={{ default $.Values.tuningDefaults.coreThreads $tuningParams.coreThreads }}" >> /mnt/envvol/server.env;
               echo "CM_MQ_MAXPOOLSIZE={{ default $.Values.tuningDefaults.mqMaxPoolSize $tuningParams.mqMaxPoolSize }}" >> /mnt/envvol/server.env;
+              echo "CM_MQ_MINPOOLSIZE={{ default $.Values.tuningDefaults.mqMinPoolSize $tuningParams.mqMinPoolSize }}" >> /mnt/envvol/server.env;
               echo "EX_MAX_THREADS={{ default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads }}" >> /mnt/envvol/server.env;
               echo "DS_CURAMDB_CACHE_SIZE={{ default $.Values.tuningDefaults.curamdb_statementCacheSize $tuningParams.curamdb_statementCacheSize }}" >> /mnt/envvol/server.env;
               echo "CM_CURAMDB_CONN_PER_THREAD={{ default $.Values.tuningDefaults.curamdb_numConnectionsPerThreadLocal $tuningParams.curamdb_numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
@@ -286,6 +287,36 @@ spec:
               echo "CM_CURAMSESSDB_CONN_PER_THREAD={{ default $.Values.tuningDefaults.curamsessdb_numConnectionsPerThreadLocal $tuningParams.curamsessdb_numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
               echo "CM_CURAMSESSDB_MAX_POOL_SIZE={{ default $.Values.tuningDefaults.curamsessdb_maxPoolSize $tuningParams.curamsessdb_maxPoolSize }}" >> /mnt/envvol/server.env;
               echo "CM_CURAMSESSDB_PURGE_POLICY={{ default $.Values.tuningDefaults.curamsessdb_purgePolicy $tuningParams.curamsessdb_purgePolicy }}" >> /mnt/envvol/server.env;
+              {{- if not $tuningParams.maxEndPoints_DPEnactmentAS }}
+              echo "CM_JMS_DPENACTMENT_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_DPENACTMENT_MAXENDPOINTS={{ $tuningParams.maxEndPoints_DPEnactmentAS }}" >> /mnt/envvol/server.env;
+              {{- end}}              
+              {{- if not $tuningParams.maxEndPoints_WorkflowActivityAS }}
+              echo "CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowActivityAS }}" >> /mnt/envvol/server.env;
+              {{- end }}
+              {{- if not $tuningParams.maxEndPoints_WorkflowEnactmentAS }}
+              echo "CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowEnactmentAS }}" >> /mnt/envvol/server.env;
+              {{- end }}
+              {{- if not $tuningParams.maxEndPoints_DPErrorAS }}
+              echo "CM_JMS_DPERROR_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_DPErrorAS }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_DPERROR_MAXENDPOINTS={{ $tuningParams.maxEndPoints_DPErrorAS }}" >> /mnt/envvol/server.env;
+              {{- end }}
+              {{- if not $tuningParams.maxEndPoints_WorkflowErrorAS }}
+              echo "CM_JMS_WORKFLOWERROR_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_WorkflowErrorAS }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_WORKFLOWERROR_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowErrorAS }}" >> /mnt/envvol/server.env;
+              {{- end }}
+              {{- if not $tuningParams.maxEndPoints_CuramDeadMessageQueueAS }}
+              echo "CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_CuramDeadMessageQueueAS }}" >> /mnt/envvol/server.env;
+              {{- else }}
+              echo "CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS={{ $tuningParams.maxEndPoints_CuramDeadMessageQueueAS }}" >> /mnt/envvol/server.env;
+              {{- end}}
               {{- range (default $app.jvm $tuningParams.jvm) }}
               echo "{{ . }}" >> /mnt/envvol/jvm.options;
               {{- end }}

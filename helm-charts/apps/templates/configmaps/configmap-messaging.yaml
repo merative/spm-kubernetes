@@ -55,7 +55,7 @@ data:
       <variable name="listenerPort" value="1414"/>
       {{- end }}
 
-      <jmsActivationSpec id="eis/DPEnactmentAS">
+      <jmsActivationSpec id="eis/DPEnactmentAS" maxEndpoints="${env.CM_JMS_DPENACTMENT_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "DPEnactment") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -63,7 +63,7 @@ data:
         <properties.wmqJms persistence="PERS" baseQueueName="QN.DPENACTMENT" />
       </jmsQueue>
 
-      <jmsActivationSpec id="eis/DPErrorAS">
+      <jmsActivationSpec id="eis/DPErrorAS" maxEndpoints="${env.CM_JMS_DPERROR_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "DPError") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -71,7 +71,7 @@ data:
         <properties.wmqJms persistence="PERS" baseQueueName="QN.DPERROR" />
       </jmsQueue>
 
-      <jmsActivationSpec id="eis/WorkflowEnactmentAS">
+      <jmsActivationSpec id="eis/WorkflowEnactmentAS" maxEndpoints="${env.CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "WorkflowEnactment") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -79,7 +79,7 @@ data:
         <properties.wmqJms persistence="PERS" baseQueueName="QN.WORKFLOWENACTMENT" />
       </jmsQueue>
 
-      <jmsActivationSpec id="eis/WorkflowActivityAS">
+      <jmsActivationSpec id="eis/WorkflowActivityAS" maxEndpoints="${env.CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "WorkflowActivity") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -87,7 +87,7 @@ data:
         <properties.wmqJms persistence="PERS" baseQueueName="QN.WORKFLOWACTIVITY" />
       </jmsQueue>
 
-      <jmsActivationSpec id="eis/WorkflowErrorAS">
+      <jmsActivationSpec id="eis/WorkflowErrorAS" maxEndpoints="${env.CM_JMS_WORKFLOWERROR_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "WorkflowError") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -95,7 +95,7 @@ data:
         <properties.wmqJms persistence="PERS" baseQueueName="QN.WORKFLOWERROR" />
       </jmsQueue>
 
-      <jmsActivationSpec id="eis/CuramDeadMessageQueueAS">
+      <jmsActivationSpec id="eis/CuramDeadMessageQueueAS" maxEndpoints="${env.CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS}">
         {{- include "jms.queueActivationSpec" (list . "CuramDeadMessageQueue") | nindent 8 }}
       </jmsActivationSpec>
 
@@ -126,7 +126,8 @@ data:
       </jmsConnectionFactory>
       <connectionManager
         id="ConMgr6"
-        maxPoolSize="${env.CM_MQ_MAXPOOLSIZE}" 
+        maxPoolSize="${env.CM_MQ_MAXPOOLSIZE}"
+        minPoolSize="${env.CM_MQ_MINPOOLSIZE}"
         numConnectionsPerThreadLocal="${env.CM_JMS_NUM_CONNECTIONS_PER_THREAD_LOCAL}"
         maxConnectionsPerThread="${env.CM_JMS_MAX_CONNECTIONS_PER_THREAD}"
       />
