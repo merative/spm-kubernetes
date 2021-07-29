@@ -21,15 +21,6 @@ if [ `id -u` -ge 10000 ]; then
   echo "xmlserver:x:`id -u`:`id -g`:,,,:$XMLSERVER_PATH:/bin/bash" >> /etc/passwd
 fi
 
-stopServer() {
-  echo "Stopping XML Server "
-  ant -f $XMLSERVER_PATH/xmlserver.xml stop 2>&1 | tee -a tmp/xmlserver.log
-  if [ $? = 0 ]
-  then
-      echo "XML Server stopped successfully"
-  fi
-}
-
 # Creates directories for persistence on the PV volume (if set by Helm)
 if [ -n "$MOUNT_POINT" ]; then
   # Persistence volume can be slow to mount
@@ -50,9 +41,34 @@ else
   JVM_GC_OPTS="-verbose:gc -Xverbosegclog:tmp/verbosegc.log"
 fi
 
-trap "stopServer" SIGTERM
-
 # Starts XML Server
 cd $XMLSERVER_PATH
 # The values for JVM_MAX_MEM JVM_THREAD_STACK_SIZE will come from the Helm charts
-ant -f xmlserver.xml $JVM_MAX_MEM $JVM_THREAD_STACK_SIZE -Djava.jvmargs="$JVM_GC_OPTS" 2>&1 | tee -a tmp/xmlserver.log
+
+# use sed to edit the xmlserver.xml file to incorporate the new max memory as well as any jvm arguments
+# first change the maxmemory size, if the JVM_MAX_MEM param is set
+
+if [ ! -z ${JVM_MAX_MEM} ]; then
+  sed -i "s/<property name=\"java.maxmemory\"   value=\"768m\"\/>/<property name=\"java.maxmemory\"   value=\"$JVM_MAX_MEM\"\/>/g" xmlserver.xml
+fi
+
+# now remove the reference to maxmemory from the java task
+
+sed -i "/maxmemory=\"\${java.maxmemory}\"/d" xmlserver.xml
+
+# now add in an additional line into the java task to use the java.maxmemory as a jvmarg
+
+sed -zEi 's/>([^\n]*\n[^\n]*<jvmarg line=\"\$\{java.jvmargs\}\" \/>)/>\n      <jvmarg value=\"-Xmx\$\{java.maxmemory\}\" \/>\1/'  xmlserver.xml
+
+# if the JAVA_THREAD_STACK_SIZE param is set,include the java thread stack size by replacing the default
+if [ ! -z ${JAVA_THREAD_STACK_SIZE} ]; then
+  sed -i "s/<property name=\"java.thread.stack.size\" value=\"-Xss4m\"\/>/<property name=\"java.thread.stack.size\" value=\"$JAVA_THREAD_STACK_SIZE\"\/>/g" xmlserver.xml
+fi
+
+# now update the xmlserver.xml to update the java options <property name="java.jvmargs" value="-Dfake.property=1"/> to include any jvm options passed in
+# note the use of the # char in the sed expression, this is to account for slashes that may be in the paths
+JVM_OPTIONS="$JVM_OPTIONS $JVM_GC_OPTS"
+
+sed -i "s#<property name=\"java.jvmargs\" value=\"-Dfake.property=1\"\/>#<property name=\"java.jvmargs\" value=\"$JVM_OPTIONS\"\/>#g" xmlserver.xml
+ant -f xmlserver.xml  2>&1 | tee -a tmp/xmlserver.log
+

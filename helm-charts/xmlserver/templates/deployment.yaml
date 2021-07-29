@@ -92,8 +92,10 @@ spec:
               value: {{ .Values.global.timezone }}
             - name: JVM_MAX_MEM
               value: {{ .Values.jvm.maxMemory | quote }}
-            - name: JVM_THREAD_STACK_SIZE
+            - name: JAVA_THREAD_STACK_SIZE
               value: {{ .Values.jvm.threadStackSize | quote }}
+            - name: JVM_OPTIONS
+              value: {{ .Values.jvm.jvmOptions | quote }}
           {{- if .Values.global.apps.common.persistence.enabled }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
@@ -105,5 +107,11 @@ spec:
           {{- if .Values.global.apps.common.persistence.enabled }}
             - name: {{ .Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
-              subPath: {{ include "persistence.subDir" $ }}
           {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - /opt/ibm/Curam/xmlserver/stop-xmlserver.sh

@@ -142,7 +142,7 @@ spec:
             {{- toYaml ($tuningParams.resources) | nindent 12 }}
             {{- else }}
             {{- toYaml ($.Values.resources) | nindent 12 }}
-            {{- end }}            
+            {{- end }}
           volumeMounts:
             - name: mqsc-cmds
               mountPath: /etc/mqm/20-config.mqsc

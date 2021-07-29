@@ -41,7 +41,6 @@ global:
         # instanceId: ""
         # bucketName: ""
         mountPoint: ''
-        subDir: ''
 
 # Override the global image tag for the web server only
 imageTagOverride: ''

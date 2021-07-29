@@ -46,7 +46,6 @@ The following tables list the configurable parameters of the `spm` chart and the
 | `global.apps.common.persistence.bucketRegion` | Region (`ibm.io/region`) of the Cloud Object Storage bucket, if required by your storage provisioner | `''` |
 | `global.apps.common.persistence.storageClassName` | Name of the Storage Class to use | `''` |
 | `global.apps.common.persistence.mountPoint` | Path, where the `Persistent Volume` should be mounted in pods | `''` |
-| `global.apps.common.persistence.subDir` | Subdirectory inside the mount point, where logs should be stored. If blank, defaults to the Helm release name | `''` |
 | `global.apps.config.<applicationID>.enabled` | Enable/disable SPM applications in the Helm release, where `applicationID` is the lower-cased name of the EAR file deployed | `true` for `curam`, `false` for all others |
 | `global.ingress.enabled` | Toggle creation of Ingress/Route resources | `false` |
 | `global.ingress.generateCert` | Create a self-signed certificate for use in Ingress definitions | `false` |
@@ -210,7 +209,7 @@ We only support containerised MQ on Openshift.
 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.1.5.0-r2` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.version` | Version of [IBM MQ](https://hub.docker.com/r/ibmcom/mq) to deploy | `9.2.2.0-r1` |
 | ![VM based only](https://img.shields.io/badge/-VM_only-blue) `global.mq.useConnectionNameList` | Indicator if IBM MQ is running in HA mode outside the cluster | `false` |
 | `global.mq.tlsSecretName` | Name of a pre-created Secret containing TLS certificates for IBM MQ (required if running MQ outside the cluster, optional for MQ containers - certificates are auto-generated if not provided) | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.name` | Name of the queue manager to be created in the MQ container | `QM1` |
@@ -260,8 +259,9 @@ We only support containerised MQ on Openshift.
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `xmlserver.replicaCount` | Number of replicas to be deployed | `1` |
-| `xmlserver.jvm.maxMemory` | The maximum Java heap for the XML server | `-Djava.maxmemory=768m` |
-| `xmlserver.jvm.threadStackSize` | The Java thread stack size for the XML server | `-Djava.thread.stack.size=-Xss4m` |
+| `xmlserver.jvm.maxMemory` | The maximum Java heap for the XML server | `768m` |
+| `xmlserver.jvm.threadStackSize` | The Java thread stack size for the XML server | `-Xss4m` |
+| `xmlserver.jvm.jvmOptions` | Options to be passed to the JVM eg min heapsize -Xms1024m  | `''` |
 | `xmlserver.config.threadPoolSize` | The XML server thread pool size | `5` |
 | `xmlserver.config.threadPoolQueueSize` | The XML server thread pool queue size | `200` |
 | `xmlserver.config.socketTimeout` | The XML server socket timeout (milliseconds) | `60000` |
