@@ -71,14 +71,43 @@ spec:
         - name: xmlserverconfig-template-file
           configMap:
             name: {{ .Release.Name }}-xmlserverconfig-template-cm
-      {{- if .Values.global.apps.common.persistence.enabled }}
+        - name: keystore-props
+          configMap:
+            name: {{ .Release.Name }}-tlskeystoreprops-cm
+        - name: tls-certs
+          secret:
+            secretName: {{ include "sch.names.fullName" (list .) }}
+        - name: keystore-volume
+          emptyDir: {}
+        {{- if .Values.global.apps.common.persistence.enabled }}
         - name: {{ .Release.Name }}-persistence-volume
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-persistence-pvc
-      {{- end }}
+        {{- end }}
+      initContainers:
+        - name: import-certs-for-xmlserver
+          {{- include "xmlserver.utilities.definition" . | nindent 10 }}
+          env:
+            - name: svcKeyFile
+              value: /mnt/svcCertificates/tls.key
+            - name: svcCrtFile
+              value: /mnt/svcCertificates/tls.crt
+            - name: keystore
+              value: /mnt/keystores/keystore.p12
+          command:
+            - /bin/sh
+            - -c
+            - >
+              openssl pkcs12 -export -inkey $svcKeyFile -in $svcCrtFile -out $keystore -password pass:password -name xmlserverks;
+              keytool -list -v -keystore $keystore -storepass password -storetype pkcs12;
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: tls-certs
+              mountPath: /mnt/svcCertificates
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ include "xmlserver.imageFullName" .Values.global.images }}
+          image: {{ include "xmlserver.imageFullName" (dict "ImageConfig" .Values.global.images "ImageName" "xmlserver") }}
           imagePullPolicy: {{ .Values.global.images.pullPolicy }}
           ports:
             - containerPort: {{ .Values.serverPort | default 1800 }}
@@ -86,24 +115,38 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-{{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | indent 10 }}
+          {{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) | nindent 10 }}
           env:
             - name: TZ
               value: {{ .Values.global.timezone }}
             - name: JVM_MAX_MEM
               value: {{ .Values.jvm.maxMemory | quote }}
-            - name: JVM_THREAD_STACK_SIZE
+            - name: JAVA_THREAD_STACK_SIZE
               value: {{ .Values.jvm.threadStackSize | quote }}
-          {{- if .Values.global.apps.common.persistence.enabled }}
+            - name: JVM_OPTIONS
+              value: {{ .Values.jvm.jvmOptions | quote }}
+            {{- if .Values.global.apps.common.persistence.enabled }}
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
-          {{- end }}
+            {{- end }}
           volumeMounts:
             - name: xmlserverconfig-template-file
               mountPath: /opt/ibm/Curam/xmlserver/xmlserverconfig.xml.template
               subPath: xmlserverconfig.xml.template
-          {{- if .Values.global.apps.common.persistence.enabled }}
+            - name: keystore-props
+              mountPath: /opt/ibm/Curam/xmlserver/TLSKeystore.properties
+              subPath: TLSKeystore.properties
+            - name: keystore-volume
+              mountPath: /opt/ibm/Curam/xmlserver/keystore.p12
+              subPath: keystore.p12
+            {{- if .Values.global.apps.common.persistence.enabled }}
             - name: {{ .Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
-              subPath: {{ include "persistence.subDir" $ }}
-          {{- end }}
+            {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                - /bin/bash
+                - -c
+                - /opt/ibm/Curam/xmlserver/stop-xmlserver.sh

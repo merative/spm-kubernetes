@@ -48,9 +48,9 @@ sch:
           weight: 100
     labelType: "prefixed"
     metering:
-      productName: "IBM Curam Universal Access"
-      productVersion: "7.0.10"
-      productID: "4d7d3640638b478ba11ad1b9db716fd5"
+      productName: "IBM Curam Citizen Engagement"
+      productVersion: "8.0"
+      productID: "871ebfd3cbd04513813d51718bed9494"
     podSecurityContext:
       hostIPC: false
       hostNetwork: false

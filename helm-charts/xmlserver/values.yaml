@@ -41,7 +41,6 @@ global:
         # instanceId: ""
         # bucketName: ""
         mountPoint: ''
-        subDir: ''
 
 # XML server port number
 serverPort: 1800
@@ -68,8 +67,9 @@ affinityValue: application
 
 # XML server JVM configuration settings
 jvm:
-  maxMemory: '-Djava.maxmemory=768m'
-  threadStackSize: '-Djava.thread.stack.size=-Xss4m'
+  maxMemory: '768m'
+  threadStackSize: '-Xss4m'
+  jvmOptions:
 
 # XML server configuration settings
 config:

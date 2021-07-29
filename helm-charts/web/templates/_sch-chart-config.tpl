@@ -42,7 +42,7 @@ sch:
         runAsNonRoot: true
     metering:
       productName: "IBM Curam Social Program Management Platform"
-      productVersion: "7.0.10"
+      productVersion: "8.0"
       productID: "1bba719a1b4744a9901f85563744c0d1"
     containerSecurityContext:
       securityContext:

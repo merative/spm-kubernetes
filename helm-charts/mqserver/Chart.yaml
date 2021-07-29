@@ -14,8 +14,8 @@
 # limitations under the License.
 ###############################################################################
 apiVersion: v2
-kubeVersion: ">=1.16"
-appVersion: "7.0.11.0"
+kubeVersion: ">=1.19"
+appVersion: "8.0.0.0"
 name: mqserver
 description: |-
   Helm Chart for Deployment of MQ server for SPM within a Kubernetes Cluster
@@ -29,7 +29,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 1.12.0
+version: 21.7.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
