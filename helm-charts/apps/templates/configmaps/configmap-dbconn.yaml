@@ -50,7 +50,22 @@ data:
         statementCacheSize="${env.DS_CURAMTIMERDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMTIMERDB") | nindent 8 }}
       </dataSource>
-      <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTimer_${env.POD_HOSTNAME}" dataSourceRef="DefaultDataSource" createTables="true" />
-      <persistentExecutor id="defaultEJBPersistentTimerExecutor" taskStoreRef="EJBTimerDatabaseStore" missedTaskThreshold="5m"/>
+
+      <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTIMER_${env.POD_TIMER_TYPE}_" dataSourceRef="DefaultDataSource" createTables="true"/>
+      <persistentExecutor id="defaultEJBPersistentTimerExecutor" 
+        taskStoreRef="EJBTimerDatabaseStore" 
+        missedTaskThreshold="{{ .Values.persistentTimers.missedTaskThreshold }}" 
+        pollInterval="{{ .Values.persistentTimers.pollInterval }}"
+        initialPollDelay="{{ .Values.persistentTimers.initialPollDelay }}"
+        {{- if .Values.persistentTimers.pollSize }}
+        pollSize="{{ .Values.persistentTimers.pollSize }}"
+        {{- end }}
+      />
+      <ejbContainer>
+        <timerService persistentExecutorRef="defaultEJBPersistentTimerExecutor"
+          missedPersistentTimerAction="{{ .Values.persistentTimers.missedPersistentTimerAction }}"
+          lateTimerThreshold="{{ .Values.persistentTimers.lateTimerThreshold }}"
+        />
+      </ejbContainer>
 
     </server>

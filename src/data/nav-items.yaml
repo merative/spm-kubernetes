@@ -73,6 +73,8 @@
       path: /supporting-infrastructure/batch/batch-processing/
     - title: Enabling ISAM
       path: /supporting-infrastructure/ISAM/
+    - title: Persistent Timers
+      path: /supporting-infrastructure/persistent-timers/
 - title: Monitoring
   pages:
     - title: Monitoring the application

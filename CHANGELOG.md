@@ -2,6 +2,62 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.7.0 ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green)
+
+> This release introduces support for SPM 8.0.0.0 and contains breaking changes for deployment of SPM 7.0.11.0
+
+### Added
+
+* Add the ability to tune java options for the XMLServer application
+
+### Breaking Changes
+
+* Due to the upgrade to IBM MQ 9.2, the following breaking changes have been introduced:
+  * On existing deployments, the upgrade of IBM MQ requires the applications pods to be scaled down completely, followed by a delay to process any remaining messages, before updating the deployment
+  * Moved `global.mq.multiInstance.availabilityType` to `global.mq.availabilityType`
+  * Moved `global.mq.multiInstance.storageType` to `global.mq.storageType`
+  * Moved `global.mq.multiInstance.storageClassName` to `global.mq.storageClassName`
+  * Removed `global.mq.multiInstance` as a configuration, and the following children parameters:
+    * `operatorsEnabled`, `cephEnabled`, `useDynamicProvisioning`, `nfsEnabled`, `nfsIP`, `nfsFolder`, `nfsMountOptions`
+  * Support for manual creation of persistent volumes and persistent volume claims has been removed
+* Removed `global.apps.common.persistence.subDir` as a configuration
+  * The paths on the storage volume have now change from `<root>/<HelmRelease_or_subDir>/<podName>` to `<root>/<podName>`. This is to accommodate pod initialization on start-up
+
+### Added
+
+* Add TLS certificates for Secure XML server
+* Add OpenID configuration for authentication using JSON Web Tokens for SPM Chatbot **only**
+* Add signing certificates for JSON Web Tokens for SPM Chatbot **only**
+* Added SPM 8.0.0.0 annotations to SPM v8 specific content in the runbook
+* Added known issue to account for WebSphere Liberty timeout messages WTRN0006W and WTRN0124I
+
+### Changed
+
+* Upgraded IBM MQ image from `9.1.5` to `9.2.2`
+* Updated IBM MQ Resource Adapter to `9.2.2.0`
+* Starting from `spm-kubernetes` release `21.7.0`, chart versions have been updated to align with the release version.
+  * The following helm-charts have been updated: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+  * All changes in helm-charts will now detailed in the `CHANGELOG.md` file
+* `kubeVersion` for all helm-charts updated to `">=1.19"`
+* `appVersion` for all helm-charts updated to `8.0.0.0`
+* Liberty persistent timer tables are no longer created per pod, but are created and shared by pod-type
+* Updated runbook pre-requisites page to add information on Docker
+* Changed MQ configuration for the `apps` producer and consumers pods to be using separated channels
+* Moved tuning settings from `initContainer` to a new ConfigMap
+* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly.
+
+### Fixed
+
+* Fixed XML Server shutdown by adding a pod preStop hook
+
+### Removed
+
+* Removed `RELEASENOTES.md` for the following helm-charts: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+  * All changes in helm-charts will now detailed in the `CHANGELOG.md` file
+* Removed `global.apps.common.persistence.subDir` as a configuration
+* Removed `persistence.subDir` from the following helm-charts: `apps`, `batch`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Removed obsolete Helm Chart known issue
+
 ## v21.6.0
 
 ### Added
@@ -128,7 +184,7 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* Limit allowed HTTP verbs as detailed in the [Knowledge Center](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.11/com.ibm.curam.content.doc/Security/t_SECHAND_httpverbperms.html)
+* Limit allowed HTTP verbs as detailed in the [IBM Documentation](https://www.ibm.com/docs/en/spm/7.0.11?topic=considerations-enabling-http-verb-permissions)
 * Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/IBM/spm-kubernetes/issues/51))
 * Adds values from `podAnnotations` at deployment of `apps` chart
 

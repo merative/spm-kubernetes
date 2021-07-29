@@ -1,5 +1,5 @@
 {{/*
-Copyright 2019,2020 IBM Corporation
+Copyright 2019,2021 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -33,14 +33,14 @@ Create chart name and version as used by the chart label.
 Build up full image path
 */}}
 {{- define "xmlserver.imageFullName" -}}
-{{- .registry -}}/
-{{- if .imageLibrary -}}
-{{- .imageLibrary -}}/
+{{- .ImageConfig.registry -}}/
+{{- if .ImageConfig.imageLibrary -}}
+{{- .ImageConfig.imageLibrary -}}/
 {{- end -}}
-{{- if .imagePrefix -}}
-{{- .imagePrefix -}}
+{{- if .ImageConfig.imagePrefix -}}
+{{- .ImageConfig.imagePrefix -}}
 {{- end -}}
-xmlserver:{{- .imageTag -}}
+{{- .ImageName -}}:{{- .ImageConfig.imageTag -}}
 {{- end -}}
 
 {{/*
@@ -62,12 +62,23 @@ Mountpoint for the persistence storage on the application pods (e.g. /tmp/persis
 {{- end -}}
 
 {{/*
-Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/release_name")
+InitContainer resources
 */}}
-{{- define "persistence.subDir" -}}
-{{- if .Values.global.apps.common.persistence.subDir -}}
-{{- .Values.global.apps.common.persistence.subDir -}}
-{{- else -}}
-{{- printf "%s" $.Release.Name -}}
-{{- end -}}
-{{- end -}}
+{{- define "initContainer.resources" }}
+resources:
+  limits:
+    memory: 256Mi
+    cpu: 250m
+  requests:
+    memory: 128Mi
+    cpu: 250m
+{{- end }}
+
+{{/*
+ibmjava image
+*/}}
+{{- define "xmlserver.utilities.definition" }}
+image: {{ include "xmlserver.imageFullName" (dict "ImageConfig" .Values.global.images "ImageName" "utilities") }}
+{{- include "initContainer.resources" . }}
+{{- include "sch.security.securityContext" (list . .sch.chart.containerSecurityContext) }}
+{{- end }}

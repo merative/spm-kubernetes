@@ -330,8 +330,8 @@ So, if your Helm release was named "purpleclown" you would find pod names like t
 
 where the number of pods may vary depending on the SPM applications deployed.
 
-The location of MQ logs is inside the MQ pods is as documented in the [MQ Knowledge Center](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.tro.doc/q039570_.htm).
-You can interrogate the various log, error, and trace locations identified in the MQ Knowledge Center (and its MustGather) by accessing the MQ pod's shell; for example:
+The location of MQ logs is inside the MQ pods is as documented in the [MQ IBM Documentation](https://www.ibm.com/docs/en/ibm-mq/9.1?topic=windows-error-log-directories).
+You can interrogate the various log, error, and trace locations identified in the MQ IBM Documentation (and its MustGather) by accessing the MQ pod's shell; for example:
 
 ```
 kubectl exec --namespace <name_space> -it <mq_pod_name> -- /bin/bash
@@ -356,7 +356,7 @@ kubectl exec --namespace <name_space> -it <xmlserver_pod_name> -- /bin/bash
 The log file in `/opt/ibm/Curam/xmlserver/tmp/xmlserver.log` is the same as the stdout produced by the `kubectl logs` command.
 
 There are additional XML Server tracing and logging options identified in
-[Configuring the XML server](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/XMLInfrastructure/c_XMLINF_Server1ConfiguringXmlServer1.html),
+[Configuring the XML server](https://www.ibm.com/docs/en/spm/7.0.11?topic=server-configuring-xml),
 but gathering this data is beyond the scope of this document.
 
 #### Cúram batch logs and artifacts

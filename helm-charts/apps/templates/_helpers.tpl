@@ -59,17 +59,6 @@ Mountpoint for the persistence storage on the application pods (e.g. /tmp/persis
 {{- end -}}
 
 {{/*
-Folder name to persist release files inside mountpoint (e.g. /tmp/persistence/release_name/")
-*/}}
-{{- define "persistence.subDir" -}}
-{{- if .Values.global.apps.common.persistence.subDir -}}
-{{- .Values.global.apps.common.persistence.subDir -}}
-{{- else -}}
-{{- printf "%s" $.Release.Name -}}
-{{- end -}}
-{{- end -}}
-
-{{/*
 JMX Stats Persistence enablement options
 */}}
 {{- define "persistence.jmxStats" -}}
@@ -144,8 +133,8 @@ JMS Topic Connection Factory properties
   queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+  hostName="{{ $.Release.Name }}-mqserver-curam-ibm-mq"
   {{- else }}
   hostName="{{ $.Release.Name }}-mqserver-curam"
   {{- end }}
@@ -194,8 +183,8 @@ JMS Topic Activation Spec properties
   queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+  hostName="{{ $.Release.Name }}-mqserver-curam-ibm-mq"
   {{- else }}
   hostName="{{ $.Release.Name }}-mqserver-curam"
   {{- end }}

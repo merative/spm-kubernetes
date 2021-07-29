@@ -70,7 +70,6 @@ global:
         # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
         # bucketRegion: ""
         mountPoint: ''
-        subDir: ''
         jmxstats:
           ## Parameters of the JMX Stats to be persisted on the PVC
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
@@ -228,6 +227,9 @@ apps:
   loginConfig:
     trace: false
     identityOnly: false
+  jwtConfig:
+    issuerIdentifier: spm
+    secretName: ''
   sessionConfig:
     sessionTimeout: 30m
     transactionTimeout: 3m

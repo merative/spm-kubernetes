@@ -107,6 +107,9 @@ spec:
         - name: logging-cm
           configMap:
             name: {{ $.Release.Name }}-logging-cm
+        - name: openid-cm
+          configMap:
+            name: {{ $.Release.Name }}-openid-cm
         - name: transactions-cm
           configMap:
             name: {{ $.Release.Name }}-transactions-cm
@@ -148,6 +151,12 @@ spec:
             {{- else }}
             secretName: {{ $.Release.Name }}-apps-tls
             {{- end }}
+        - name: jwt-certs
+          secret:
+            secretName: {{ default (printf "%s-apps-jwt" $.Release.Name) $.Values.jwtConfig.secretName }}
+        - name: xmlserver-certs
+          secret:
+            secretName: {{ $.Release.Name }}-xmlserver
         {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
         - name: db2-cert
           secret:
@@ -172,10 +181,10 @@ spec:
           command:
             - /bin/sh
             - -c
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
             - >
-              until nc -z -w3 {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq 1414; do
-                echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
+              until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq 1414; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq:1414 to be reachable;
                 sleep 2;
               done;
             {{- else }}
@@ -229,6 +238,37 @@ spec:
               mountPath: /mnt/keystores
             - name: service-certs
               mountPath: /mnt/svcCertificates
+        - name: import-jwt-certs
+          {{- include "utilities.definition" $ | indent 10 }}
+          env:
+            - name: svcKeyFile
+              value: /mnt/svcCertificates/tls.key
+            - name: svcCrtFile
+              value: /mnt/svcCertificates/tls.crt
+            - name: keystore
+              value: /mnt/keystores/jwtkeystore.p12
+            - name: truststore
+              value: /mnt/keystores/key.p12
+            - name: password
+              value: password
+            - name: trustpassword
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
+          command:
+            - /bin/sh
+            - -c
+            - >
+              openssl pkcs12 -export -inkey $svcKeyFile -in $svcCrtFile -out $keystore -password pass:$password -name jwtkeyalias;
+              keytool -import -trustcacerts -noprompt -alias jwtcertalias -file $svcCrtFile -keystore $truststore -storepass $trustpassword -storetype pkcs12;
+              keytool -list -v -keystore $keystore -storepass $password -storetype pkcs12;
+              keytool -list -v -keystore $truststore -storepass $trustpassword -storetype pkcs12;
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: jwt-certs
+              mountPath: /mnt/svcCertificates
         - name: import-certs-for-mq
           {{- include "utilities.definition" $ | indent 10 }}
           env:
@@ -256,67 +296,35 @@ spec:
               mountPath: /mnt/keystores
             - name: mq-certs
               mountPath: /mnt/mqCertificates
-        - name: populate-server-env
+        - name: import-certs-for-xmlserver
           {{- include "utilities.definition" $ | indent 10 }}
           env:
-            - name: podHostname
+            - name: xmlServerCrtDir
+              value: /mnt/xmlServerCertificates
+            - name: truststore
+              value: /mnt/keystores/key.p12
+            - name: password
               valueFrom:
-                fieldRef:
-                  apiVersion: v1
-                  fieldPath: metadata.name
+                secretKeyRef:
+                  name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+                  key: KeystorePassword
           command:
             - /bin/sh
             - -c
             - >
-              echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env;
-              echo "EX_CORE_THREADS={{ default $.Values.tuningDefaults.coreThreads $tuningParams.coreThreads }}" >> /mnt/envvol/server.env;
-              echo "CM_MQ_MAXPOOLSIZE={{ default $.Values.tuningDefaults.mqMaxPoolSize $tuningParams.mqMaxPoolSize }}" >> /mnt/envvol/server.env;
-              echo "CM_MQ_MINPOOLSIZE={{ default $.Values.tuningDefaults.mqMinPoolSize $tuningParams.mqMinPoolSize }}" >> /mnt/envvol/server.env;
-              echo "EX_MAX_THREADS={{ default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads }}" >> /mnt/envvol/server.env;
-              echo "DS_CURAMDB_CACHE_SIZE={{ default $.Values.tuningDefaults.curamdb_statementCacheSize $tuningParams.curamdb_statementCacheSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMDB_CONN_PER_THREAD={{ default $.Values.tuningDefaults.curamdb_numConnectionsPerThreadLocal $tuningParams.curamdb_numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMDB_MAX_POOL_SIZE={{ default $.Values.tuningDefaults.curamdb_maxPoolSize $tuningParams.curamdb_maxPoolSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMDB_PURGE_POLICY={{ default $.Values.tuningDefaults.curamdb_purgePolicy $tuningParams.curamdb_purgePolicy }}" >> /mnt/envvol/server.env;
-              echo "CM_JMS_MAX_CONNECTIONS_PER_THREAD={{ default $.Values.tuningDefaults.maxJMSConnectionsPerThread $tuningParams.maxJMSConnectionsPerThread }}" >> /mnt/envvol/server.env;
-              echo "CM_JMS_NUM_CONNECTIONS_PER_THREAD_LOCAL={{ default $.Values.tuningDefaults.mqNumConnectionsPerThreadLocal $tuningParams.mqNumConnectionsPerThreadLocal}}" >> /mnt/envvol/server.env;
-              echo "DS_CURAMTIMERDB_CACHE_SIZE={{ default $.Values.tuningDefaults.curamtimerdb_statementCacheSize $tuningParams.curamtimerdb_statementCacheSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMTIMERDB_CONN_PER_THREAD={{ default $.Values.tuningDefaults.curamtimerdb_numConnectionsPerThreadLocal $tuningParams.curamtimerdb_numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMTIMERDB_MAX_POOL_SIZE={{ default $.Values.tuningDefaults.curamtimerdb_maxPoolSize $tuningParams.curamtimerdb_maxPoolSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMTIMERDB_PURGE_POLICY={{ default $.Values.tuningDefaults.curamtimerdb_purgePolicy $tuningParams.curamtimerdb_purgePolicy }}" >> /mnt/envvol/server.env;
-              echo "DS_CURAMSESSDB_CACHE_SIZE={{ default $.Values.tuningDefaults.curamsessdb_statementCacheSize $tuningParams.curamsessdb_statementCacheSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMSESSDB_CONN_PER_THREAD={{ default $.Values.tuningDefaults.curamsessdb_numConnectionsPerThreadLocal $tuningParams.curamsessdb_numConnectionsPerThreadLocal }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMSESSDB_MAX_POOL_SIZE={{ default $.Values.tuningDefaults.curamsessdb_maxPoolSize $tuningParams.curamsessdb_maxPoolSize }}" >> /mnt/envvol/server.env;
-              echo "CM_CURAMSESSDB_PURGE_POLICY={{ default $.Values.tuningDefaults.curamsessdb_purgePolicy $tuningParams.curamsessdb_purgePolicy }}" >> /mnt/envvol/server.env;
-              {{- if not $tuningParams.maxEndPoints_DPEnactmentAS }}
-              echo "CM_JMS_DPENACTMENT_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_DPENACTMENT_MAXENDPOINTS={{ $tuningParams.maxEndPoints_DPEnactmentAS }}" >> /mnt/envvol/server.env;
-              {{- end}}              
-              {{- if not $tuningParams.maxEndPoints_WorkflowActivityAS }}
-              echo "CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowActivityAS }}" >> /mnt/envvol/server.env;
-              {{- end }}
-              {{- if not $tuningParams.maxEndPoints_WorkflowEnactmentAS }}
-              echo "CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS={{ (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowEnactmentAS }}" >> /mnt/envvol/server.env;
-              {{- end }}
-              {{- if not $tuningParams.maxEndPoints_DPErrorAS }}
-              echo "CM_JMS_DPERROR_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_DPErrorAS }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_DPERROR_MAXENDPOINTS={{ $tuningParams.maxEndPoints_DPErrorAS }}" >> /mnt/envvol/server.env;
-              {{- end }}
-              {{- if not $tuningParams.maxEndPoints_WorkflowErrorAS }}
-              echo "CM_JMS_WORKFLOWERROR_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_WorkflowErrorAS }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_WORKFLOWERROR_MAXENDPOINTS={{ $tuningParams.maxEndPoints_WorkflowErrorAS }}" >> /mnt/envvol/server.env;
-              {{- end }}
-              {{- if not $tuningParams.maxEndPoints_CuramDeadMessageQueueAS }}
-              echo "CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS={{ $.Values.tuningDefaults.maxEndPoints_CuramDeadMessageQueueAS }}" >> /mnt/envvol/server.env;
-              {{- else }}
-              echo "CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS={{ $tuningParams.maxEndPoints_CuramDeadMessageQueueAS }}" >> /mnt/envvol/server.env;
-              {{- end}}
+              keytool -import -trustcacerts -noprompt -alias xmlserverks -file $xmlServerCrtDir/tls.crt -keystore $truststore -storepass $password -storetype pkcs12;
+              keytool -list -v -keystore $truststore -storepass $password -storetype pkcs12;
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: /mnt/keystores
+            - name: xmlserver-certs
+              mountPath: /mnt/xmlServerCertificates
+        - name: populate-jvm-options
+          {{- include "utilities.definition" $ | indent 10 }}
+          command:
+            - /bin/sh
+            - -c
+            - >
               {{- range (default $app.jvm $tuningParams.jvm) }}
               echo "{{ . }}" >> /mnt/envvol/jvm.options;
               {{- end }}
@@ -342,6 +350,8 @@ spec:
                 name: {{ default (printf "%s-system-credentials" $.Release.Name) $.Values.systemUser.credsSecretName }}
             - secretRef:
                 name: {{ default (printf "%s-wlpadm" $.Release.Name) $.Values.wlpAdmin.secretName }}
+            - configMapRef:
+                name: {{ $.Release.Name }}-tuning-producer-{{ $name }}
           env:
             - name: LICENSE
               value: {{ $.Values.global.license }}
@@ -371,15 +381,17 @@ spec:
               value: CHL_{{ $qmgrName | upper }}
             {{- else }}
             - name: MQ_HOST_NAME
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-              value: {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+              value: {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq
             {{- else }}
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
             {{- end }}
             - name: MQ_QMGR_NAME
               value: {{ $.Values.global.mq.queueManager.name }}
             - name: MQ_CHANNEL_NAME
-              value: MQ_CHN
+              value: MQ_CHN_PROD
+            - name: MQ_CHANNEL_PORT
+              value: "1414"
             {{- end }}
             - name: MQ_CONN_USER
               valueFrom:
@@ -392,6 +404,8 @@ spec:
             {{- end }}
             - name: TZ
               value: {{ $.Values.global.timezone }}
+            - name: POD_TIMER_TYPE
+              value: {{ $.Chart.Name }}_producer_{{ $name }}
           {{- with .readinessPath }}
           readinessProbe:
             httpGet:
@@ -471,6 +485,12 @@ spec:
             - name: logging-cm
               mountPath: /config/adc_conf/server_logging.xml
               subPath: server_logging.xml
+            - name: openid-cm
+              mountPath: /config/configDropins/defaults/server_openid.xml
+              subPath: server_openid.xml
+            - name: openid-cm
+              mountPath: /config/resources/JWTKeystore.properties
+              subPath: JWTKeystore.properties
             - name: transactions-cm
               mountPath: /config/adc_conf/server_resources_tx.xml
               subPath: server_resources_tx.xml
@@ -498,14 +518,13 @@ spec:
             {{- end }}
             - name: keystore-volume
               mountPath: /output/resources/security
+            - name: keystore-volume
+              mountPath: /config/resources/jwtkeystore.p12
+              subPath: jwtkeystore.p12
             {{- if $.Values.global.apps.common.persistence.enabled }}
             - name: {{ $.Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
-              subPath: {{ include "persistence.subDir" $ }}
             {{- end }}
-            - name: env-volume
-              mountPath: /config/server.env
-              subPath: server.env
             - name: env-volume
               mountPath: /config/jvm.options
               subPath: jvm.options

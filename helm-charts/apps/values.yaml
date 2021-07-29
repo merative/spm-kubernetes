@@ -70,7 +70,6 @@ global:
         # bucketName: ""
         # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
         mountPoint: ''
-        subDir: ''
         jmxstats:
           ## Parameters of the JMX Stats to be persisted on the PVC
           # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
@@ -242,8 +241,6 @@ global:
     useConnectionNameList: false
     objectSuffix: ''
     tlsSecretName: ''
-    multiInstance:
-      operatorsEnabled: false
     queueManager:
       name: "QM1"
       secret:
@@ -290,6 +287,10 @@ loginConfig:
   trace: false
   identityOnly: false
 
+jwtConfig:
+  issuerIdentifier: spm
+  secretName: ''
+
 # Configure Session and Transactions
 sessionConfig:
   sessionTimeout: 30m
@@ -298,6 +299,15 @@ sessionConfig:
   cookie:
     httpOnly: true
     secure: true
+
+# Liberty persistent timer settings
+persistentTimers:
+  missedPersistentTimerAction: ONCE
+  lateTimerThreshold: 5m
+  missedTaskThreshold: 120s
+  pollInterval: 120s
+  initialPollDelay: 0
+  pollSize: ""
 
 # Number of replicas to deploy
 replicaCount: 1

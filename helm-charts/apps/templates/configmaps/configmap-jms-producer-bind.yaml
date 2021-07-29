@@ -30,6 +30,7 @@ data:
       <classloading useJarUrls="true" />
       <library id="CuramServerCodeLib">
         <fileset dir="${server.config.dir}/apps/CuramServerCode.ear" includes="*.jar" />
+        <folder dir="${server.config.dir}/resources" />
       </library>
       <enterpriseApplication id="CuramServerCode.ear" location="CuramServerCode.ear" name="CuramServerCode">
         <classloader commonLibraryRef="customLoginLib" delegation="parentFirst" privateLibraryRef="CuramServerCodeLib" />

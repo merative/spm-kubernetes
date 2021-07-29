@@ -2,17 +2,16 @@
 
 ## Introduction
 
-* The MQ Server chart is a component of IBM Cúram Social Program Management (SPM) Platform responsible for providing an MQ instance for JMS processing. For more information about MQ, see [About IBM MQ](https://www.ibm.com/support/knowledgecenter/SSFKSJ_9.1.0/com.ibm.mq.pro.doc/q001010_.htm).
+* The MQ Server chart is a component of IBM Cúram Social Program Management (SPM) Platform responsible for providing an MQ instance for JMS processing. For more information about MQ, see [About IBM MQ](https://www.ibm.com/docs/en/ibm-mq/9.1?topic=mq-about).
 
 ## Chart Details
 
 * Deployment of a single MQ instance (if desired).
 * Deployment of a multi-instance MQ via NFS or Ceph (if desired).
+* Starting from `spm-kubernetes` release `21.7.0`, chart versions have been updated to align with the release version.
 
 ## Prerequisites
 
-* Kubernetes 1.16 or later
-* Helm 3.0.0 or later
 * A configured NFS server (for use with NFS)
 * A populated OpenShift Cluster (for use with Ceph)
 
