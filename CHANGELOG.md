@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file
 
+
+## v21.6.1
+
+### Breaking Changes
+
+* Removed `global.apps.common.persistence.subDir` as a configuration.
+  * The paths on the storage volume have now changed from `<root>/<HelmRelease_or_subDir>/<podName>` to `<root>/<podName>`. This is to accommodate pod initialization on start-up
+
+### Added
+
+* Add the ability to tune java options for the XMLServer application 
+* Added known issue to account for WebSphere Liberty timeout messages WTRN0006W and WTRN0124I
+
+### Changed
+
+* Upgraded IBM MQ image from `9.1.5` to `9.2.2`
+* Updated IBM MQ Resource Adapter to `9.2.2.0`
+* Updated runbook pre-requisites page to add information on Docker.
+* Changed MQ configuration for the `apps` producer and consumers pods to be using separated channels
+* Starting from `spm-kubernetes` release `21.6.1`, chart versions have been updated to align with the release version.
+  * The following helm-charts have been updated: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+  * All changes in helm-charts will now detailed in the `CHANGELOG.md` file
+* `kubeVersion` for all helm-charts updated to `">=1.19"`
+* Moved tuning settings from `initContainer` to a new ConfigMap
+* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly.
+
+### Fixed
+
+* Fixed XML Server shutdown by adding a pod `preStop` hook
+
+### Removed
+
+* Removed `RELEASENOTES.md` for the following helm-charts: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+  * All changes in helm-charts will now detailed in the `CHANGELOG.md` file
+* Removed `global.apps.common.persistence.subDir` as a configuration
+* Removed `persistence.subDir` from the following helm-charts: `apps`, `batch`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Removed obsolete Helm Chart known issue
+
 ## v21.6.0
 
 ### Added
@@ -128,7 +166,7 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* Limit allowed HTTP verbs as detailed in the [Knowledge Center](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.11/com.ibm.curam.content.doc/Security/t_SECHAND_httpverbperms.html)
+* Limit allowed HTTP verbs as detailed in the [IBM Documentation](https://www.ibm.com/docs/en/spm/7.0.11?topic=considerations-enabling-http-verb-permissions)
 * Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/IBM/spm-kubernetes/issues/51))
 * Adds values from `podAnnotations` at deployment of `apps` chart
 

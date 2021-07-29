@@ -64,9 +64,9 @@ global:
         enabled: false
         mqTuning: {}
   mq:
-    version: 9.1.5.0-r2
+    version: 9.2.2.0-r1
     # Licensing reference for mq.ibm.com/v1beta1
-    license: "L-APIG-BM7GDH"
+    license: "L-APIG-BMKG5H"
     use: "Development"
     tlsSecretName: ''
     queueManager:

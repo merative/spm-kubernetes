@@ -25,6 +25,7 @@ ARG ANT_VERSION
 COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 COPY content/release-stage/CuramSDEJ/xmlserver /opt/ibm/Curam/xmlserver
 COPY content/start-xmlserver.sh /opt/ibm/Curam/xmlserver/start-xmlserver.sh
+COPY content/stop-xmlserver.sh /opt/ibm/Curam/xmlserver/stop-xmlserver.sh
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/ \
     && chgrp -Rc 0 /opt/ibm/Curam \
     && chmod -Rc g=u /opt/ibm/Curam \
@@ -46,6 +47,7 @@ ENV PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH:.
 USER root
 RUN rpm -e --nodeps tzdata \
     && microdnf install -y tzdata \
+    && microdnf install -y hostname \
     && microdnf clean all \
     && rm -rf /var/cache/yum
 RUN mkdir -p /opt/ibm/Curam/xmlserver \

@@ -11,7 +11,7 @@ Use as a Supporting Program means that IBM MQ certified containers can only be u
 
 SPM does not require or support the use of any IBM MQ Advanced features available in the IBM MQ certified containers.
 
-IBM MQ certified container is supported only on SPM Version 7.0.11 and later versions.
+IBM MQ certified container is supported only from SPM Version 7.0.11 and later versions.
 
 <InlineNotification>
 
@@ -49,8 +49,8 @@ If using Ceph, the PVs are dynamically configured. Therefore, no further configu
 ## Operators
 
 MQ can also be deployed via Operators. Operators are a method of packaging and deploying Kubernetes applications that take human operational knowledge of managing the application and encode it into the
-package itself, which can then be shared with users. Operator deployment can be used to create a single-instance or a multi-instance deployment, as desired.  
+package itself, which can then be shared with users. Operator deployment can be used to create a single-instance or a multi-instance deployment, as desired.
 
-The IBM MQ Operator can be installed using the Operator Hub. More information on  installing the IBM Operator using the OpenShift CLI
-can be found [here](https://www.ibm.com/support/knowledgecenter/en/SSFKSJ_9.1.0/com.ibm.mq.ctr.doc/ctr_installing_cli.htm).  
+The [IBM MQ Operator](https://www.ibm.com/docs/en/ibm-mq/9.2?topic=containers-support-mq-operator) can be installed using the Operator Hub. More information on  installing the IBM Operator using the OpenShift CLI
+can be found [here](https://www.ibm.com/docs/en/ibm-mq/9.1?topic=openshift-installing-mq-operator-using-cli)
 When deploying in this way, a **Queue Manager** object is created. The Operator deployment also handles the creation of the **PersistentVolume** and **Stateful Set** objects.

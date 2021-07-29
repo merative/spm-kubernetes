@@ -145,19 +145,23 @@ Confirm the availability of the JAR files by running the following command:
 
 <InlineNotification>
 
-**Note:** As of Release 20.7.0, the IBM MQ Resource Adapter version used to verify this runbook is 9.1.5.0.
+**Note:** As of Release 21.6.1, the IBM MQ Resource Adapter version used to verify this runbook is 9.2.2.0.
+<p>&nbsp;</p>
+An IBM MQ Resources Adapter of a supported version level can connect to any IBM MQ Queue Manager of supported version level,
+but the feature set available will be based on whichever is of the lower level.
+For more information, see the [related version compatibility documentation](https://www.ibm.com/docs/en/ibm-mq/9.2?topic=cci-compatibility-between-different-versions-mq-mqi-client-queue-manager).
 
 </InlineNotification>
 
 IBM MQ is required for WebSphere Liberty JMS support, therefore you must install the MQ Resource Adapter.
 
 1. Download the IBM MQ resource adapter from Fix Central.
-   * Click this link: [IBM MQ Resource Adapter](https://ibm.biz/mq91cdRA)
+   * Click this link: [IBM MQ Resource Adapter](https://ibm.biz/mq92JRA)
    * Find the resource adapter for your version of IBM MQ in the displayed list of available fixes. For example:
 
     ```
-    release level: 9.1.5.0-IBM-MQ-Java-InstallRA
-    Continuous Delivery Release: 9.1.5 IBM MQ Resource Adapter for use with Application Servers
+    release level: 9.2.2.0-IBM-MQ-Java-InstallRA
+    Continuous Delivery Release: 9.2.2 IBM MQ Resource Adapter for use with Application Servers
     ```
 
    * Then click the resource adapter file name and follow the download process.

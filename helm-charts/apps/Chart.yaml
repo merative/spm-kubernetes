@@ -14,7 +14,7 @@
 # limitations under the License.
 ###############################################################################
 apiVersion: v2
-kubeVersion: ">=1.16"
+kubeVersion: ">=1.19"
 appVersion: "7.0.11.0"
 name: apps
 description: |-
@@ -29,7 +29,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 3.7.0
+version: 21.6.1
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team

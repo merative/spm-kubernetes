@@ -8,11 +8,10 @@
 
 * Deployment of a single pod listening on port 8443
 * Exposed to the cluster using a service for potential load balancing
+* Starting from `spm-kubernetes` release `21.6.1`, chart versions have been updated to align with the release version.
 
 ## Prerequisites
 
-* Kubernetes 1.16 or later
-* Helm 3.0.0 or later
 * [`PodDisruptionBudgets`](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) are recommended for high resiliency in an application during risky operations, such as draining a node for maintenance or scaling down a cluster.
 
 ### PodSecurityPolicy Requirements
