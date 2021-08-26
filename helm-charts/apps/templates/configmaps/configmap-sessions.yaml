@@ -33,7 +33,7 @@ data:
 
       <dataSource id="curamsessdb" jndiName="jdbc/curamsessdb"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
+        isolationLevel="TRANSACTION_REPEATABLE_READ"
         statementCacheSize="${env.DS_CURAMSESSDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMSESSDB") | nindent 8 }}
       </dataSource>

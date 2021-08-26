@@ -3,6 +3,7 @@
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
+{{- $tuningParams := $app.mqTuning }}
 ---
 ###############################################################################
 # Copyright 2019,2021 IBM Corporation
@@ -91,6 +92,10 @@ spec:
       enabled: {{ $.Values.global.mq.metrics.enabled | default false }}
     route:
       enabled: false
+    {{- if hasKey $tuningParams "resources" }}
+    resources:
+      {{- toYaml ($tuningParams.resources) | nindent 12 }}      
+    {{- end }}
   securityContext:
     initVolumeAsRoot: {{ $.Values.global.mq.security.initVolumeAsRoot }}
     {{- if $.Values.global.mq.security.context.fsGroup }}

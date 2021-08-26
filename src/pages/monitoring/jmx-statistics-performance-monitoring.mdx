@@ -6,18 +6,18 @@ description: Monitoring performance using JMX statistics
 
 Cúram JMX statistics provides operational data from a running IBM® Cúram Social Program Management (SPM) application.
 JMX statistics for use with a traditional application server are documented
-in this [IBM Documentation](https://www.ibm.com/docs/en/spm/7.0.11?topic=application-configuring-jmx-statistics) page.
+in this [IBM Documentation](https://www.ibm.com/docs/en/spm/8.0.0?topic=application-configuring-jmx-statistics) page.
 
 ### Cúram JMX Kubernetes Limitations
 
 Cúram JMX statistics behave similarly in Kubernetes, but have the following limitations:
 
-* Access by using the [SPM Administration Application](https://www.ibm.com/docs/en/spm/7.0.11?topic=statistics-using-administration-application)
+* Access by using the [SPM Administration Application](https://www.ibm.com/docs/en/spm/8.0.0?topic=statistics-using-administration-application)
 is not supported because:
   * Not all pods have the requisite SPM client installed, which means JMS performance is unavailable using this access mechanism.
   * The reverse proxy nature of Kubernetes means that even for the pods with clients installed, identifying the correct target server would be difficult.
 
-Therefore, for Kubernetes you are restricted to using the timer-based access method, for more information, see [Using the JMX Timer](https://www.ibm.com/docs/en/spm/7.0.11?topic=statistics-using-jmx-timer).
+Therefore, for Kubernetes you are restricted to using the timer-based access method, for more information, see [Using the JMX Timer](https://www.ibm.com/docs/en/spm/8.0.0?topic=statistics-using-jmx-timer).
 
 ## Cúram JMX timer-based statistics on Kubernetes
 

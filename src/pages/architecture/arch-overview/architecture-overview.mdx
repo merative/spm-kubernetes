@@ -59,11 +59,11 @@ containers, orchestrated by Helm, and running on IKS.
 To support containerized architectures, a number of architectural changes were made. The changes are documented as follows and apply only to SPM running on
 Kubernetes.
 
-* [Message Architecture](https://www.ibm.com/docs/en/spm/7.0.11?topic=architecture-messaging)
+* [Message Architecture](https://www.ibm.com/docs/en/spm/8.0.0?topic=architecture-messaging)
   When IBM® Cúram Social Program Management is containerized, IBM MQ Long Term Support (LTS) is used as the message engine to process internal application
   JMS-based deferred processing.
-* [Transaction Isolation](https://www.ibm.com/docs/en/spm/7.0.11?topic=architecture-transaction-isolation)
+* [Transaction Isolation](https://www.ibm.com/docs/en/spm/8.0.0?topic=architecture-transaction-isolation)
   Client HTTP initiated transactions and JMS initiated transactions run on different WebSphere Application Server Liberty instances, integrated through
   an external message engine (for example, IBM MQ).
-* [Elasticity](https://www.ibm.com/docs/en/spm/7.0.11?topic=architecture-elasticity)
+* [Elasticity](https://www.ibm.com/docs/en/spm/8.0.0?topic=architecture-elasticity)
   Elasticity in IBM Cloud Kubernetes Service is the ability to scale up or down pods and nodes to adjust to the load to meet the end user demand.

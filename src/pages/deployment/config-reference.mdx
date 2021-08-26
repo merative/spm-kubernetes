@@ -159,7 +159,7 @@ The default batch configuration runs any queued jobs every 30 minutes (equivalen
 Additional batch jobs may be added with additional keys under `batch.programs`.
 
 The following `batch.programs` example adds the
-[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/7.0.11?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
+[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/8.0.0?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
 batch job to be run at 2AM every Sunday night:
 
 ```yaml
@@ -284,7 +284,7 @@ In a Kubernetes environment, there is only one XML Server from SPM's point of vi
 | `uawebapp.imageConfig.library` | Namespace in the image registry containing your Univeral Access image | `''` |
 | `uawebapp.imageConfig.name` | Name of your Univeral Access image to be used | `''` |
 | `uawebapp.imageConfig.tag` | Image tag of your Univeral Access image to be used | `latest` |
-| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/7.0.11?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
+| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/8.0.0?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |
 | `uawebapp.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |

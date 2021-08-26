@@ -23,7 +23,7 @@ To build and run IBM Cúram Social Program Management (SPM) for Kubernetes, inst
 * [IBM Cúram Social Program Management (SPM) software](/deploy-spm/install-spm)
 * [Docker®, and Helm](/prereq/docker-helm)
 * [Kubernetes](/prereq/kubernetes/kubernetes-overview)
-  * [Minikube](/prereq/kubernetes/minikube)
+  * [minikube](/prereq/kubernetes/minikube)
 * [OpenShift](/prereq/openshift/openshift-overview)
   * [CodeReady Containers](/prereq/openshift/codeready-containers)
 * [Code Ready Container](/prereq/openshift/codeready-containers)
@@ -46,11 +46,41 @@ The technologies listed are fixed version support only, unless stated otherwise.
 
 | Supported Software                                                              | Version                   | Prerequisite Minimum  | Notes       |
 | ------------------------------------------------------------------------------- | ------------------------- | --------------------- | ------------|
-| WebSphere Liberty                                                               | 20.0.0.12                  | 20.0.0.12              | 1           |
-| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future fix packs  | 4.6                   | 8,12        |
+| WebSphere Liberty                                                               | 20.0.0.12                 | 20.0.0.12             | 1           |
+| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future fix packs  | 4.6                   | 11          |
+| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.19 and future fix packs | 1.19                  | 2,10        |
+| IBM MQ LTS                                                                      | 9.1 <br/> 9.2             | 9.2.0.2 and future FP <br/> 9.1.0.5 and future FP | 3           |
+| IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.2                       | 9.2.2.0 and future FP | 8           |
+| Docker                                                                          | 20.10                     | 20.10.2 and future FP | 4,5,6,9,12  |
+| Helm                                                                            | v3                        | v3.3.4 and future FP  | 7           |
+
+|Notes|
+|-|
+|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS), or OpenShift. |
+|`(2)` &#124; IBM Cúram Social Program Management supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes.|
+|`(3)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
+|`(4)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
+|`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
+|`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
+|`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
+|`(8)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
+|`(9)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
+|`(10)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
+|`(11)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Red Hat OpenShift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
+|`(12)` &#124; IBM Cúram Social Program Management uses Docker only to build container images, IBM Cúram Social Program Management do not use Docker as a container runtime engine.|
+
+</AccordionItem>
+
+<AccordionItem title="SPM 7.0.11.0">
+
+| Supported Software                                                              | Version                   | Prerequisite Minimum  | Notes       |
+| ------------------------------------------------------------------------------- | ------------------------- | --------------------- | ------------|
+| WebSphere Liberty                                                               | 20.0.0.9                  | 20.0.0.9              | 1           |
+| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.5 and future fix packs  | 4.5                   | 12          |
 | Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.19 and future fix packs | 1.19                  | 2,11        |
-| IBM MQ LTS                                                                      | 9.2                       | 9.2.0.2 and future FP | 3           |
-| IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.2                       | 9.2.2.0 and future FP | 9           |
+| IBM MQ LTS                                                                      | 9.1                       | 9.1.0.5 and future FP | 3           |
+| IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.1                       | 9.1.5.0 and future FP | 8           |
+| Docker                                                                          | 19.03                     | 19.03.5 and future FP | 4,5,6,9,13  |
 | Docker                                                                          | 20.10                     | 20.10.2 and future FP | 4,5,6,10,13 |
 | Helm                                                                            | v3                        | v3.3.4 and future FP  | 7           |
 
@@ -63,44 +93,12 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
 |`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
 |`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
-|`(8)` &#124; IBM Cúram Social Program Management supports OpenShift 4.5 or later.|
-|`(9)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
-|`(10)` &#124; Support for Docker 20.10 was introducted as part of the SPM@Kubernetes 21.2.0 release.|
+|`(8)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
+|`(9)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
+|`(10)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
 |`(11)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
-|`(12)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Red Hat Openshift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
+|`(12)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Red Hat OpenShift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
 |`(13)` &#124; IBM Cúram Social Program Management uses Docker only to build container images, IBM Cúram Social Program Management do not use Docker as a container runtime engine.|
-
-</AccordionItem>
-
-<AccordionItem title="SPM 7.0.11.0">
-
-| Supported Software                                                              | Version                   | Prerequisite Minimum  | Notes       |
-| ------------------------------------------------------------------------------- | ------------------------- | --------------------- | ------------|
-| WebSphere Liberty                                                               | 20.0.0.9                  | 20.0.0.9              | 1           |
-| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.5 and future fix packs  | 4.5                   | 8,13        |
-| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.19 and future fix packs | 1.19                  | 2,12        |
-| IBM MQ LTS                                                                      | 9.1                       | 9.1.0.5 and future FP | 3           |
-| IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.1                       | 9.1.5.0 and future FP | 9           |
-| Docker                                                                          | 19.03                     | 19.03.5 and future FP | 4,5,6,10,14 |
-| Docker                                                                          | 20.10                     | 20.10.2 and future FP | 4,5,6,11,14 |
-| Helm                                                                            | v3                        | v3.3.4 and future FP  | 7           |
-
-|Notes|
-|-|
-|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS), or OpenShift. |
-|`(2)` &#124; IBM Cúram Social Program Management supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes.|
-|`(3)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(4)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
-|`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
-|`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
-|`(8)` &#124; IBM Cúram Social Program Management supports OpenShift 4.5 or later.|
-|`(9)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
-|`(10)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
-|`(11)` &#124; Support for Docker 20.10 was introducted as part of the SPM@Kubernetes 21.2.0 release.|
-|`(12)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
-|`(13)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Red Hat Openshift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
-|`(14)` &#124; IBM Cúram Social Program Management uses Docker only to build container images, IBM Cúram Social Program Management do not use Docker as a container runtime engine.|
 
 </AccordionItem>
 
@@ -127,7 +125,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(8)` &#124; For SPM 7.0.10.0 there is still a hard requirement on an external identity provider (e.g. OpenLDAP) for elasticity. This code is no longer available in the latest version of the runbook. This can be found in the [September 2020 release](https://github.com/IBM/spm-kubernetes/releases/tag/20.9.0).|
 |`(9)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
 |`(10)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
-|`(11)` &#124; Support for Docker 20.10 was introducted as part of the SPM@Kubernetes 21.2.0 release.|
+|`(11)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
 
 </AccordionItem>
 
