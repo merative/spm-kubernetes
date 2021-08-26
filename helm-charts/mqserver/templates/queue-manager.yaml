@@ -1,8 +1,9 @@
 {{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
+{{- if (.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
 {{ $apps := .Values.global.apps.config }}
-{{- if .Values.global.mq.multiInstance.operatorsEnabled }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
+{{- $tuningParams := $app.mqTuning }}
 ---
 ###############################################################################
 # Copyright 2019,2021 IBM Corporation
@@ -22,7 +23,7 @@
 apiVersion: mq.ibm.com/v1beta1
 kind: QueueManager
 metadata:
-  name: {{ $name }}{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
+  name: {{ include "sch.names.fullCompName" (list $ $name) }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "mqserver.labels" $ | nindent 4 }}
@@ -52,7 +53,7 @@ spec:
           - config.mqsc
           - channel_{{$name}}.mqsc
     availability:
-      type: {{ $.Values.global.mq.multiInstance.availabilityType }}
+      type: {{ $.Values.global.mq.availabilityType }}
     livenessProbe:
       initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds }}
       periodSeconds: {{ $.Values.livenessProbe.periodSeconds }}
@@ -64,22 +65,45 @@ spec:
       timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
       failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
     storage:
+      {{- if eq $.Values.global.mq.storageType "ephemeral" }}
       queueManager:
-        type: persistent-claim
-        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        type: 'ephemeral'
+      recoveryLogs:
+        type: 'ephemeral'
+      persistedData:
+        type: 'ephemeral'
+      {{- else }}
+      queueManager:
+        type: 'persistent-claim'
+        class: {{ $.Values.global.mq.storageClassName }}
         size: 2Gi
       recoveryLogs:
-        type: persistent-claim
+        type: 'persistent-claim'
         enabled: true
-        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        class: {{ $.Values.global.mq.storageClassName }}
         size: 2Gi
       persistedData:
-        type: persistent-claim
+        type: 'persistent-claim'
         enabled: true
-        class: {{ $.Values.global.mq.multiInstance.storageClassName }}
+        class: {{ $.Values.global.mq.storageClassName }}
         size: 2Gi
+      {{- end }}
     metrics:
       enabled: {{ $.Values.global.mq.metrics.enabled | default false }}
+    route:
+      enabled: false
+    {{- if hasKey $tuningParams "resources" }}      
+    resources:
+      {{- toYaml ($tuningParams.resources) | nindent 12 }}      
+    {{- end }}      
+  securityContext:
+    initVolumeAsRoot: {{ $.Values.global.mq.security.initVolumeAsRoot }}
+    {{- if $.Values.global.mq.security.context.fsGroup }}
+    fsGroup: {{ $.Values.global.mq.security.context.fsGroup }}
+    {{- end }}
+    supplementalGroups: {{ $.Values.global.mq.security.context.supplementalGroups }}
+  web:
+    enabled: {{ $.Values.global.mq.web.enabled }}
   template:
     pod:
       containers:
@@ -97,8 +121,6 @@ spec:
                 secretKeyRef:
                   name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
                   key: {{ $.Values.global.mq.queueManager.secret.appPasswordKey }}
-  web:
-    enabled: true
 {{- end }}
 {{- end }}
 {{- end }}

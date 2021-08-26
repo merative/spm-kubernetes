@@ -85,8 +85,8 @@ spec:
                   name: {{ default (printf "%s-mq-credentials" $.Release.Name) $.Values.global.mq.queueManager.secret.name }}
                   key: {{ $.Values.global.mq.queueManager.secret.adminPasswordKey }}
             - name: IBMMQ_CONNECTION_CONNNAME
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-              value: {{ printf "%s%s-ibm-mq(1414)" $name $.Values.global.mq.queueManager.name | lower }}
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+              value: {{ printf "%s-mqserver-%s-ibm-mq(1414)" $.Release.Name $name }}
             {{- else }}
               value: {{ printf "%s(1414)" (include "sch.names.fullCompName" (list $ $name)) }}
             {{- end }}
@@ -132,10 +132,10 @@ spec:
           command:
             - /bin/sh
             - -c
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
             - >
-              until nc -z -w3 {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq 1414; do
-                echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
+              until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq 1414; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq:1414 to be reachable;
                 sleep 2;
               done;
             {{- else }}

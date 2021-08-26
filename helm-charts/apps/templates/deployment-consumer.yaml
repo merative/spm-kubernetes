@@ -159,10 +159,10 @@ spec:
           command:
             - /bin/sh
             - -c
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
             - >
-              until nc -z -w3 {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq 1414; do
-                echo waiting for {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq:1414 to be reachable;
+              until nc -z -w3 {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq 1414; do
+                echo waiting for {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq:1414 to be reachable;
                 sleep 2;
               done;
             {{- else }}
@@ -305,8 +305,8 @@ spec:
               value: CHL_{{ $qmgrName | upper }}
             {{- else }}
             - name: MQ_HOST_NAME
-            {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-              value: {{ $name }}{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq
+            {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+              value: {{ $.Release.Name }}-mqserver-{{ $name }}-ibm-mq
             {{- else }}
               value: {{ $.Release.Name }}-mqserver-{{ $name }}
             {{- end }}

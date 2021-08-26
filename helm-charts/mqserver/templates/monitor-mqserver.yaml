@@ -1,10 +1,11 @@
-{{ $apps := .Values.global.apps.config }}
-{{- range $name, $app := $apps }}
+{{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
+{{- if and .Values.global.mq.metrics.enabled .Values.global.mq.metrics.additionalMetrics }}
+{{- if .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" }}
+{{- range $name, $app := .Values.global.apps.config }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
-{{- if or ($.Values.global.mq.multiInstance.cephEnabled) ($.Values.global.mq.multiInstance.nfsEnabled) }}
 ---
 ###############################################################################
-# Copyright 2019,2021 IBM Corporation
+# Copyright 2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,23 +20,19 @@
 # limitations under the License.
 ###############################################################################
 
-apiVersion: v1
-kind: PersistentVolumeClaim
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
 metadata:
-  name: {{ $.Release.Namespace }}-{{ $name }}-pvc-qm
+  name: {{ include "sch.names.fullCompName" (list $ (printf "%s-metrics" $name)) }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list $ (printf "%s-metrics" $name)) | nindent 4 }}
 spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 1Gi
-  {{ if $.Values.global.mq.multiInstance.useDynamicProvisioning }}
-  storageClassName: {{ $.Values.global.mq.multiInstance.storageClassName }}
-  {{ else }}
   selector:
     matchLabels:
-      {{ $.Release.Namespace }}-pv: {{ $.Release.Namespace }}-{{ $name }}-pv-qm
-  {{ end }}
+      {{- include "sch.metadata.labels.standard" (list $ (printf "%s-metrics" $name)) | nindent 6 }}
+  podMetricsEndpoints:
+    - port: client
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
