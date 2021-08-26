@@ -241,8 +241,6 @@ global:
     useConnectionNameList: false
     objectSuffix: ''
     tlsSecretName: ''
-    multiInstance:
-      operatorsEnabled: false
     queueManager:
       name: "QM1"
       secret:

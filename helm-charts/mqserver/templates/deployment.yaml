@@ -1,9 +1,8 @@
 {{- include "sch.config.init" (list . "mqserver.sch.chart.config.values") -}}
+{{- if (not (.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1")) }}
 {{ $apps := .Values.global.apps.config }}
 {{- range $name, $app := $apps }}
 {{- if and ($app.enabled) (not (hasKey $app "mqConnectionNameList")) }}
-{{- if (not ($.Values.global.mq.multiInstance.operatorsEnabled)) }}
-{{- if  (and (not ($.Values.global.mq.multiInstance.cephEnabled)) (not ($.Values.global.mq.multiInstance.nfsEnabled))) }}
 {{- $tuningParams := $app.mqTuning }}
 ---
 ###############################################################################
@@ -153,7 +152,6 @@ spec:
             - name: service-certs
               mountPath: /etc/mqm/pki/keys/ibmwebspheremq{{ $.Values.global.mq.queueManager.name | default "QM1" | lower }}
               readOnly: true
-{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

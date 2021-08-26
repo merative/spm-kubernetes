@@ -133,8 +133,8 @@ JMS Topic Connection Factory properties
   queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+  hostName="{{ $.Release.Name }}-mqserver-curam-ibm-mq"
   {{- else }}
   hostName="{{ $.Release.Name }}-mqserver-curam"
   {{- end }}
@@ -183,8 +183,8 @@ JMS Topic Activation Spec properties
   queueManager="{{ .Values.global.mq.objectSuffix }}_curam"
   channel="CHL_{{ .Values.global.mq.objectSuffix | upper }}_CURAM"
   {{- else }}
-  {{- if $.Values.global.mq.multiInstance.operatorsEnabled }}
-  hostName="curam{{ $.Values.global.mq.queueManager.name | lower }}-ibm-mq"
+  {{- if ($.Capabilities.APIVersions.Has "mq.ibm.com/v1beta1") }}
+  hostName="{{ $.Release.Name }}-mqserver-curam-ibm-mq"
   {{- else }}
   hostName="{{ $.Release.Name }}-mqserver-curam"
   {{- end }}

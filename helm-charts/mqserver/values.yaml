@@ -80,32 +80,26 @@ global:
         adminPasswordKey: 'adminPasswordKey'
         # appPasswordKey is the secret key that contains the 'admin' user password
         appPasswordKey: 'appPasswordKey'
+    security:
+      # Initialise the storage volume as root. May be required depending on the storage backend used
+      initVolumeAsRoot: false
+      # Section to specifies additional security context settings
+      context:
+        # Allow to change the ownership of that volume to be owned by the pod
+        fsGroup:
+        # May be required when using file systems
+        supplementalGroups: []
+    # availabilityType to be used for deployments via Operators only. Alternatives: MultiInstance or SingleInstance.
+    availabilityType: 'SingleInstance'
+    # storageType to be used via Operators only. Alternatives: ephemeral or persistent-claim
+    storageType: 'ephemeral'
+    # storageClassName is required when using a dynamic storage provisioner
+    storageClassName: ''
     metrics:
       enabled: false
       additionalMetrics: false
-    multiInstance:
-      operatorsEnabled: false
-      # availabilityType to be used for deployments via Operators only. Alternatives: MultiInstance or SingleInstance.
-      availabilityType: ''
-      # cephEnabled to be used for MultiInstance deployment via Helm using Storage Class
-      cephEnabled: false
-      # Flag to indicate that a dynamic storage provisioner is to be used, e.g. Ceph, IBM File Storage
-      useDynamicProvisioning: false
-      # storageClassName is required when using a dynamic storage provisioner
-      storageClassName: ''
-      # nfsEnabled / nfsIP / nfsFolder applies only
-      nfsEnabled: false
-      nfsIP: ''
-      nfsFolder: ''
-      nfsMountOptions: []
-    security:
-      # Initialise the storage volume as root. May be required depending on the storage backend used.
-      initVolumeAsRoot: false
-      context:
-        # fsGroup / supplementalGroups may be required when using NFS.
-        fsGroup:
-        supplementalGroups: []
-
+    web:
+      enabled: false
 
 # MQ Metrics image details
 metricsImage:

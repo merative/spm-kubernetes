@@ -217,13 +217,9 @@ We only support containerised MQ on Openshift.
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.queueManager.secret.adminPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ admin user | `adminPasswordKey` |
 | `global.mq.queueManager.secret.appUsernameKey` | The key in the Kubernetes Secret containing the username for the MQ client user | `appUsername` |
 | `global.mq.queueManager.secret.appPasswordKey` | The key in the Kubernetes Secret containing the password for the MQ client user | `appPasswordKey` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.cephEnabled` | Deploy MQ as a StatefulSet using Ceph storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.storageClassName` | Storage class used for dynamic provisioning on the Ceph backend | `''` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsEnabled` | Deploy MQ as a StatefulSet using NFS storage backend (`cephEnabled` and `nfsEnabled` are mutually exclusive) | `false` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsIP` | IP address or hostname of the NFS server | `''` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsFolder` | Path on the NFS server, where MQ data should be stored | `''` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.nfsMountOptions` | Additional mount options that may be added | `[]` |
-| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.multiInstance.useDynamicProvisioning` | Use a dynamic storage provider with the storage class defined by `global.mq.multiInstance.storageClassName` | `false` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.availabilityType` | Availability type to be used for deployments (alternatives: `SingleInstance` or `MultiInstance`). Only available with stateful MQ Operators | `SingleInstance` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.storageType` | Storage type to be used (alternatives: `ephemeral` or `persistent-claim`) | `ephemeral` |
+| ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.storageClassName` | Storage class used for dynamic provisioning by the provisioner | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.fsGroup` | Primary user group for any filesystem mounts, if required by the storage provisioner | `''` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.context.supplementalGroups` | Supplemental user groups for any filesystem mounts, if required by the storage provisioner | `[]` |
 | ![Container only](https://img.shields.io/badge/-Container_only-red) `global.mq.security.initVolumeAsRoot` | Initialise storage volume as `root` user | `false` |

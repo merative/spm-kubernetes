@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.6.2
+
+### Breaking Changes
+
+* Following the upgrade to IBM MQ 9.2 in release `v21.6.1`, the below list of breaking changes has been introduced:
+  * On existing deployments, the upgrade of IBM MQ requires the applications pods to be scaled down completely, followed by a delay to process any remaining messages, before updating the deployment
+  * Moved `global.mq.multiInstance.availabilityType` to `global.mq.availabilityType`
+  * Moved `global.mq.multiInstance.storageType` to `global.mq.storageType`
+  * Moved `global.mq.multiInstance.storageClassName` to `global.mq.storageClassName`
+  * Removed `global.mq.multiInstance` as a configuration, and the following children parameters:
+    * `operatorsEnabled`, `cephEnabled`, `useDynamicProvisioning`, `nfsEnabled`, `nfsIP`, `nfsFolder`, `nfsMountOptions`
+  * Support for manual creation of persistent volumes and persistent volume claims has been removed
+* Removed `global.apps.common.persistence.subDir` as a configuration
+  * The paths on the storage volume have now change from `<root>/<HelmRelease_or_subDir>/<podName>` to `<root>/<podName>`. This is to accommodate pod initialization on start-up
+* `Ingress` and `IngressClass` resources have graduated to `networking.k8s.io/v1`, see [Ingress graduates to General Availability](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.19.md#ingress-graduates-to-general-availability)
+  * Due to ingress graduating to `networking.k8s.io/v1` spm `ingress.yaml` has been update to check `networking.k8s.io` version.
+  * Definition of the ingress path has been moved to the `spm.ingress.item` template
+
+### Added
+
+* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
+
+### Changed
+
+* The following helm-charts have been updated to chart version `21.6.2`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
+
+### Fixed
+
+* Fixed issue where tuning params for resources on MQ pods created by the MQ operator were not being honoured
+
+### Removed
 
 ## v21.6.1
 
@@ -12,7 +44,7 @@ All notable changes to this project will be documented in this file
 
 ### Added
 
-* Add the ability to tune java options for the XMLServer application 
+* Add the ability to tune java options for the XMLServer application
 * Added known issue to account for WebSphere Liberty timeout messages WTRN0006W and WTRN0124I
 
 ### Changed

@@ -38,14 +38,14 @@ data:
 
       <!-- ========================== Data Sources ========================== -->
       <dataSource id="curamdb" jndiName="jdbc/curamdb"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
+        isolationLevel="TRANSACTION_REPEATABLE_READ"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
         statementCacheSize="${env.DS_CURAMDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMDB") | nindent 8 }}
       </dataSource>
 
       <dataSource id="DefaultDataSource" jndiName="jdbc/curamtimerdb"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
+        isolationLevel="TRANSACTION_REPEATABLE_READ"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
         statementCacheSize="${env.DS_CURAMTIMERDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMTIMERDB") | nindent 8 }}

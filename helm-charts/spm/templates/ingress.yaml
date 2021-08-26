@@ -17,7 +17,11 @@
 # limitations under the License.
 ###############################################################################
 
+{{ if .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
+apiVersion: networking.k8s.io/v1
+{{ else -}}
 apiVersion: networking.k8s.io/v1beta1
+{{- end -}}
 kind: Ingress
 metadata:
   name: {{ .Release.Name }}
@@ -50,27 +54,15 @@ spec:
       http:
         paths:
           {{- range $name, $app := .Values.global.apps.config }}
-          {{- if and $app.enabled $app.ingressPath }}
-          - path: {{ $app.ingressPath }}
-            backend:
-              serviceName: {{ $.Release.Name }}-apps-{{ $name }}
-              servicePort: https
-          {{- end }}
+            {{- if and $app.enabled $app.ingressPath }}
+              {{- include "spm.ingress.item" (dict "caps" $.Capabilities "path" ($app.ingressPath) "name" (printf "%s-apps-%s" $.Release.Name $name) "port" "https") | nindent 10 -}}
+            {{- end }}
           {{- end }}
           {{- if .Values.uawebapp.imageConfig.name }}
-          - path: {{ .Values.uawebapp.ingressPath | default "/universal" }}
-            backend:
-              serviceName: {{ $.Release.Name }}-uawebapp
-              servicePort: https
+            {{- include "spm.ingress.item" (dict "caps" .Capabilities "path" (.Values.uawebapp.ingressPath | default "/universal") "name" (printf "%s-uawebapp" .Release.Name) "port" "https") | nindent 10 -}}
           {{- end }}
           {{- if .Values.global.isam.enabled }}
-          - path: "/ibm"
-            backend:
-              serviceName: {{ $.Release.Name }}-apps-curam
-              servicePort: https
+           {{- include "spm.ingress.item" (dict "caps" .Capabilities "path" "/ibm" "name" (printf "%s-apps-curam" .Release.Name) "port" "https") | nindent 10 -}}
           {{- end }}
-          - path: {{ .Values.web.ingressPath | default "/CuramStatic" }}
-            backend:
-              serviceName: {{ $.Release.Name }}-web
-              servicePort: https
+          {{- include "spm.ingress.item" (dict "caps" .Capabilities "path" (.Values.web.ingressPath | default "/CuramStatic") "name" (printf "%s-web" .Release.Name) "port" "https") | nindent 10 -}}
 {{- end }}
