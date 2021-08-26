@@ -2,9 +2,7 @@
 ignore=^http://localhost
        ^https://www.ibm.com/support
        ^https://ibm.biz/
-       ^https://github.com/IBM/spm-kubernetes/blob/main/CHANGELOG.md
-       ^https://github.ibm.com/wh-curamspm-devops/spm-kubernetes/blob/main/CHANGELOG.md
-       ^https://github.com/IBM/spm-kubernetes/tree/main
+
 
 internlinks=^http://TRAVIS_HOST:8888/
 checkextern=1
