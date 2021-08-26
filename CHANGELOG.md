@@ -27,12 +27,11 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.6.2`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
-* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeateable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
 
 ### Fixed
 
-*  Fixed issue where tuning params for resources on MQ pods created by the MQ operator were not being
-honoured
+* Fixed issue where tuning params for resources on MQ pods created by the MQ operator were not being honoured
 
 ### Removed
 
