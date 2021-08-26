@@ -7,9 +7,9 @@ All notable changes to this project will be documented in this file
 ### Breaking Changes
 
 * `Ingress` and `IngressClass` resources have graduated to `networking.k8s.io/v1`, see [Ingress graduates to General Availability](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.19.md#ingress-graduates-to-general-availability)
-  * Due to ingress graduating to `networking.k8s.io/v1` spm `ingress.yaml` has been update to check `networking.k8s.io` version.
+  * Due to ingress graduating to `networking.k8s.io/v1` spm `ingress.yaml` has been updated to check `networking.k8s.io` version
   * Definition of the ingress path has been moved to the `spm.ingress.item` template
-* SPM-Kubernetes default branch has been renamed from `master` to `main`.
+* SPM-Kubernetes default branch has been renamed from `master` to `main`
 
 ### Added
 
@@ -17,17 +17,15 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+* The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 * Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
-* Updated IBM Documentation link to SPM V8.
+* Updated IBM Documentation link to SPM V8
 * Clarified prerequisite software statements ([#83](https://github.com/IBM/spm-kubernetes/issues/83))
 
 ### Fixed
 
 * Update Oracle Database driver name to `ojdbc8.jar` ([#84](https://github.com/IBM/spm-kubernetes/issues/84))
 * Fixed issue where MQ pods deployed by MQ Operator on Openshift were not respecting tuning params
-
-### Removed
 
 ## v21.7.0 ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green)
 
@@ -68,7 +66,7 @@ All notable changes to this project will be documented in this file
 * Updated runbook pre-requisites page to add information on Docker
 * Changed MQ configuration for the `apps` producer and consumers pods to be using separated channels
 * Moved tuning settings from `initContainer` to a new ConfigMap
-* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly.
+* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly
 
 ### Fixed
 
@@ -87,7 +85,7 @@ All notable changes to this project will be documented in this file
 ### Added
 
 * Added capability to tune Kubernetes resources for MQ pods for individual applications
-* Added clarification regarding sample values files.
+* Added clarification regarding sample values files
 * Added JVM garbage collection and tuning settings for XML server pods
   * Updated sample override files to include example settings
 * Added capability to specify thread pool size, thread queue size, and socket timeout value for XML server pods
