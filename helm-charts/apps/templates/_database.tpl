@@ -80,7 +80,7 @@ JDBC Connection driver JAR list
 {{- if eq (.type | upper) "DB2" -}}
 db2jcc4.jar db2jcc_license_cu.jar
 {{- else if eq (.type | upper) "ORA" -}}
-ojdbc.jar
+ojdbc8.jar
 {{- else -}}
 {{ fail ("Unsupported database type provided: " .type) }}
 {{- end -}}

@@ -2,13 +2,36 @@
 
 All notable changes to this project will be documented in this file
 
-## v21.7.0 ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green)
+## v21.8.0
 
-> This release introduces support for SPM 8.0.0.0 and contains breaking changes for deployment of SPM 7.0.11.0
+### Breaking Changes
+
+* `Ingress` and `IngressClass` resources have graduated to `networking.k8s.io/v1`, see [Ingress graduates to General Availability](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.19.md#ingress-graduates-to-general-availability)
+  * Due to ingress graduating to `networking.k8s.io/v1` spm `ingress.yaml` has been update to check `networking.k8s.io` version.
+  * Definition of the ingress path has been moved to the `spm.ingress.item` template
+* SPM-Kubernetes default branch has been renamed from `master` to `main`.
 
 ### Added
 
-* Add the ability to tune java options for the XMLServer application
+* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
+
+### Changed
+
+* The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
+* Updated IBM Documentation link to SPM V8.
+* Clarified prerequisite software statements ([#83](https://github.com/IBM/spm-kubernetes/issues/83))
+
+### Fixed
+
+* Update Oracle Database driver name to `ojdbc8.jar` ([#84](https://github.com/IBM/spm-kubernetes/issues/84))
+* Fixed issue where MQ pods deployed by MQ Operator on Openshift were not respecting tuning params
+
+### Removed
+
+## v21.7.0 ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green)
+
+> This release introduces support for SPM 8.0.0.0 and contains breaking changes for deployment of SPM 7.0.11.0
 
 ### Breaking Changes
 
@@ -25,6 +48,7 @@ All notable changes to this project will be documented in this file
 
 ### Added
 
+* Add the ability to tune java options for the XMLServer application
 * Add TLS certificates for Secure XML server
 * Add OpenID configuration for authentication using JSON Web Tokens for SPM Chatbot **only**
 * Add signing certificates for JSON Web Tokens for SPM Chatbot **only**
