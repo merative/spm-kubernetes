@@ -4,7 +4,7 @@ name: CI
 on:
   push:
   pull_request:
-    branches: [ master, release/v7 ]
+    branches: [ main, release/v7 ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
         run: |
           markdownlint **/*.mdx
           npm run build
-          
+
       - name: Validate docs
         run: |
           docker run --rm -d --name gatsby -p 8888:80 -v $(pwd)/public:/usr/local/apache2/htdocs$SITE_PREFIX httpd:2.4
@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy Pages
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: ${{ github.ref == 'refs/heads/main' }}
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
