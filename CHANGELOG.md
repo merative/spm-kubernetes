@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.8.1
+
+### Fixed
+
+* Fixed broken link for jmx monitoring
+* Fixed `github pages` generation to build from `main` instead of `master`
+
 ## v21.8.0
 
 ### Breaking Changes
