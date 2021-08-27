@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.8.1
+
+### Fixed
+
+* Fixed broken link for jmx monitoring
+* Fixed `github pages` generation to build from `main` instead of `master`
+
 ## v21.8.0
 
 ### Breaking Changes
@@ -13,7 +20,8 @@ All notable changes to this project will be documented in this file
 
 ### Added
 
-* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
+* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html)
+or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
 
 ### Changed
 
