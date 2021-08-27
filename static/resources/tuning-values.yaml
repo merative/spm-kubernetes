@@ -47,187 +47,148 @@ global:
   apps: {}
     # config:
     #   curam:
-    #     enabled: true
-    #     resources:
-    #       limits:
-    #         cpu: 2
-    #         memory: 4Gi
-    #       requests:
-    #         cpu: 1
-    #         memory: 2Gi
-    #     producerTuning: 
-    #       # Curam Producer JVM Setting
-    #       jvm: ['-Xms1844M','-Xmx1844M','-Xmn1228M']
-    #       coreThreads: 4
-    #       maxThreads: 4
-    #       maxPoolSize: 8
-    #       numConnectionsPerThreadLocal: 2
-    #       purgePolicy: EntirePool
-    #       statementCacheSize: 1000
-    #       # MQ Settings for Curam Producer
-    #       mqMaxPoolSize: 8
-    #       mqMinPoolSize: 8
-    #       mqNumConnectionsPerThreadLocal: 2
-    #       maxJMSConnectionsPerThread: 2
-    #       maxEndPoints_DPErrorAS: 1
-    #       maxEndPoints_WorkflowErrorAS: 1
-    #       maxEndPoints_CuramDeadMessageQueueAS: 1
-    #       maxEndPoints_DPEnactmentAS: 100
-    #       maxEndPoints_WorkflowActivityAS: 101
-    #       maxEndPoints_WorkflowEnactmentAS: 102
-    #       # Curam Producer Database Settings
-    #       curamdb_maxPoolSize: 16
-    #       curamdb_numConnectionsPerThreadLocal: 2
-    #       curamdb_purgePolicy: EntirePool
-    #       curamdb_statementCacheSize: 1000
-    #       curamtimerdb_maxPoolSize: 8
-    #       curamtimerdb_numConnectionsPerThreadLocal: 2
-    #       curamtimerdb_purgePolicy: EntirePool
-    #       curamtimerdb_statementCacheSize: 1000
-    #       curamsessdb_maxPoolSize: 8
-    #       curamsessdb_numConnectionsPerThreadLocal: 2
-    #       curamsessdb_purgePolicy: EntirePool
-    #       curamsessdb_statementCacheSize: 1000
-    #       # Curam Producer requested resources
-    #       resources:
-    #         requests:
-    #           cpu: 2
-    #           memory: 2850Mi
-    #         limits:
-    #           cpu: 2
-    #           memory: 2850Mi
-    #     consumerTuning:
-    #       # Curam Consumer JVM Setting
-    #       jvm: ['-Xms1844M','-Xmx1844M','-Xmn1228M']
-    #       coreThreads: 4
-    #       maxThreads: 4
-    #       maxPoolSize: 8
-    #       numConnectionsPerThreadLocal: 2
-    #       purgePolicy: EntirePool
-    #       statementCacheSize: 1000
-    #       # MQ Settings for Curam Consumer
-    #       mqMaxPoolSize: 12
-    #       mqMinPoolSize: 12
-    #       mqNumConnectionsPerThreadLocal: 2
-    #       maxJMSConnectionsPerThread: 2
-    #       maxEndPoints_DPErrorAS: 1
-    #       maxEndPoints_WorkflowErrorAS: 1
-    #       maxEndPoints_CuramDeadMessageQueueAS: 1
-    #       maxEndPoints_DPEnactmentAS: 100
-    #       maxEndPoints_WorkflowActivityAS: 101
-    #       maxEndPoints_WorkflowEnactmentAS: 102
-    #       # Curam Consumer Database Settings
-    #       curamdb_maxPoolSize: 24
-    #       curamdb_numConnectionsPerThreadLocal: 2
-    #       curamdb_purgePolicy: EntirePool
-    #       curamdb_statementCacheSize: 1000
-    #       curamtimerdb_maxPoolSize: 12
-    #       curamtimerdb_numConnectionsPerThreadLocal: 2
-    #       curamtimerdb_purgePolicy: EntirePool
-    #       curamtimerdb_statementCacheSize: 1000
-    #       curamsessdb_maxPoolSize: 12
-    #       curamsessdb_numConnectionsPerThreadLocal: 2
-    #       curamsessdb_purgePolicy: EntirePool
-    #       curamsessdb_statementCacheSize: 1000
-    #       # Curam Consumer requested resources
-    #       resources:
-    #         requests:
-    #           cpu: 2
-    #           memory: 2850Mi
-    #         limits:
-    #           cpu: 2v
-    #           memory: 2850Mi
-    #       mqTuning:
-    #         resources:
-    #           requests:
-    #             cpu: 1
-    #             memory: 2300Mi
-    #           limits:
-    #             cpu: 1.5
-    #             memory: 2500Mi
-    #   rest:
-    #     enabled: true
-    #     resources:
-    #       limits:
-    #         cpu: 2
-    #         memory: 4Gi
-    #       requests:
-    #         cpu: 1
-    #         memory: 2Gi
+    #     mqTuning:
+    #      resources:
+    #        requests:
+    #          cpu: 1
+    #          memory: 1024Mi
+    #        limits:
+    #          cpu: 1
+    #          memory: 1024Mi
     #     producerTuning:
-    #       # Rest Producer JVM Setting
-    #       jvm: ['-Xms2304M','-Xmx2304M','-Xmn1536M']
+    #       replicaCount: 1
+    #       resources:
+    #         requests:
+    #           cpu: 2
+    #           memory: 3584Mi
+    #         limits:
+    #           cpu: 2
+    #           memory: 3584Mi
+    #       jvm: ['-Xms2560M','-Xmx2560M','-Xmn1536M']
     #       coreThreads: 8
     #       maxThreads: 8
-    #       # MQ Settings for Rest Producer
-    #       mqMaxPoolSize: 8
-    #       mqMinPoolSize: 8
-    #       mqNumConnectionsPerThreadLocal: 2
-    #       maxJMSConnectionsPerThread: 2
-    #       maxEndPoints_DPErrorAS: 1
-    #       maxEndPoints_WorkflowErrorAS: 1
-    #       maxEndPoints_CuramDeadMessageQueueAS: 1
-    #       maxEndPoints_DPEnactmentAS: 100
-    #       maxEndPoints_WorkflowActivityAS: 101
-    #       maxEndPoints_WorkflowEnactmentAS: 102
-    #       # Rest Producer Database Settings
-    #       curamdb_maxPoolSize: 16
+    #       mqMaxPoolSize: 9
+    #       mqMinPoolSize: 9
+    #       mqNumConnectionsPerThreadLocal: 6
+    #       maxJMSConnectionsPerThread: 6
+    #       curamdb_maxPoolSize: 17
     #       curamdb_numConnectionsPerThreadLocal: 2
     #       curamdb_purgePolicy: EntirePool
     #       curamdb_statementCacheSize: 1000
-    #       curamtimerdb_maxPoolSize: 8
+    #       curamtimerdb_maxPoolSize: 9
     #       curamtimerdb_numConnectionsPerThreadLocal: 2
     #       curamtimerdb_purgePolicy: EntirePool
     #       curamtimerdb_statementCacheSize: 1000
-    #       curamsessdb_maxPoolSize: 8
+    #       curamsessdb_maxPoolSize: 9
     #       curamsessdb_numConnectionsPerThreadLocal: 2
     #       curamsessdb_purgePolicy: EntirePool
     #       curamsessdb_statementCacheSize: 1000
-    #       # Rest Producer requested resources
-    #       resources:
-    #         requests:
-    #           cpu: 2
-    #           memory: 3300Mi
-    #         limits:
-    #           cpu: 2
-    #           memory: 3300Mi
     #     consumerTuning:
-    #       # Rest Consumer JVM Setting
-    #       jvm: ['-Xms6G','-Xmx6G','-Xmn4G']
-    #       coreThreads: 12
-    #       maxThreads: 12
-    #       # MQ Settings for Rest Consumer
-    #       mqMaxPoolSize: 12
-    #       mqMinPoolSize: 12
-    #       mqNumConnectionsPerThreadLocal: 2
-    #       maxJMSConnectionsPerThread: 2
-    #       maxEndPoints_DPErrorAS: 1
-    #       maxEndPoints_WorkflowErrorAS: 1
-    #       maxEndPoints_CuramDeadMessageQueueAS: 1
-    #       maxEndPoints_DPEnactmentAS: 100
-    #       maxEndPoints_WorkflowActivityAS: 101
-    #       maxEndPoints_WorkflowEnactmentAS: 102
-    #       # Rest Consumer Database Settings
-    #       curamdb_maxPoolSize: 24
-    #       curamdb_numConnectionsPerThreadLocal: 2
-    #       curamdb_purgePolicy: EntirePool
-    #       curamdb_statementCacheSize: 1000
-    #       curamtimerdb_maxPoolSize: 12
-    #       curamtimerdb_numConnectionsPerThreadLocal: 2
-    #       curamtimerdb_purgePolicy: EntirePool
-    #       curamtimerdb_statementCacheSize: 1000
-    #       curamsessdb_maxPoolSize: 12
-    #       curamsessdb_numConnectionsPerThreadLocal: 2
-    #       curamsessdb_purgePolicy: EntirePool
-    #       curamsessdb_statementCacheSize: 1000
-    #       # Rest Consumer requested resources
+    #       replicaCount: 1
     #       resources:
     #         requests:
     #           cpu: 2
-    #           memory: 6400Mi
+    #           memory: 2048Mi
     #         limits:
     #           cpu: 2
-    #           memory: 6400Mi
+    #           memory: 2048Mi
+    #       jvm: ['-Xms1600M','-Xmx1600M','-Xmn960M','-verbose:sizes']
+    #       coreThreads: 9
+    #       maxThreads: 9
+    #       mqMaxPoolSize: 10
+    #       mqMinPoolSize: 10
+    #       mqNumConnectionsPerThreadLocal: 6
+    #       maxJMSConnectionsPerThread: 6
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 9
+    #       maxEndPoints_WorkflowActivityAS: 9
+    #       maxEndPoints_WorkflowEnactmentAS: 9
+    #       curamdb_maxPoolSize: 19
+    #       curamdb_numConnectionsPerThreadLocal: 2
+    #       curamdb_purgePolicy: EntirePool
+    #       curamdb_statementCacheSize: 1000
+    #       curamtimerdb_maxPoolSize: 9
+    #       curamtimerdb_numConnectionsPerThreadLocal: 2
+    #       curamtimerdb_purgePolicy: EntirePool
+    #       curamtimerdb_statementCacheSize: 1000
+    #       curamsessdb_maxPoolSize: 1
+    #       curamsessdb_numConnectionsPerThreadLocal: 2
+    #       curamsessdb_purgePolicy: EntirePool
+    #       curamsessdb_statementCacheSize: 1000
+    #   rest:
+    #     mqTuning:
+    #      resources:
+    #        requests:
+    #          cpu: 1
+    #          memory: 1024Mi
+    #        limits:
+    #          cpu: 1
+    #          memory: 1024Mi
+    #     producerTuning:
+    #       replicaCount: 3
+    #       resources:
+    #         requests:
+    #           cpu: 2
+    #           memory: 3584Mi
+    #         limits:
+    #           cpu: 2
+    #           memory: 3584Mi
+    #       jvm: ['-Xms2560M','-Xmx2560M','-Xmn1536M']
+    #       coreThreads: 8
+    #       maxThreads: 8
+    #       mqMaxPoolSize: 9
+    #       mqMinPoolSize: 9
+    #       mqNumConnectionsPerThreadLocal: 6
+    #       maxJMSConnectionsPerThread: 6
+    #       curamdb_maxPoolSize: 17
+    #       curamdb_numConnectionsPerThreadLocal: 2
+    #       curamdb_purgePolicy: EntirePool
+    #       curamdb_statementCacheSize: 1000
+    #       curamtimerdb_maxPoolSize: 9
+    #       curamtimerdb_numConnectionsPerThreadLocal: 2
+    #       curamtimerdb_purgePolicy: EntirePool
+    #       curamtimerdb_statementCacheSize: 1000
+    #       curamsessdb_maxPoolSize: 9
+    #       curamsessdb_numConnectionsPerThreadLocal: 2
+    #       curamsessdb_purgePolicy: EntirePool
+    #       curamsessdb_statementCacheSize: 1000
+    #     consumerTuning:
+    #       replicaCount: 6
+    #       resources:
+    #         requests:
+    #           cpu: 2
+    #           memory: 2048Mi
+    #         limits:
+    #           cpu: 2
+    #           memory: 2048Mi
+    #       jvm: ['-Xms1600M','-Xmx1600M','-Xmn960M','-verbose:sizes']
+    #       coreThreads: 9
+    #       maxThreads: 9
+    #       mqMaxPoolSize: 10
+    #       mqMinPoolSize: 10
+    #       mqNumConnectionsPerThreadLocal: 6
+    #       maxJMSConnectionsPerThread: 6
+    #       maxEndPoints_DPErrorAS: 1
+    #       maxEndPoints_WorkflowErrorAS: 1
+    #       maxEndPoints_CuramDeadMessageQueueAS: 1
+    #       maxEndPoints_DPEnactmentAS: 9
+    #       maxEndPoints_WorkflowActivityAS: 9
+    #       maxEndPoints_WorkflowEnactmentAS: 9
+    #       curamdb_maxPoolSize: 19
+    #       curamdb_numConnectionsPerThreadLocal: 2
+    #       curamdb_purgePolicy: EntirePool
+    #       curamdb_statementCacheSize: 1000
+    #       curamtimerdb_maxPoolSize: 9
+    #       curamtimerdb_numConnectionsPerThreadLocal: 2
+    #       curamtimerdb_purgePolicy: EntirePool
+    #       curamtimerdb_statementCacheSize: 1000
+    #       curamsessdb_maxPoolSize: 1
+    #       curamsessdb_numConnectionsPerThreadLocal: 2
+    #       curamsessdb_purgePolicy: EntirePool
+    #       curamsessdb_statementCacheSize: 1000
+    
     #   citizenportal:
     #     enabled: false
     #   curamwebservices:
@@ -270,11 +231,11 @@ uawebapp: {}
 #   ingressPath: /universal
 #   resources:
 #     requests:
-#       cpu: 2
-#       memory: 1000Mi
+#       cpu: 1
+#       memory: 1024Mi
 #     limits:
-#       cpu: 2
-#       memory: 1000Mi
+#       cpu: 1
+#       memory: 1024Mi
 
 # Override values in 'web' Chart
 web: {}
@@ -284,22 +245,23 @@ web: {}
 #   ingressPath: /CuramStatic
 #   resources:
 #     requests:
-#       cpu: 2
-#       memory: 1000Mi
+#       cpu: 1
+#       memory: 1024Mi
 #     limits:
-#       cpu: 2
-#       memory: 1000Mi
+#       cpu: 1
+#       memory: 1024Mi
 
 # Override values in 'xmlserver' Chart
 xmlserver: {}
-#   replicaCount: 1
+#   replicaCount: 6
 #   jvm:
-#      maxMemory: '-Djava.maxmemory=768m'
-#      threadStackSize: '-Djava.thread.stack.size=-Xss4m'
+#      maxMemory: '768m'
+#      threadStackSize: '-Xss4m'
+#      jvmOptions: ''
 #   config:
 #      socketTimeout: 60000
 #      threadPoolQueueSize: 200
-#      threadPoolSize: 6
+#      threadPoolSize: 5
 #   resources:
 #     requests:
 #       cpu: 2

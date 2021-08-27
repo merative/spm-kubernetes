@@ -1,0 +1,56 @@
+{{- include "sch.config.init" (list . "apps.sch.chart.config.values") -}}
+{{- range $name, $app := .Values.global.apps.config }}
+{{- if $app.enabled }}
+{{- $tuningParams := $app.consumerTuning }}
+{{- $maxThreads := (default $.Values.tuningDefaults.maxThreads $tuningParams.maxThreads) }}
+---
+###############################################################################
+# Copyright 2021 IBM Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $.Release.Name }}-tuning-consumer-{{ $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list $ $name) | nindent 4 }}
+data:
+  EX_CORE_THREADS: {{ default $.Values.tuningDefaults.coreThreads $tuningParams.coreThreads | quote }}
+  CM_MQ_MAXPOOLSIZE: {{ default $.Values.tuningDefaults.mqMaxPoolSize $tuningParams.mqMaxPoolSize | quote }}
+  CM_MQ_MINPOOLSIZE: {{ default $.Values.tuningDefaults.mqMinPoolSize $tuningParams.mqMinPoolSize | quote }}
+  EX_MAX_THREADS: {{ $maxThreads | quote }}
+  DS_CURAMDB_CACHE_SIZE: {{ default $.Values.tuningDefaults.curamdb_statementCacheSize $tuningParams.curamdb_statementCacheSize | quote }}
+  CM_CURAMDB_CONN_PER_THREAD: {{ default $.Values.tuningDefaults.curamdb_numConnectionsPerThreadLocal $tuningParams.curamdb_numConnectionsPerThreadLocal | quote }}
+  CM_CURAMDB_MAX_POOL_SIZE: {{ default $.Values.tuningDefaults.curamdb_maxPoolSize $tuningParams.curamdb_maxPoolSize | quote }}
+  CM_CURAMDB_PURGE_POLICY: {{ default $.Values.tuningDefaults.curamdb_purgePolicy $tuningParams.curamdb_purgePolicy | quote }}
+  CM_JMS_MAX_CONNECTIONS_PER_THREAD: {{ default $.Values.tuningDefaults.maxJMSConnectionsPerThread $tuningParams.maxJMSConnectionsPerThread | quote }}
+  CM_JMS_NUM_CONNECTIONS_PER_THREAD_LOCAL: {{ default $.Values.tuningDefaults.mqNumConnectionsPerThreadLocal $tuningParams.mqNumConnectionsPerThreadLocal | quote }}
+  DS_CURAMTIMERDB_CACHE_SIZE: {{ default $.Values.tuningDefaults.curamtimerdb_statementCacheSize $tuningParams.curamtimerdb_statementCacheSize | quote }}
+  CM_CURAMTIMERDB_CONN_PER_THREAD: {{ default $.Values.tuningDefaults.curamtimerdb_numConnectionsPerThreadLocal $tuningParams.curamtimerdb_numConnectionsPerThreadLocal | quote }}
+  CM_CURAMTIMERDB_MAX_POOL_SIZE: {{ default $.Values.tuningDefaults.curamtimerdb_maxPoolSize $tuningParams.curamtimerdb_maxPoolSize | quote }}
+  CM_CURAMTIMERDB_PURGE_POLICY: {{ default $.Values.tuningDefaults.curamtimerdb_purgePolicy $tuningParams.curamtimerdb_purgePolicy | quote }}
+  DS_CURAMSESSDB_CACHE_SIZE: {{ default $.Values.tuningDefaults.curamsessdb_statementCacheSize $tuningParams.curamsessdb_statementCacheSize | quote }}
+  CM_CURAMSESSDB_CONN_PER_THREAD: {{ default $.Values.tuningDefaults.curamsessdb_numConnectionsPerThreadLocal $tuningParams.curamsessdb_numConnectionsPerThreadLocal | quote }}
+  CM_CURAMSESSDB_MAX_POOL_SIZE: {{ default $.Values.tuningDefaults.curamsessdb_maxPoolSize $tuningParams.curamsessdb_maxPoolSize | quote }}
+  CM_CURAMSESSDB_PURGE_POLICY: {{ default $.Values.tuningDefaults.curamsessdb_purgePolicy $tuningParams.curamsessdb_purgePolicy | quote }}
+  CM_JMS_DPENACTMENT_MAXENDPOINTS: {{ ternary $maxThreads $tuningParams.maxEndPoints_DPEnactmentAS (not $tuningParams.maxEndPoints_DPEnactmentAS) | quote }}
+  CM_JMS_WORKFLOWACTIVITY_MAXENDPOINTS: {{ ternary $maxThreads $tuningParams.maxEndPoints_WorkflowActivityAS (not $tuningParams.maxEndPoints_WorkflowActivityAS) | quote }}
+  CM_JMS_WORKFLOWENACTMENT_MAXENDPOINTS: {{ ternary $maxThreads $tuningParams.maxEndPoints_WorkflowEnactmentAS (not $tuningParams.maxEndPoints_WorkflowEnactmentAS) | quote }}
+  CM_JMS_DPERROR_MAXENDPOINTS: {{ default $.Values.tuningDefaults.maxEndPoints_DPErrorAS $tuningParams.maxEndPoints_DPErrorAS | quote }}
+  CM_JMS_WORKFLOWERROR_MAXENDPOINTS: {{ default $.Values.tuningDefaults.maxEndPoints_WorkflowErrorAS $tuningParams.maxEndPoints_WorkflowErrorAS | quote }}
+  CM_JMS_CURAMDEADMESSAGEQUEUE_MAXENDPOINTS: {{ default $.Values.tuningDefaults.maxEndPoints_CuramDeadMessageQueueAS $tuningParams.maxEndPoints_CuramDeadMessageQueueAS | quote }}
+{{- end }}
+{{- end }}

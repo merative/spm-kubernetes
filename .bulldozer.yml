@@ -4,7 +4,7 @@ merge:
   trigger:
     labels: ["merge when ready"]
     comment_substrings: ["==AUTOMERGE==", "==MERGE_WHEN_READY=="]
-    branches: ["master"]
+    branches: ["main"]
     branch_patterns: ["epic/.*"]
   ignore:
     labels: ["do not merge"]
@@ -15,5 +15,5 @@ merge:
 update:
   trigger:
     labels: ["wip", "update me"]
-    branches: ["master"]
+    branches: ["main"]
     branch_patterns: ["epic/.*"]

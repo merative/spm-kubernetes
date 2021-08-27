@@ -5,50 +5,20 @@ description: Known issues
 
 Some issues might require product changes to resolve them.
 <AnchorLinks small>
-  <AnchorLink>Minikube dashboard command on Red Hat</AnchorLink>
-  <AnchorLink>Using Helm on Red Hat</AnchorLink>
+Helm Charts:
+  <AnchorLink>Storage initialized using a runbook version older than 20.9.0</AnchorLink>
+WebSphere Liberty:
   <AnchorLink>Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages</AnchorLink>
-  <AnchorLink>The logs are filled by repetitions of the ICWWKS4001I message</AnchorLink>
-  <AnchorLink>Limitations when using the Minikube none driver</AnchorLink>
+  <AnchorLink>The logs contain occurrences of the ICWWKS4001I message</AnchorLink>
   <AnchorLink>IBM MQ XAER_PROTO issue</AnchorLink>
+Minikube:
+  <AnchorLink>Minikube dashboard command on Red Hat</AnchorLink>
+  <AnchorLink>Limitations when using the Minikube none driver</AnchorLink>
 </AnchorLinks>
 
-## Minikube dashboard command on Red Hat
+## Helm Charts
 
-When you follow the steps`Kubernetes dashboard` in [Monitoring the application](/monitoring/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
-For more information, see [Minikube issue 5815](https://github.com/kubernetes/minikube/issues/5815).
-
-## Using Helm on Red Hat
-
-When you use Helm on Red Hat, you might have to use the Linux® `yum` command to install the `socat` utility. Otherwise, Tiller does not work properly.
-
-## Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages
-
-The `Context Root Not Found` error occurs because the deployment does not install the BIRT application.
-
-## The logs are filled by repetitions of the ICWWKS4001I message
-
-For example:
-
-```
-[1/22/19 8:48:18:272 GMT] 000000ba com.ibm.ws.security.token.internal.TokenManagerImpl ICWWKS4001I: The security token cannot be validated. This can be for the following reasons:
-1. The security token was generated on another server using different keys.
-2. The token configuration or the security keys of the token service that created the token has been changed.
-3. The token service that created the token is no longer available.
-```
-
-The root cause is users not clearing the browser cache after the application is redeployed. Users might have old, local cookie files.
-
-However, after a redeployment or an upgrade, the application does not recognize the cookies that are presented to it by the computer, which causes the error messages in the logs.
-
-## Limitations when using the Minikube none driver
-
-There are a number of limitations associated with the Minikube none driver that are documented in [Minikube documentation](https://minikube.sigs.k8s.io/docs/reference/drivers/none/).
-You must evaluate the impacts of these limitations for your implementation.
-
-However, the unavailability of the `minikube ssh` command might make it difficult to analyze and resolve problems and issues. For example, switching to the kvm2 driver enables the use of `minikube ssh` and resolves issues with the Docker Registry.
-
-## Storage initialized using a runbook version older than 20.9.0
+### Storage initialized using a runbook version older than 20.9.0
 
 If storage has been initialized using a version of the runbook older than 20.9.0, you will need to update your
 override values to include a supplementary group:
@@ -63,7 +33,28 @@ global:
 
 This is due to a update in IBM MQ, the details of which can be found [here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md).
 
-## IBM MQ XAER_PROTO issue
+## WebSphere Liberty
+
+### Context Root Not Found error on the SPM home page, BIRT, or caseload summary pages
+
+The `Context Root Not Found` error occurs because the deployment does not install the BIRT application.
+
+### The logs contain occurrences of the ICWWKS4001I message
+
+For example:
+
+```
+[1/22/19 8:48:18:272 GMT] 000000ba com.ibm.ws.security.token.internal.TokenManagerImpl ICWWKS4001I: The security token cannot be validated. This can be for the following reasons:
+1. The security token was generated on another server using different keys.
+2. The token configuration or the security keys of the token service that created the token has been changed.
+3. The token service that created the token is no longer available.
+```
+
+The root cause is users not clearing the browser cache after the application is redeployed. Users might have old, local cookie files.
+
+However, after a redeployment or an upgrade, the application does not recognize the cookies that are presented to it by the computer, which causes the error messages in the logs.
+
+### IBM MQ XAER_PROTO issue
 
 The following issue has been observed in the JMS Consumer pods when JMS transactions is processed by a newly deployed pod, at the initial JMS transactions. The exception in thrown by the IBM MQ Resource Adapter.
 
@@ -82,3 +73,38 @@ The error code was XAER_PROTO. The exception stack trace follows: javax.transact
 ```
 
 The issue does not affect the state of the Queue Manager. It does not disrupt the connection between the JMS Consumer pods and IBM MQ Queue Manager nor the ability of JMS Consumer to process JMS messages.
+
+### Timeout messages WTRN0006W and WTRN0124I
+
+WebSphere Liberty messages `WTRN0006W` and `WTRN0124I` may appear in `messages.log` as shown here:
+
+```
+WTRN0006W: Transaction 0000017A49B1BD8E0000000125A119FC115513F2FEA8810BAA357685E0C649F93911ADC10000017A49B1BD8E0000000125A119FC115513F2FEA8810BAA357685E0C649F93911ADC100000001 has timed out after 180 seconds.
+WTRN0124I: When the timeout occurred the thread with which the transaction is, or was most recently, associated was Thread[Default Executor-thread-4,5,Default Executor Thread Group]. The stack trace of this thread when the timeout occurred was:
+        java.lang.Object.wait(Native Method)
+        java.lang.Object.wait(Object.java:218)
+        com.ibm.ws.threading.internal.BoundedBuffer.waitGet_(BoundedBuffer.java:176)
+        com.ibm.ws.threading.internal.BoundedBuffer.take(BoundedBuffer.java:647)
+        java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1085)
+        java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+        java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+        java.lang.Thread.run(Thread.java:822)
+```
+
+When these messages appear with a stacktrace similar to above it is not a relvant error or a thread hanging, as per this
+[WebSphere Application Server support page](https://www.ibm.com/support/pages/identifying-idle-threads-thread-dumps-taken-against-websphere-application-server),
+which also covers Liberty.
+
+## Minikube
+
+### Minikube dashboard command on Red Hat
+
+When you follow the steps`Kubernetes dashboard` in [Monitoring the application](/monitoring/interrogate_runtime), the `minikube dashboard` command might not work on Red Hat operating systems.
+For more information, see [Minikube issue 5815](https://github.com/kubernetes/minikube/issues/5815).
+
+### Limitations when using the Minikube none driver
+
+There are a number of limitations associated with the Minikube none driver that are documented in [Minikube documentation](https://minikube.sigs.k8s.io/docs/reference/drivers/none/).
+You must evaluate the impacts of these limitations for your implementation.
+
+However, the unavailability of the `minikube ssh` command might make it difficult to analyze and resolve problems and issues. For example, switching to the kvm2 driver enables the use of `minikube ssh` and resolves issues with the Docker Registry.

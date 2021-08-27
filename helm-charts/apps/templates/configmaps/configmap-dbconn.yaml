@@ -38,19 +38,34 @@ data:
 
       <!-- ========================== Data Sources ========================== -->
       <dataSource id="curamdb" jndiName="jdbc/curamdb"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
+        isolationLevel="TRANSACTION_REPEATABLE_READ"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
         statementCacheSize="${env.DS_CURAMDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMDB") | nindent 8 }}
       </dataSource>
 
       <dataSource id="DefaultDataSource" jndiName="jdbc/curamtimerdb"
-        isolationLevel="TRANSACTION_READ_COMMITTED"
+        isolationLevel="TRANSACTION_REPEATABLE_READ"
         jdbcDriverRef="CuramJdbcDriver" type="javax.sql.XADataSource"
         statementCacheSize="${env.DS_CURAMTIMERDB_CACHE_SIZE}">
         {{- include "apps.dsprops.fragment" (list . "CURAMTIMERDB") | nindent 8 }}
       </dataSource>
-      <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTimer_${env.POD_HOSTNAME}" dataSourceRef="DefaultDataSource" createTables="true" />
-      <persistentExecutor id="defaultEJBPersistentTimerExecutor" taskStoreRef="EJBTimerDatabaseStore" missedTaskThreshold="5m"/>
+
+      <databaseStore id="EJBTimerDatabaseStore" tablePrefix="EJBTIMER_${env.POD_TIMER_TYPE}_" dataSourceRef="DefaultDataSource" createTables="true"/>
+      <persistentExecutor id="defaultEJBPersistentTimerExecutor"
+        taskStoreRef="EJBTimerDatabaseStore"
+        missedTaskThreshold="{{ .Values.persistentTimers.missedTaskThreshold }}"
+        pollInterval="{{ .Values.persistentTimers.pollInterval }}"
+        initialPollDelay="{{ .Values.persistentTimers.initialPollDelay }}"
+        {{- if .Values.persistentTimers.pollSize }}
+        pollSize="{{ .Values.persistentTimers.pollSize }}"
+        {{- end }}
+      />
+      <ejbContainer>
+        <timerService persistentExecutorRef="defaultEJBPersistentTimerExecutor"
+          missedPersistentTimerAction="{{ .Values.persistentTimers.missedPersistentTimerAction }}"
+          lateTimerThreshold="{{ .Values.persistentTimers.lateTimerThreshold }}"
+        />
+      </ejbContainer>
 
     </server>

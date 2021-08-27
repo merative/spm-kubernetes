@@ -135,5 +135,4 @@ spec:
             {{- if .Values.global.apps.common.persistence.enabled }}
             - name: {{ .Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" . }}
-              subPath: {{ include "persistence.subDir" . }}
             {{- end }}

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
 ###############################################################################
 
 apiVersion: v2
-kubeVersion: ">=1.16"
-appVersion: "7.0.11.0"
+kubeVersion: ">=1.19"
+appVersion: "8.0.0.0"
 name: spm
 description: |-
   Umbrella Helm Chart for Full Curam Deployment of SPM within a Kubernetes Cluster
@@ -30,7 +30,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 2.8.0
+version: 21.8.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
@@ -56,22 +56,22 @@ icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~3.7.0"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: batch
-    version: "~2.1.1"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: uawebapp
-    version: "~3.2.2"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: web
-    version: "~3.2.2"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: mqserver
-    version: "~1.12.0"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: xmlserver
-    version: "~2.2.0"
+    version: "~21.8.0"
     repository: "@local-development"
   - name: ibm-sch
     repository: "@sch"

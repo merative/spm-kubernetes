@@ -60,3 +60,25 @@ serviceName={{ $.Release.Name }}-uawebapp name=uaRoute hash=sha1 path=/;
 {{- end -}}
 serviceName={{ $.Release.Name }}-web name=webRoute hash=sha1 path=/;
 {{- end }}
+
+{{/*
+Template for Ingress path definitions
+*/}}
+{{- define "spm.ingress.item" -}}
+- path: {{ .path }}
+  pathType: ImplementationSpecific
+  backend:
+    {{- if .caps.APIVersions.Has "networking.k8s.io/v1" }}
+    service:
+      name: {{ .name }}
+      port:
+        {{- if (kindIs "int" .port) }}
+        number: {{ .port }}
+        {{- else }}
+        name: {{ .port }}
+        {{- end }}
+    {{- else }}
+    serviceName: {{ .name }}
+    servicePort: {{ .port }}
+    {{- end }}
+{{- end -}}

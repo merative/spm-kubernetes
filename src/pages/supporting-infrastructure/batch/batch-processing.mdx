@@ -13,7 +13,7 @@ The schedule can be adjusted using the `batch.programs.queued.schedule` key.
 
 </InlineNotification>
 
-The pod runs the standard command `build.sh runbatch` that is described in [Running the Batch Launcher](https://www.ibm.com/support/knowledgecenter/SS8S5A_7.0.10/com.ibm.curam.content.doc/Operations/c_COPSGUIDE_Processes2RunningBatchLauncher1.html).
+The pod runs the standard command `build.sh runbatch` that is described in [Running the Batch Launcher](https://www.ibm.com/docs/en/spm/8.0.0?topic=launcher-running-batch).
 
 At the end of the execution, the pod stops but is not destroyed and a new pod is created after another 30 minutes. Access the log by running the `kubectl logs pod/podname` command.
 

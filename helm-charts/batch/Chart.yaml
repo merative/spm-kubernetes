@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
 # limitations under the License.
 ###############################################################################
 apiVersion: v2
-kubeVersion: ">=1.16"
-appVersion: "7.0.11.0"
+kubeVersion: ">=1.19"
+appVersion: "8.0.0.0"
 name: batch
 description: |-
   Helm Chart for SPM Batch within a Kubernetes Cluster
@@ -29,7 +29,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 2.1.2
+version: 21.8.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team

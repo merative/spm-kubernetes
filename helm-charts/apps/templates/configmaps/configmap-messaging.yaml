@@ -52,7 +52,7 @@ data:
       <variable name="connectionNameList" value="${env.MQ_CONN_NAME_LIST}"/>
       {{- else }}
       <variable name="mqHostName" value="${env.MQ_HOST_NAME}"/>
-      <variable name="listenerPort" value="1414"/>
+      <variable name="listenerPort" value="${env.MQ_CHANNEL_PORT}"/>
       {{- end }}
 
       <jmsActivationSpec id="eis/DPEnactmentAS" maxEndpoints="${env.CM_JMS_DPENACTMENT_MAXENDPOINTS}">
