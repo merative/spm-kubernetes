@@ -58,6 +58,14 @@ cd $SERVER_DIR
 ./build.sh configtest
 ```
 
+<InlineNotification>
+
+**Note:** When running `./build.sh configtest` you may experience a failed build with an `Unsupported version:` error in relation to the WebSphere Liberty version.
+
+If this happens please refer to the [Prerequisite software](https://ibm.github.io/spm-kubernetes/prereq/prereq/) for the correct list of supported WebSphere Liberty versions.
+
+</InlineNotification>
+
 ## Set up static content
 
 The static content server feature allows static content to be hosted on a separate web server.

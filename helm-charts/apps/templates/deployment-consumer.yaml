@@ -356,20 +356,34 @@ spec:
               value: {{ $.Values.global.timezone }}
             - name: POD_TIMER_TYPE
               value: {{ $.Chart.Name }}_consumer_{{ $name }}
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - /bin/grep "Application CuramServerCode started" {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
+            periodSeconds: 10
+          {{- with .readinessPath }}
           readinessProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
-                - /bin/grep "Application CuramServerCode started" {{ include "apps.logsDir" $ }}/messages*.log
-            initialDelaySeconds: 90
+                - /opt/ibm/helpers/runtime/readiness-probe.sh {{ include "apps.logsDir" $ }}/messages*.log {{ $.Values.global.ingress.hostname }}{{ . }}
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
+            timeoutSeconds: 2
+          {{- end }}
           livenessProbe:
             exec:
               command:
               - /bin/sh
               - -c
               - /opt/ibm/helpers/runtime/liveness-probe.sh {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
+            periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             {{- if $tuningParams.resources }}
             {{- toYaml ($tuningParams.resources) | nindent 12 }}

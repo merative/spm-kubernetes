@@ -6,3 +6,6 @@ ignore=^http://localhost
 
 internlinks=^http://TRAVIS_HOST:8888/
 checkextern=1
+
+[checking]
+timeout=120
