@@ -1,7 +1,7 @@
 {
   "name": "spm-kubernetes",
   "private": true,
-  "version": "21.6.2",
+  "version": "21.6.3",
   "license": "Apache 2.0",
   "scripts": {
     "dev": "gatsby develop -H 0.0.0.0",
