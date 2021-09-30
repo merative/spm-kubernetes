@@ -2,12 +2,24 @@
 
 All notable changes to this project will be documented in this file
 
-## v21.8.1
+## v21.9.0
+
+### Added
+
+* Add a startup probe to the `apps` producer and consumers pods
+
+### Changed
+
+* Updated WebSphere Liberty version to include 21.0.0.9
+* Updated support statement for Helm v3 in prerequisite
+  * Due to breaking changes in Helm release `v3.7.0`, IBM Cúram Social Program Management only supports up to Helm `v3.6.3`
+* The following helm-charts have been updated to chart version `21.9.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Timeout for `linkchecker` updated from 60 to 120
+* Clarified prerequisite software statements
+* Update the readiness probe of the `apps` producer and consumers pods, consider a pod ready if curl to application link gives successful response or if codes `CWWKZ0001I` & `CWWKF0011I` are found in message logs
+* Updated the liveness probe to check only the last 1000 lines of the logs file
 
 ### Fixed
-
-* Fixed broken link for jmx monitoring
-* Fixed `github pages` generation to build from `main` instead of `master`
 
 ## v21.8.0
 
@@ -20,8 +32,7 @@ All notable changes to this project will be documented in this file
 
 ### Added
 
-* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html)
-or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
+* Configure `PodMonitor` resources for the `apps` producer and consumers pods and for the `mqserver` metrics pods to integrate with OpenShift's [built-in Prometheus](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator)
 
 ### Changed
 
@@ -34,6 +45,8 @@ or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-opera
 
 * Update Oracle Database driver name to `ojdbc8.jar` ([#84](https://github.com/IBM/spm-kubernetes/issues/84))
 * Fixed issue where MQ pods deployed by MQ Operator on Openshift were not respecting tuning params
+
+### Removed
 
 ## v21.7.0 ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green)
 
@@ -74,7 +87,7 @@ or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-opera
 * Updated runbook pre-requisites page to add information on Docker
 * Changed MQ configuration for the `apps` producer and consumers pods to be using separated channels
 * Moved tuning settings from `initContainer` to a new ConfigMap
-* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly
+* IBM Documentation has now replaced IBM Knowledge Center. Runbook links have been updated accordingly.
 
 ### Fixed
 
@@ -93,7 +106,7 @@ or [Prometheus Operator](https://github.com/prometheus-operator/prometheus-opera
 ### Added
 
 * Added capability to tune Kubernetes resources for MQ pods for individual applications
-* Added clarification regarding sample values files
+* Added clarification regarding sample values files.
 * Added JVM garbage collection and tuning settings for XML server pods
   * Updated sample override files to include example settings
 * Added capability to specify thread pool size, thread queue size, and socket timeout value for XML server pods

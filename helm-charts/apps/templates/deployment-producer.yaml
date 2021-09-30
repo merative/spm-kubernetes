@@ -408,12 +408,14 @@ spec:
               value: {{ $.Chart.Name }}_producer_{{ $name }}
           {{- with .readinessPath }}
           readinessProbe:
-            httpGet:
-              path: {{ . }}
-              port: client
-              scheme: HTTPS
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - /opt/ibm/helpers/runtime/readiness-probe.sh {{ include "apps.logsDir" $ }}/messages*.log {{ $.Values.global.ingress.hostname }}{{ . }}
             initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
+            timeoutSeconds: 2
           {{- end }}
           {{- if .readinessTCPProbe }}
           readinessProbe:
@@ -432,6 +434,14 @@ spec:
             initialDelaySeconds: 90
             periodSeconds: 10
           {{- end }}
+          startupProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - /bin/grep -e "application available .*{{ $app.ingressPath }}" {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
+            periodSeconds: 10
           livenessProbe:
             exec:
               command:
@@ -440,6 +450,7 @@ spec:
               - /opt/ibm/helpers/runtime/liveness-probe.sh {{ include "apps.logsDir" $ }}/messages.log
             initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             {{- if $tuningParams.resources }}
             {{- toYaml ($tuningParams.resources) | nindent 12 }}

@@ -83,6 +83,8 @@
       path: /monitoring/jmx-statistics-performance-monitoring/
     - title: Monitoring MQ Queue Depth Events
       path: /monitoring/mq_queue_depth_events_monitoring/
+    - title: Health Checks
+      path: /monitoring/Health Checks/  
 - title: Troubleshooting
   pages:
     - title: XML server

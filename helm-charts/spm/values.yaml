@@ -108,7 +108,7 @@ global:
           limits:
             cpu: 1.5
             memory: 2Gi
-        readinessString: "application available .*/Rest"
+        readinessPath: /Rest/
       citizenportal:
         enabled: false
         replicaCount: 1
