@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.6.3
+
+### Added
+
+* Add a startup probe to the `apps` producer and consumers pods
+
+### Changed
+
+* Updated WebSphere Liberty version to include 21.0.0.9
+* The following helm-charts have been updated to chart version `21.6.3`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+* Timeout for linkchecker updated from 60 to 120
+* Update the readiness probe of the `apps` producer and consumers pods, consider a pod ready if curl to application link gives successful response or if codes 'CWWKZ0001I & CWWKF0011I' are found in message logs.
+* Updated the liveness probe to check only the last 1000 lines of the logs file
+* Updated support statement for Helm v3 in prerequisite
+  * Due to breaking changes in Helm release `v3.7.0`, IBM Cúram Social Program Management only supports up to Helm `v3.6.3`
+
+### Fixed
+
+* Restore setting of environment variable `POD_HOSTNAME` in Liberty `server.xml` for the `apps` producer and consumers pods
+
 ## v21.6.2
 
 ### Breaking Changes

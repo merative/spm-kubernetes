@@ -126,6 +126,8 @@ spec:
         {{- end }}
         - name: keystore-volume
           emptyDir: {}
+        - name: jvm-volume
+          emptyDir: {}
         - name: env-volume
           emptyDir: {}
         - name: service-certs
@@ -250,8 +252,24 @@ spec:
             - -c
             - >
               {{- range (default $app.jvm $tuningParams.jvm) }}
-              echo "{{ . }}" >> /mnt/envvol/jvm.options;
+              echo "{{ . }}" >> /mnt/jvmvol/jvm.options;
               {{- end }}
+          volumeMounts:
+            - name: jvm-volume
+              mountPath: /mnt/jvmvol
+        - name: populate-server-env
+          {{- include "utilities.definition" $ | indent 10 }}
+          env:
+            - name: podHostname
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+          command:
+            - /bin/sh
+            - -c
+            - >
+              echo "POD_HOSTNAME=$podHostname" | sed "s/-/_/g" > /mnt/envvol/server.env;
           volumeMounts:
             - name: env-volume
               mountPath: /mnt/envvol
@@ -328,20 +346,34 @@ spec:
             {{- end }}
             - name: TZ
               value: {{ $.Values.global.timezone }}
-          readinessProbe:
+          startupProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
-                - /bin/grep "Application CuramServerCode started" {{ include "apps.logsDir" $ }}/messages*.log
-            initialDelaySeconds: 90
+                - /bin/grep "Application CuramServerCode started" {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
+          {{- with .readinessPath }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - /opt/ibm/helpers/runtime/readiness-probe.sh {{ include "apps.logsDir" $ }}/messages*.log {{ $.Values.global.ingress.hostname }}{{ . }}
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
+            periodSeconds: 10
+            timeoutSeconds: 2
+          {{- end }}
           livenessProbe:
             exec:
               command:
               - /bin/sh
               - -c
               - /opt/ibm/helpers/runtime/liveness-probe.sh {{ include "apps.logsDir" $ }}/messages.log
+            initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
+            periodSeconds: 10
+            timeoutSeconds: 2
           resources:
             {{- if $tuningParams.resources }}
             {{- toYaml ($tuningParams.resources) | nindent 12 }}
@@ -401,8 +433,11 @@ spec:
             - name: {{ $.Release.Name }}-persistence-volume
               mountPath: {{ include "persistence.mountPoint" $ }}
             {{- end }}
-            - name: env-volume
+            - name: jvm-volume
               mountPath: /config/jvm.options
               subPath: jvm.options
+            - name: env-volume
+              mountPath: /config/server.env
+              subPath: server.env
 {{- end }}
 {{- end }}

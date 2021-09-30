@@ -1,0 +1,27 @@
+---
+title: Health Checks
+description: Health Checks
+---
+
+## What are health checks
+
+A health check periodically performs diagnostics on a running container to determine when a container application has started, when to restart a container and to decide if a pod should receive traffic.
+You can use the Startup, Readiness and Liveness Probes to perform the health checks.
+
+## Startup Probe
+
+A startup probe helps you to understand whether the application within a container is started.
+The liveness and readiness check is disabled until the startup probe succeeds, making sure those probes don't interfere with the application startup.
+If the startup probe does not succeed within a specified time period, the kubelet kills the container, and the container is subject to the pod restartPolicy.
+
+## Readiness Probe
+
+A readiness probe determines if a container is ready to start accepting traffic. If the readiness probe fails for a container, the kubelet removes the pod from the list of available service endpoints.
+
+## Liveness Probe
+
+A liveness probe determines if a container is still running. If the liveness probe fails the pod then responds based on its restart policy.
+
+More details about the Startup, Readiness and Liveness Probes can be found
+[here](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) on Kubernetes
+site and [here](https://docs.openshift.com/container-platform/4.6/applications/application-health.html) on OpenShift site.
