@@ -106,6 +106,14 @@ helm template apps
 
 To publish the individual charts to the Chart museum repository, run the following commands from the `helm-charts` folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](/prereq/git):
 
+<InlineNotification kind="warning">
+
+In October 2021, Helm `v3.7.0` introduced a number of breaking changes, which required modifications of the tooling used in this runbook. For local development, SPM requires [chartmuseum/helm-push](https://github.com/chartmuseum/helm-push).
+
+Due to the changes introduced as part of Helm `v3.7.0` and Chart museum `v0.10.0`, when using Chartmuseum the target `helm push` has changed to `helm cm-push`
+
+</InlineNotification>
+
 ```shell
 cd $SPM_HOME/helm-charts
 
