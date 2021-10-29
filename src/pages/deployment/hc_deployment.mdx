@@ -14,8 +14,13 @@ deployment. It must be all lowercase. All kubernetes objects in your deployment 
 
 For now you could just use `releasename` and for more information see [the helm documentation](https://helm.sh/docs/intro/using_helm/).
 
+<InlineNotification>
+
+**Note:** Helm v3 (`releasename` is mandatory for Helm v3)
+
+</InlineNotification>
+
 ```shell
-# Helm v3 ('releasename' is mandatory for Helm v3)
 helm install releasename local-development/spm
 ```
 
