@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.10.0
+
+### Breaking Changes
+
+* Helm `v3.7.0` introduced a number of breaking changes, which required modifications of the tooling used in this runbook..
+  * SPM requires [chartmuseum/helm-push](https://github.com/chartmuseum/helm-push). Due to the changes introduced as part of Helm `v3.7.0` and Chart museum `v0.10.0`, Chartmuseum has change `helm push` to `helm cm-push`.
+  For more information see [chartmuseum/helm-push v0.10.0](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0) release notes.
+
+### Changed
+
+* The following helm-charts have been updated to chart version `21.10.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Updated support statement for Helm v3 in prerequisite
+  * IBM Cúram Social Program Management now supports Helm `v3.7.0` or greater
+* `kubeVersion` for all helm-charts updated to `">=1.20"`
+* Updated the minimum supported version of Kubernetes to `1.20`
+
+### Removed
+
+* Removed support for Kubernetes `1.19`
+
 ## v21.9.0
 
 ### Added

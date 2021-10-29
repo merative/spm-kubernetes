@@ -47,7 +47,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 | Supported Software                                                              | Version                   | Prerequisite Minimum  | Notes       |
 | ------------------------------------------------------------------------------- | ------------------------- | --------------------- | ------------|
 | WebSphere Liberty                                                               | 21.0.0.9, 20.0.0.12       | 20.0.0.12             | 1           |
-| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.19 and future releases  | 1.19                  | 2,3         |
+| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.20 and future releases  | 1.20                  | 2,3         |
 | OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future releases   | 4.6 <br/> 4.6 EUS     | 4,5         |
 | IBM MQ LTS                                                                      | 9.2 and future fix packs<br/> 9.1 and future fix packs | 9.2.0.2  <br/> 9.1.0.5 | 6           |
 | IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.2 and future fix packs  | 9.2.2.0               | 7           |
@@ -68,8 +68,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(10)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
 |`(11)` &#124; IBM Cúram Social Program Management *only requires* Docker to build container images, IBM Cúram Social Program Management *does not require* Docker as a container runtime engine.|
 |`(12))` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
-|`(13)` &#124; Due to breaking changes in Helm release `v3.7.0`, IBM Cúram Social Program Management only supports up to Helm `v3.6.3`|
-
+|`(13)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
 </AccordionItem>
 
 <AccordionItem title="SPM 7.0.11.0">
@@ -78,7 +77,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 | ------------------------------------------------------------------------------- | ------------------------- | --------------------- | ------------|
 | WebSphere Liberty                                                               | 21.0.0.9, 20.0.0.9        | 20.0.0.9              | 1           |
 | OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future releases   | 4.6 <br/> 4.6 EUS     | 12          |
-| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.19 and future releases  | 1.19                  | 2,11        |
+| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.20 and future releases  | 1.20                  | 2,11        |
 | IBM MQ LTS                                                                      | 9.1 and future fix packs  | 9.1.0.5               | 3           |
 | IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.1 and future fix packs  | 9.1.5.0               | 8           |
 | Docker                                                                          | 19.03                     | 19.03.5               | 4,5,6,9,13  |
@@ -100,7 +99,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(11)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-3` is *deprecated*, and `n-4` is *unsupported*. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions) and [Kubernetes versions release history](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions#release-history)|
 |`(12)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
 |`(13)` &#124; IBM Cúram Social Program Management *only requires* Docker to build container images, IBM Cúram Social Program Management *does not require* Docker as a container runtime engine.|
-|`(14)` &#124; Due to breaking changes in Helm release `v3.7.0`, IBM Cúram Social Program Management only supports up to Helm `v3.6.3`|
+|`(14)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
 
 </AccordionItem>
 
@@ -109,7 +108,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 | Supported Software            | Version                   | Prerequisite Minimum  | Notes    |
 | ----------------------------- | ------------------------- | --------------------- | -------- |
 | WebSphere Liberty             | 20.0.0.9                  | 19.0.0.12             | 1,8      |
-| Kubernetes                    | 1.19 and future releases  | 1.19                  | 2,8,9    |
+| Kubernetes                    | 1.20 and future releases  | 1.20                  | 2,8,9    |
 | IBM MQ                        | 9.1 and future fix packs  | 9.1.0.4               | 3        |
 | Docker                        | 19.03                     | 19.03.5               | 4,5,6,10 |
 | Docker                        | 20.10                     | 20.10.2               | 4,5,6,11 |
@@ -128,7 +127,7 @@ The technologies listed are fixed version support only, unless stated otherwise.
 |`(9)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
 |`(10)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
 |`(11)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
-|`(12)` &#124; Due to breaking changes in Helm release `v3.7.0`, IBM Cúram Social Program Management only supports up to Helm `v3.6.3`|
+|`(12)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
 
 </AccordionItem>
 
