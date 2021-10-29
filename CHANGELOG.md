@@ -10,8 +10,6 @@ All notable changes to this project will be documented in this file
   * SPM requires [chartmuseum/helm-push](https://github.com/chartmuseum/helm-push). Due to the changes introduced as part of Helm `v3.7.0` and Chart museum `v0.10.0`, Chartmuseum has change `helm push` to `helm cm-push`.
   For more information see [chartmuseum/helm-push v0.10.0](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0) release notes.
 
-### Added
-
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.10.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
@@ -23,8 +21,6 @@ All notable changes to this project will be documented in this file
 ### Removed
 
 * Removed support for Kubernetes `1.19`
-
-### Fixed
 
 ## v21.9.0
 
