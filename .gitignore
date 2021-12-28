@@ -16,6 +16,7 @@ staticcontent
 *!test.txt
 .gradle
 *.jar
+!dockerfiles/Liberty/xmlserver-metrics/xmlserver_prometheus*.jar
 *.zip
 *.swp
 StaticContent.zip

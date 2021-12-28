@@ -10,6 +10,7 @@
 
 * Deployment of a single pod listening on port 1800
 * Exposed to SPM using a service for potential load balancing
+* ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Sample sidecar deployment provided for making XML server statistics available to Prometheus
 
 ## Prerequisites
 

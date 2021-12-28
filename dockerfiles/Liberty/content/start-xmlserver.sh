@@ -70,5 +70,13 @@ fi
 JVM_OPTIONS="$JVM_OPTIONS $JVM_GC_OPTS"
 
 sed -i "s#<property name=\"java.jvmargs\" value=\"-Dfake.property=1\"\/>#<property name=\"java.jvmargs\" value=\"$JVM_OPTIONS\"\/>#g" xmlserver.xml
-ant -f xmlserver.xml  2>&1 | tee -a tmp/xmlserver.log
 
+# Set XML server options, if specified in the helm chart; e.g., in the xmlserver/values.xml file:
+#   startOptions: -forcestatswrite
+if [ -z "${XMLSERVER_OPTIONS+x}" ] ; then
+  XMLSERVER_OPTIONS=""
+else
+  XMLSERVER_OPTIONS='-Dadditional.args="'$XMLSERVER_OPTIONS'"'
+fi
+
+ant -f xmlserver.xml $XMLSERVER_OPTIONS 2>&1 | tee -a tmp/xmlserver.log

@@ -63,18 +63,20 @@
   hasDivider: true
 - title: Supporting infrastructure
   pages:
-    - title: MQ Overview and Configuration
-      path: /supporting-infrastructure/mq/mq-overview/
-    - title: Cloud Object Storage
-      path: /supporting-infrastructure/COS/
-    - title: LogDNA
-      path: /supporting-infrastructure/LogDNA/
     - title: Batch Processing
       path: /supporting-infrastructure/batch/batch-processing/
+    - title: Cloud Object Storage
+      path: /supporting-infrastructure/COS/
     - title: Enabling ISAM
       path: /supporting-infrastructure/ISAM/
+    - title: LogDNA
+      path: /supporting-infrastructure/LogDNA/
+    - title: MQ Overview and Configuration
+      path: /supporting-infrastructure/mq/mq-overview/
     - title: Persistent Timers
       path: /supporting-infrastructure/persistent-timers/
+    - title: XML server service
+      path: /supporting-infrastructure/xmlserver-service/
 - title: Monitoring
   pages:
     - title: Monitoring the application
@@ -83,12 +85,14 @@
       path: /monitoring/jmx-statistics-performance-monitoring/
     - title: Monitoring MQ Queue Depth Events
       path: /monitoring/mq_queue_depth_events_monitoring/
+    - title: Monitoring XML servers
+      path: /monitoring/xmlserver-monitoring/
     - title: Health Checks
-      path: /monitoring/Health Checks/  
+      path: /monitoring/Health Checks/
+    - title: Monitoring Apache HTTP Server metrics
+      path: /monitoring/Web_components_Apache_monitoring/
 - title: Troubleshooting
   pages:
-    - title: XML server
-      path: /troubleshooting/xmlserver/
     - title: Handling failed JMS messages on the MQ dead message queue
       path: /troubleshooting/failed_jms_messages/
     - title: Remote debugging

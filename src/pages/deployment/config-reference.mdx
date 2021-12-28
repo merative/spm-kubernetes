@@ -159,7 +159,7 @@ The default batch configuration runs any queued jobs every 30 minutes (equivalen
 Additional batch jobs may be added with additional keys under `batch.programs`.
 
 The following `batch.programs` example adds the
-[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/8.0.0?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
+[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/8.0.1?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
 batch job to be run at 2AM every Sunday night:
 
 ```yaml
@@ -263,17 +263,19 @@ We only support containerised MQ on Openshift.
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `xmlserver.replicaCount` | Number of replicas to be deployed | `1` |
+| `xmlserver.serverPort` | The port that the XML server (its service) listens on (see note below) | `1800` |
 | `xmlserver.jvm.maxMemory` | The maximum Java heap for the XML server | `768m` |
 | `xmlserver.jvm.threadStackSize` | The Java thread stack size for the XML server | `-Xss4m` |
-| `xmlserver.jvm.jvmOptions` | Options to be passed to the JVM eg min heapsize -Xms1024m  | `''` |
+| `xmlserver.jvm.jvmOptions` | Options to be passed to the JVM; for example, the minimum heap size: `-Xms1024m` | `''` |
 | `xmlserver.config.threadPoolSize` | The XML server thread pool size | `5` |
 | `xmlserver.config.threadPoolQueueSize` | The XML server thread pool queue size | `200` |
 | `xmlserver.config.socketTimeout` | The XML server socket timeout (milliseconds) | `60000` |
 | `xmlserver.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
+| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.startOptions` | XML server start option; specifically for specifying `-forcestatswrite`, described in [Statistics](https://www.ibm.com/docs/en/spm/8.0.1?topic=server-statistics) | `''` |
 
 <InlineNotification>
 
-In a Kubernetes environment, there is only one XML Server from SPM's point of view - the load balancing functionality is handled by Kubernetes services between all the replicas.
+In a Kubernetes environment the XML server replicas are abstracted to the single `xmlserver.serverPort` by a Kubernetes service that handles the load balancing between multiple replicas.
 
 </InlineNotification>
 
@@ -284,7 +286,7 @@ In a Kubernetes environment, there is only one XML Server from SPM's point of vi
 | `uawebapp.imageConfig.library` | Namespace in the image registry containing your Univeral Access image | `''` |
 | `uawebapp.imageConfig.name` | Name of your Univeral Access image to be used | `''` |
 | `uawebapp.imageConfig.tag` | Image tag of your Univeral Access image to be used | `latest` |
-| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/8.0.0?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
+| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/8.0.1?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |
 | `uawebapp.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |

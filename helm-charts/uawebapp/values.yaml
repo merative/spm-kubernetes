@@ -85,3 +85,5 @@ readinessProbe:
 # weight 100 for nodes labelled as worker-type:application
 affinityKey: worker-type
 affinityValue: application
+
+httpMetricsEnabled: false
