@@ -2,11 +2,33 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.12.0
+
+### Added
+
+* ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Ability to specify XML server startup options via `startOptions:` in `xmlserver/values.yaml`
+* ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Sample XML server sidecar deployment artifacts provided for making XML server statistics available to Prometheus
+* Added the ability to generate Prometheus Apache HTTP metrics for the uawebapp and web applications
+
+### Changed
+
+* The following helm-charts have been updated to chart version `21.12.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* `appVersion` for all helm-charts updated to `8.0.1.0`
+* Updated the timeout of the linkchecker from 60 to 120
+* Clarified prerequisite software statements
+* Clarified statement for `wlp_psw`
+
+### Fixed
+
+* Fixed the issue where `xmlserver` pod termination overwrote the `verbosegc.log` written to by the `main` Ant task.
+* Clarified statement for `wlp_psw` in `values.yaml` and yaml examples ([#92](https://github.com/IBM/spm-kubernetes/issues/92))
+* Corrected `kubeVersion` ([#94](https://github.com/IBM/spm-kubernetes/issues/94))
+
 ## v21.10.0
 
 ### Breaking Changes
 
-* Helm `v3.7.0` introduced a number of breaking changes, which required modifications of the tooling used in this runbook..
+* Helm `v3.7.0` introduced a number of breaking changes, which required modifications of the tooling used in this runbook.
   * SPM requires [chartmuseum/helm-push](https://github.com/chartmuseum/helm-push). Due to the changes introduced as part of Helm `v3.7.0` and Chart museum `v0.10.0`, Chartmuseum has change `helm push` to `helm cm-push`.
   For more information see [chartmuseum/helm-push v0.10.0](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0) release notes.
 
@@ -57,7 +79,7 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
-* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.0?topic=design-db2)
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.1?topic=design-db2)
 * Updated IBM Documentation link to SPM V8
 * Clarified prerequisite software statements ([#83](https://github.com/IBM/spm-kubernetes/issues/83))
 

@@ -47,7 +47,7 @@ The message will stay until you either resend it to its originating queue or del
 Normally your only concern with respect to JMS message failures is what ends up in the dead message queue, since that represents work that should be processed but wasn’t.
 
 However, there are some error queue interventions that may be necessary, which are outside the scope of this document.
-For instance, Cúram Express Rules processing will transfer messages routed to the JMS error queue to batch as discussed in [Dependency Manager deferred processing](https://www.ibm.com/docs/en/spm/8.0.0?topic=manager-dependency-deferred-processing).
+For instance, Cúram Express Rules processing will transfer messages routed to the JMS error queue to batch as discussed in [Dependency Manager deferred processing](https://www.ibm.com/docs/en/spm/8.0.1?topic=manager-dependency-deferred-processing).
 
 You should monitor the dead message queue in MQ, `QN.CURAMDEADMESSAGEQUEUE`, to ensure that messages are not failing to be processed, which should also be evidenced by Java exceptions in the Liberty logs and a non-zero queue depth in MQ.
 For instance, this MQSC command displays the current queue depth for the dead message queue:

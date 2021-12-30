@@ -76,3 +76,11 @@ config:
   threadPoolSize: 5
   threadPoolQueueSize: 200
   socketTimeout: 60000
+
+# XML server start options
+startOptions:
+
+# Collecting of XML server metrics
+metrics:
+  enabled: true
+  port: 8080

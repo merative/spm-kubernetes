@@ -43,7 +43,7 @@ global:
     username: db2admin
     # Name of pre-created secret containing database credentals
     credsSecretName: ''
-    # The XOR-encrypted password injected into Liberty configuration
+    # The XOR-encrypted DB User's password injected into Liberty configuration - see Liberty/bin/securityUtility to encrypt your value
     wlp_psw: "{xor}Oz1tPjsyNjE="
     # The SPM-encrypted password injected into Bootstrap.properties
     spm_psw: "5itAmT5UzH7wR6kvkYqkTw=="

@@ -5,7 +5,7 @@ description: Support and configuration of Liberty persistent timers
 
 ## ![SPM 8.0.0.0](https://img.shields.io/badge/-SPM_8.0.0.0-green) Support for Liberty persistent timers
 
-Liberty persistent timers are configured by default to support the [SPM timer infrastructure](https://www.ibm.com/docs/en/spm/8.0.0?topic=behavior-cram-timer).
+Liberty persistent timers are configured by default to support the [SPM timer infrastructure](https://www.ibm.com/docs/en/spm/8.0.1?topic=behavior-cram-timer).
 This configuration takes advantage of the Liberty capability, provided by release 20.0.0.1, to share a set of timer database tables across Liberty servers, which in our case run in Kubernetes pods.
 
 Sharing database timer tables avoids the issue where automatic creation of timer tables that occurs at each and every server/pod start could pose a database limit risk.
