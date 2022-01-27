@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2020 IBM Corporation
+# Copyright 2020,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 ###############################################################################
 
 ARG WLP_VERSION=21.0.0.9-full-java8-ibmjava-ubi
-ARG MQ_ADAPTER_VERSION=9.2.2.0
+ARG MQ_ADAPTER_VERSION=9.2.4.0
 ARG MQ_RA_LICENSE
 ARG JMX_EXPORTER_URL=https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 

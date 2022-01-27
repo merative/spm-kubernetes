@@ -40,7 +40,7 @@ helm repo update
 
 ### Configuring the Helm chart
 
-An in-depth catalog of available configuration options is available in the [Configuration Reference](/deployment/config-reference) topic.
+A catalog of available configuration options is available in the [Configuration Reference](/deployment/config-reference) topic.
 
 While you may change the values in your local copy of `helm-charts/spm/values.yaml`, it is strongly recommended to use a values override file with your custom options.
 
@@ -48,7 +48,7 @@ While you may change the values in your local copy of `helm-charts/spm/values.ya
 
 Sample override files for Minikube, IKS, and CRC are also available in the `$SPM_HOME/static/resources` folder. We have provided a minimum
 spec required for a successful deployment in these files, with more options for overriding commented out. The config options from the
-before mentioned [Configuration Reference](/deployment/config-reference) topic should be used with these files.
+[Configuration Reference](/deployment/config-reference) topic should be used with these files.
 
 </InlineNotification>
 
@@ -78,11 +78,17 @@ For each chart, its dependencies must be resolved before it can be loaded into a
 
 <InlineNotification>
 
-Due to an internal Helm [defect](https://github.com/helm/helm/issues/5780), conditional subchart enablement does not work in Helm 3.
+Due to a Helm [defect](https://github.com/helm/helm/issues/5780), conditional subchart enablement does not work in Helm 3.
 As a result of this, `uawebapp` needs to be packaged and pushed, irrespective of whether you are deploying it or not.
 It is possible to remove the dependency from the spm `chart.yaml`, if you do not wish to package and push it to the repo.
 
 </InlineNotification>
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -95,7 +101,38 @@ helm dependency update web
 helm dependency update uawebapp
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\helm-charts\
+
+helm dependency update apps
+helm dependency update mqserver
+helm dependency update xmlserver
+helm dependency update batch
+helm dependency update web
+helm dependency update uawebapp
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 If you made any changes to any of the charts, these can now be verified using the `helm lint` and `helm template` commands, for example:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -103,6 +140,27 @@ cd $SPM_HOME/helm-charts
 helm lint apps
 helm template apps
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\helm-charts\
+
+helm lint apps
+helm template apps
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 To publish the individual charts to the Chart museum repository, run the following commands from the `helm-charts` folder. The commands also use the `$SPM_HOME` value that is defined in [Install prerequisite software](/prereq/git):
 
@@ -113,6 +171,12 @@ In October 2021, Helm `v3.7.0` introduced a number of breaking changes, which re
 Due to the changes introduced as part of Helm `v3.7.0` and Chart museum `v0.10.0`, when using Chartmuseum the target `helm push` has changed to `helm cm-push`
 
 </InlineNotification>
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -127,7 +191,40 @@ helm push uawebapp local-development
 helm repo update
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\helm-charts\
+
+helm push apps local-development
+helm push mqserver local-development
+helm push xmlserver local-development
+helm push batch local-development
+helm push web local-development
+helm push uawebapp local-development
+
+helm repo update
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 To generate the umbrella chart that is used for the deployment, run the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/helm-charts
@@ -137,3 +234,26 @@ helm push spm local-development
 
 helm repo update
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\helm-charts\
+
+helm dependency update spm
+helm push spm local-development
+
+helm repo update
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>

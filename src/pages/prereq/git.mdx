@@ -12,7 +12,7 @@ repository on your development system. Take the following steps:
 
 Git is the distributed version control system on which GitHub is built. Usually Git is already included on development systems, but if it is missing, you can get it from [Getting Started - Installing Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
-## Before you begin
+## Clone the spm-kubernetes repo
 
 Clone the repository locally by using the following command:
 
@@ -20,7 +20,7 @@ Clone the repository locally by using the following command:
 git clone https://github.com/IBM/spm-kubernetes
 ```
 
-The Git clone command creates a folder that is named `spm-kubernetes` in your current path. This folder is referred to as `$SPM_HOME` for the remainder of this runbook. The `$SPM_HOME` folder contains three subfolders:
+The Git clone command creates a folder that is named `spm-kubernetes` in your current path. This folder is referred to by `$SPM_HOME` (or `$env:SPM_HOME` for Windows) for the remainder of this runbook. The `$SPM_HOME` folder contains three subfolders:
 
 * *src/pages:* Contains the source files for this runbook. Do not modify the source files.
 * *dockerfiles:* Contains the Docker® files and other artifacts that are used to generate the IBM® Cúram Social Program Management (SPM) containers. For more information, see [Setting up the Docker context](/build-images/setup_docker_context).

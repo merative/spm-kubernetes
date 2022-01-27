@@ -11,9 +11,9 @@ The following sections are not a substitute for the official documentation but t
 The following installation steps are described:
 
 * Installing Minikube
+* Starting Minikube
 * Setting up the Docker® registry
 * Configuring the hosts file for Minikube
-* Starting Minikube
 * Enabling Helm for Minikube
 * A summary of some useful Minikube commands
 
@@ -23,24 +23,8 @@ Minikube installation steps are described in the official documentation for your
 
 ## Starting Minikube
 
-<InlineNotification kind="info">
-
-**Note:** In the following example we set the `--insecure-registry` option passing in a subnet of `192.168.0.0/16`.
-The IP address on your machine _may_ not be on the appropriate network for this subnet to work.
-Therefore, start a Minikube instance to verify the IP address begins with 192.168.0.X. You need only do this once.
-See the note in [Specifying the insecure registry](#specifying-the-insecure-registry).
-
-</InlineNotification>
-
 Minikube can be started with a command as simple as `minikube start` without any additional parameters. However, the resulting VM will be too small to deploy an instance of IBM® Cúram Social Program Management (SPM),
-so several other parameters are required:
-
-```shell
-minikube start --driver=virtualbox --cpus 4 --memory 8G \
-               --insecure-registry "192.168.0.0/16" \
-               --disk-size='30G' \
-               --kubernetes-version v1.20.11
-```
+so several other parameters are required as described in the following sections.
 
 ### Specifying the resource allocation
 
@@ -54,11 +38,12 @@ You can add properties to specify the resource allocation. For example:
 
 Add the `--driver=` option to the `minikube start` command to specify the underlying virtual machine driver. The following drivers were tested:
 
-* [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) (`virtualbox`) on OSX, Linux, and Windows
+* [VirtualBox](https://minikube.sigs.k8s.io/docs/drivers/virtualbox/) (`virtualbox`) on OSX and Linux
 * [VMware Fusion](https://minikube.sigs.k8s.io/docs/drivers/vmware/) (`vmware`) on OSX
   * **Note**: There is an [issue](https://github.com/kubernetes/minikube/issues/9720) running Minikube on macOS Big Sur with VMware Fusion 12. If you are using Big Sur, use an alternative driver.
 * [Docker](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) (`docker`) on Linux
 * [KVM](https://minikube.sigs.k8s.io/docs/drivers/kvm2/) (`kvm2`) on Linux
+* [Hyperv](https://minikube.sigs.k8s.io/docs/drivers/hyperv/) (`hyperv`) on Windows
 
 The [Install Minikube](https://minikube.sigs.k8s.io/docs/start/) page gives you more information on available VM driver options.
 
@@ -73,6 +58,8 @@ If you start Minikube, be sure to run `minikube stop` and `minikube delete` befo
 
 </InlineNotification>
 
+For Windows see the [Minikube handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/#enabling-insecure-registries) for information regarding the `--insecure-registry "10.0.0.0/24`" setting on the `minikube start` command.
+
 ### Specifying the Kubernetes version
 
 You can override the version of Kubernetes that gets installed inside the Minikube VM by using the `--kubernetes-version` flag. This flag controls the compatibility between the client tools and the Kubernetes specification.
@@ -84,6 +71,96 @@ If you override the Kubernetes version, ensure that you download and install the
 **Note:** The `kubectl` version running locally and on Minikube should be compatible, so it's possible to use the `--kubernetes-version` flag to keep them consistent.
 
 </InlineNotification>
+
+### Minikube start command
+
+<InlineNotification kind="info">
+
+**Note:** In the following example for Mac and Linux we set the `--insecure-registry` option passing in a subnet of `192.168.0.0/16`.
+The IP address on your machine _may_ not be on the appropriate network for this subnet to work.
+Therefore, start a Minikube instance to verify the IP address begins with 192.168.0.X. You need only do this once.
+See the note in [Specifying the insecure registry](#specifying-the-insecure-registry).
+
+</InlineNotification>
+
+Example `minikube start` commands based on the recommended settings above:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
+```shell
+minikube start --driver=virtualbox --cpus 4 --memory 8G \
+               --insecure-registry "192.168.0.0/16" \
+               --disk-size='30G' \
+               --kubernetes-version v1.20.11
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+minikube start --vm-driver=hyperv --cpus 4 --memory 8G `
+              --insecure-registry "10.0.0.0/24" `
+              --disk-size='30G' `
+              --kubernetes-version v1.20.11
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+### Using Docker inside the Minikube VM
+
+You can use the Docker installed in your local environment or, optionally, the Docker inside the Minikube VM.
+
+The command to use the Docker inside of the Minikube VM is:
+
+```shell
+minikube docker-env
+```
+
+The output of that command will instruct you how to run the command for your particular shell as illustrated:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
+```shell
+eval $(minikube -p minikube docker-env)
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+& minikube -p minikube docker-env | Invoke-Expression
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+Then `docker` commands will operate against the Minikube VM's docker, allowing, for example, the likes of `docker run` for chartmuseum and the `docker build` commands to work.
+Don't forget that if you are using multiple shells you must run the `minikube docker-env` command in each shell.
 
 ## Docker Hub download rate limit and Minikube
 
@@ -159,6 +236,30 @@ When enabled, starting Minikube starts two pods on the `kube-system` namespace, 
 
 The containers don't mount any volumes, so stopping Minikube deletes the registry content.
 
+For Windows, you must follow the steps in the [Minikube Handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/#docker-on-windows) and set the value of the `DOCKER_REGISTRY` environment variable as follows:
+
+```powershell
+$env:DOCKER_REGISTRY = "localhost:5000"
+```
+
+### Using the insecure registry on Windows
+
+For more information see the [Minikube handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/#docker-on-windows).
+
+Perform these steps to use the insecure registry on Windows:
+
+* Confirm the registry service is running in minikube:
+  `kubectl get service --namespace kube-system`
+* Part one of making the registry port available:
+  `kubectl port-forward --namespace kube-system service/registry 5000:80`
+  Note: The port-forward sporadically times out/dies; so, you have to periodically check that it's running and renter it if needed.
+* Part two of making the registry port available:
+  `docker run -d --rm -it --network=host alpine ash -c "apk add socat && socat TCP-LISTEN:5000,reuseaddr,fork TCP:host.docker.internal:5000"`
+* Test the registry:
+  `curl http://localhost:5000/v2/_catalog`
+  This first time it will be empty: `{"repositories":[]}`
+  Running the same `curl` command inside Minikube via `minikube ssh` is also a good check.
+
 ## Hostname configuration for Minikube
 
 This runbook uses a generic hostname of `minikube.local` as an example in commands and the configuration files.
@@ -180,7 +281,7 @@ echo -e "$(minikube ip)\tminikube.local" | sudo tee -a /etc/hosts
 </Row>
 </Tab>
 
-<Tab label="Windows">
+<Tab label="Windows PS">
 <Row>
 <Column>
 
@@ -194,17 +295,23 @@ Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "$(minikube ip)`t
 
 </Tabs>
 
-The local Docker client configuration must be also be updated with the corresponding IP address.
+If not using the Docker inside of the Minikube VM [minikube docker-env](Using Docker inside the Minikube VM), the local Docker client configuration must be also be updated with the corresponding IP address.
 
 * Update the `daemon.json` docker configuration file with the Minikube IP address. This file is usually located in:
   * `~/.docker/daemon.json` on OSX
   * `/etc/docker/daemon.json` on Linux
-  * `C:\ProgramData\Docker\config\daemon.json` on Windows
+  * `C:\ProgramData\Docker\config\daemon.json` or `$env:USERPROFILE\.docker\daemon.json` on Windows, depending on your installation.
 * Restart the Docker daemon:
   * On Linux - run: `sudo systemctl restart docker`
   * On Mac and Windows - use the "Restart Docker" menu option in the Docker Desktop application.
 
 Example of `daemon.json`:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```json
 {
@@ -213,6 +320,28 @@ Example of `daemon.json`:
   ]
 }
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows">
+<Row>
+<Column>
+
+```json
+{
+  "insecure-registries": [
+    "10.0.0.0/24"
+  ],
+}
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 <InlineNotification>
 
@@ -239,21 +368,93 @@ Create a namespace for the SPM deployment, again use an environment variable for
 
 Create the environment variable, you can set to value to anything you like, but it should consist of lower case alphanumeric characters or `-`, and must start and end with an alphanumeric character (e.g. `my-name`,  or `123-abc`):
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 export PROJECT="dev"
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+$env:PROJECT = "dev"
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 Create the namespace:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 kubectl create namespace $PROJECT
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+kubectl create namespace $env:PROJECT
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 Switch to the new namespace:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 kubectl config set-context --current --namespace $PROJECT
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+kubectl config set-context --current --namespace $env:PROJECT
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ## Useful Minikube commands
 

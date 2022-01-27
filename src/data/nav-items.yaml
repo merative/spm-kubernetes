@@ -79,17 +79,17 @@
       path: /supporting-infrastructure/xmlserver-service/
 - title: Monitoring
   pages:
-    - title: Monitoring the application
+    - title: Cluster status
       path: /monitoring/interrogate_runtime/
-    - title: Monitoring JMX statistics
-      path: /monitoring/jmx-statistics-performance-monitoring/
-    - title: Monitoring MQ Queue Depth Events
-      path: /monitoring/mq_queue_depth_events_monitoring/
-    - title: Monitoring XML servers
-      path: /monitoring/xmlserver-monitoring/
-    - title: Health Checks
+    - title: Health checks
       path: /monitoring/Health Checks/
-    - title: Monitoring Apache HTTP Server metrics
+    - title: JMX statistics
+      path: /monitoring/jmx-statistics-performance-monitoring/
+    - title: XML servers
+      path: /monitoring/xmlserver-monitoring/
+    - title: MQ Queue depth events
+      path: /monitoring/mq_queue_depth_events_monitoring/
+    - title: Apache HTTP server metrics
       path: /monitoring/Web_components_Apache_monitoring/
 - title: Troubleshooting
   pages:
