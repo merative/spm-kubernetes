@@ -236,6 +236,20 @@ uawebapp: {}
 #     limits:
 #       cpu: 1
 #       memory: 1024Mi
+#   tuning: |-
+#      #IHS Server tuning:
+#      ThreadLimit           2000
+#      ServerLimit              1
+#      StartServers             1
+#      MaxClients            2000
+#      MinSpareThreads       2000
+#      MaxSpareThreads       2000
+#      ThreadsPerChild       2000
+#      MaxRequestsPerChild      0
+#      MaxMemFree            2048
+#      KeepAlive               On
+#      MaxKeepAliveRequests  2000
+#      KeepAliveTimeout         2
 
 # Override values in 'web' Chart
 web: {}
@@ -250,6 +264,20 @@ web: {}
 #     limits:
 #       cpu: 1
 #       memory: 1024Mi
+#   tuning: |-
+#      #IHS Server tuning:
+#      ThreadLimit           2000
+#      ServerLimit              1
+#      StartServers             1
+#      MaxClients            2000
+#      MinSpareThreads       2000
+#      MaxSpareThreads       2000
+#      ThreadsPerChild       2000
+#      MaxRequestsPerChild      0
+#      MaxMemFree            2048
+#      KeepAlive               On
+#      MaxKeepAliveRequests  2000
+#      KeepAliveTimeout         2
 
 # Override values in 'xmlserver' Chart
 xmlserver: {}

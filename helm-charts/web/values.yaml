@@ -87,3 +87,4 @@ readinessProbe:
 affinityKey: worker-type
 affinityValue: application
 httpMetricsEnabled: false
+tuning: ""

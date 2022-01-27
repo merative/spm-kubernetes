@@ -17,6 +17,12 @@ Take the following steps:
 
 * Start a Docker container that is accessible locally on port 8080:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 docker run --rm -d --name chartmuseum \
   -p 8080:8080 \
@@ -25,6 +31,29 @@ docker run --rm -d --name chartmuseum \
   -e STORAGE_LOCAL_ROOTDIR=/tmp/charts \
   chartmuseum/chartmuseum:v0.12.0
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+docker run --rm -d --name chartmuseum `
+  -p 8080:8080 `
+  -e DEBUG=true `
+  -e STORAGE=local `
+  -e STORAGE_LOCAL_ROOTDIR=/tmp/charts `
+  chartmuseum/chartmuseum:v0.12.0
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 * Run the `docker logs` command to view the Chart Museum logs:
 
@@ -38,7 +67,7 @@ Run the following command to test connectivity. `127.0.0.1` is the localhost IP 
 
 <InlineNotification>
 
-**Note:** On Windows, the Docker Engine can run in a dedicated `docker-machine`, or can be reused from the Minikube VM.
+**Note:** On Windows, the Docker Engine can run in a dedicated docker-machine, or can be reused from the Minikube VM.
 
 </InlineNotification>
 
@@ -56,14 +85,18 @@ curl http://127.0.0.1:8080/index.yaml
 </Row>
 </Tab>
 
-<Tab label="Windows">
+<Tab label="Windows PS">
 <Row>
 <Column>
 
 ```powershell
-Invoke-RestMethod http://$(minikube ip):8080/index.yaml
-# OR
-Invoke-RestMethod http://$(docker-machine ip):8080/index.yaml
+# Uncomment the appropriate command:
+
+# Use this command if using Docker locally:
+# Invoke-RestMethod http://127.0.0.1:8080/index.yaml
+
+# Use this command if using the Docker inside Minikube:
+# Invoke-RestMethod http://$(minikube ip):8080/index.yaml
 ```
 
 </Column>
@@ -87,7 +120,7 @@ When ChartMuseum is running, you can copy the compressed `tgz` files that are pr
 
 <InlineNotification>
 
-**Note:** On Windows, the Helm Push plugin must be installed from a Git Bash window.
+**Note:** On Windows, as per [this issue](https://github.com/chartmuseum/helm-push/issues/24), the Helm Push plugin must be installed from a Bash shell (e.g., Git Bash).
 
 </InlineNotification>
 
@@ -99,11 +132,35 @@ Creating the chart files is covered later in the runbook when you run the `helm 
 
 ## Configure Helm to access the local repository
 
-To use ChartMuseum as a repository, you must configure Helm to point to it. Run the following command:
+To use ChartMuseum as a repository, you must configure Helm to point to it. Run the appropriate command:
+
+<Tabs>
+
+<Tab label="Local Docker">
+<Row>
+<Column>
 
 ```shell
 helm repo add local-development http://127.0.0.1:8080/
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="minikube VM Docker">
+<Row>
+<Column>
+
+```shell
+helm repo add local-development http://$(minikube ip):8080/
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 Verify the list of repositories by running the following command:
 

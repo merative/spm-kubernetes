@@ -16,12 +16,39 @@ For more information on encrypting Oracle databases, see [Part I Using Transpare
 
 If necessary, create a database by using the Db2 user to run the following commands:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 cd $SERVER_DIR
 ./build.sh -f $CURAMSDEJ/util/db2_createdb.xml
 ./build.sh -f $CURAMSDEJ/util/db2_postconfig.xml -Ddb2.dir=$DB2_HOME
 ./build.sh -f $CURAMSDEJ/util/db2_createdb.xml restart.db2
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+cd %SERVER_DIR%
+build.bat -f %CURAMSDEJ%\util\db2_createdb.xml
+build.bat -f %CURAMSDEJ%\util\db2_postconfig.xml -Ddb2.dir=%DB2_HOME%
+build.bat -f %CURAMSDEJ%\util\db2_createdb.xml restart.db2
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 If you are installing a new Db2 database, ensure that your log configuration is correctly configured.
 For example, to specify circular logging for a database named `CURAM`, run the following command:

@@ -50,7 +50,8 @@ data:
     MaxKeepAliveRequests 1000
     KeepAliveTimeOut 2
     ServerTokens Prod
-
+    {{ .Values.tuning  | indent 4  }}
+    
     <IfModule !mod_headers.c>
         LoadModule headers_module modules/mod_headers.so
     </IfModule>

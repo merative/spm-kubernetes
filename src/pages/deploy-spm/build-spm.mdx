@@ -18,10 +18,35 @@ Take the following steps to build SPM:
 
 Enter the directory where SPM is installed and source the SetEnvironment script; for example:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 cd /opt/IBM/Curam/Development
 . SetEnvironment.sh
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+cd c:\IBM\Curam\Development
+SetEnvironment.bat
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ## Set up AppServer.properties and verify the configuration
 
@@ -51,16 +76,41 @@ curam.webservices.httpport=10102
 curam.server.port=2809
 ```
 
-To confirm your configuration, run the following commands:
+To confirm your configuration, run the `configtest` Ant target using the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SERVER_DIR
 ./build.sh configtest
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+cd %SERVER_DIR%
+build.bat configtest
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 <InlineNotification>
 
-**Note:** When running `./build.sh configtest` you may experience a failed build with an `Unsupported version:` error in relation to the WebSphere Liberty version.
+**Note:** When running the `configtest` Ant target you may experience a failed build with an `Unsupported version:` error in relation to the WebSphere Liberty version.
 
 If this happens please refer to the [Prerequisite software](https://ibm.github.io/spm-kubernetes/prereq/prereq/) for the correct list of supported WebSphere Liberty versions.
 
@@ -101,35 +151,133 @@ Add the following to `curam-config.xml`:
 
 To build the SPM server, run the following command:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 ./build.sh clean server
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+build.bat clean server
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ## Build the database
 
 To build the SPM database, run the following command:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 ./build.sh database prepare.application.data
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+build.bat database prepare.application.data
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 ## Build the SPM client
 
 To build the SPM client, run the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $CLIENT_DIR
 ./build.sh clean client
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+cd %CLIENT_DIR%
+build.bat clean client
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 ## Build `StaticContent.zip`
 
 To build SPM `StaticContent.zip`, run the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $CLIENT_DIR
 ./build.sh zip-static-content
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows">
+<Row>
+<Column>
+
+```bat
+cd %CLIENT_DIR%
+build.bat zip-static-content
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 The `StaticContent.zip` file that is created is in the `$CLIENT_DIR/build` folder and is needed for the steps in
 [Setting up the Docker® context](/build-images/setup_docker_context).
@@ -145,6 +293,12 @@ sed -i 's/name="Curam" requireServer="true"/name="Curam" requireServer="false"/g
 
 To build the application EAR files for WebSphere Liberty, run the following commands:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 cd $SERVER_DIR
 ./build.sh libertyEAR -Dcuram.ejbserver.app.name=CuramServerCode
@@ -153,6 +307,29 @@ cd $SERVER_DIR
                       -DSERVER_MODEL_NAME=CuramServerCode \
                       -Dcuram.ejbserver.app.name=CuramServerCode
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+cd %SERVER_DIR%
+build.bat libertyEAR -Dcuram.ejbserver.app.name=CuramServerCode
+build.bat libertyEAR -Dserver.only=true ^
+                      -Dear.name=CuramServerCode ^
+                      -DSERVER_MODEL_NAME=CuramServerCode ^
+                      -Dcuram.ejbserver.app.name=CuramServerCode
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ### Precompiling JSPs
 
@@ -166,17 +343,65 @@ To improve initial page load performance, use the `precompile` target to precomp
 
 </InlineNotification>
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 ./build.sh precompilejsp -Dear.file=$SERVER_DIR/build/ear/WLP/Curam.ear
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+build.bat precompilejsp -Dear.file=%SERVER_DIR%\build\ear\WLP\Curam.ear
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 ## Package an SPM release.zip file
 
 To package the build into a `release.zip` file, run the following command:
 
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
+
 ```shell
 ./build.sh release -Dcreate.zip=true
 ```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows DOS">
+<Row>
+<Column>
+
+```bat
+build.bat release -Dcreate.zip=true
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
 
 The .zip file that is created is in the `$SERVER_DIR/release` folder and is needed for the steps in
 [Setting up the Docker environment](/build-images/setup_docker_context).

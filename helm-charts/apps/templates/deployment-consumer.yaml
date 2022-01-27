@@ -370,7 +370,7 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - /opt/ibm/helpers/runtime/readiness-probe.sh {{ include "apps.logsDir" $ }}/messages*.log {{ $.Values.global.ingress.hostname }}{{ . }}
+                - curl -k https://127.0.0.1:8443/health/ready | grep "\"status\":\"UP\""
             initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
             timeoutSeconds: 2
@@ -380,7 +380,7 @@ spec:
               command:
               - /bin/sh
               - -c
-              - /opt/ibm/helpers/runtime/liveness-probe.sh {{ include "apps.logsDir" $ }}/messages.log
+              - curl -k https://127.0.0.1:8443/health/live | grep "\"status\":\"UP\""
             initialDelaySeconds: {{ $.Values.initialDelaySeconds }}
             periodSeconds: 10
             timeoutSeconds: 2

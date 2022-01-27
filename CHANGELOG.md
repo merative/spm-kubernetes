@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.1.0
+
+### Breaking Changes
+
+* Gatsby `v4.5.2` introduced a breaking changes, when developing documentation locally.
+  * The following gatsby target fail, `gatsby develop`, due to `DeprecationWarning`.
+
+### Added
+
+* Added the ability to tune the Apache HTTP server of the UAWebApp and Web components.
+  * Updated sample override files to include example settings
+* Introduced Gatsby `v4` library
+* Introduced node_js `v16`
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.1.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Changed the liveness and readiness probes on producer and consumer pods to use the WebSphere Liberty health check feature. For more information, see [here](https://www.openliberty.io/docs/22.0.0.1/health-check-microservices.html)
+* Updated IBM MQ Resource Adapter to `9.2.4.0`
+* Updated the Runbook Minikube deployment steps for Windows, mainly around specifying the Minikube driver (changing to use `hyperv`) and insecure registry (adopting the steps in the [Minikube Handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/#enabling-insecure-registries)))
+* Changes to the `xmlserver-metrics` image:
+  * The log4j in `xmlserver_prometheus.jar` has been updated to `2.17.1`
+  * The `com.ibm.spm.xmlserver.StatsForPrometheus` class has been modified to wait until the XML server `stats/ThreadPoolWorker-*` files are created
+* Updated npm packages to resolve security vulnerability
+
+### Removed
+
+* Removed Gatsby `v3` library
+* Removed node_js `v12`
+
 ## v21.12.0
 
 ### Added
