@@ -33,9 +33,10 @@ data:
 
       <!-- Enable features -->
       <featureManager>
-        <feature>javaee-7.0</feature>
+        <feature>javaee-8.0</feature>
         <feature>localConnector-1.0</feature>
         <feature>jaxb-2.2</feature>
+        <feature>mpHealth-3.1</feature>
         {{- if .Values.wlpAdmin.enableAdminCenter }}
         <feature>adminCenter-1.0</feature>
         {{- end }}

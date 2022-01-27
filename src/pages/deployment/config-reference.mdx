@@ -257,6 +257,7 @@ We only support containerised MQ on Openshift.
 | `web.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/CuramStatic/` |
 | `web.replicaCount` | Number of replicas to be deployed | `1` |
 | `web.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
+| `web.tuning` | Tuning values for Apache HTTP server of web component. Multiple values can be configured, each in the form "key value" e.g "ThreadLimit 2"  | `''` |
 
 ### XML Server
 
@@ -290,3 +291,4 @@ In a Kubernetes environment the XML server replicas are abstracted to the single
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |
 | `uawebapp.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
+| `uawebapp.tuning` | Tuning values for Apache HTTP server of UAWebApp component. Multiple values can be configured, each in the form "key value" e.g "ThreadLimit 2"  | `''` |

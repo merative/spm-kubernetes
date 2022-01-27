@@ -33,21 +33,78 @@ If the images are stored in a private registry, set `BASE_REGISTRY` to the regis
 
 </InlineNotification>
 
-Now that all the elements are in place, build the images as follows:
+For the `docker` commands that follow you must set a `DOCKER_REGISTRY` environment variable based on the container environment you are deploying:
 
-* We will use a `$DOCKER_REGISTRY` for the following commands. Please select based on the container environment you are deploying:
-  * CRC will be `default-route-openshift-image-registry.apps-crc.testing`
-    * This URL can be retrieved using `oc registry info --public`
-  * Minikube will be `minikube.local:5000`
-  * IKS will be `us.icr.io`
+<Tabs>
+
+<Tab label="CRC">
+<Row>
+<Column>
+
+The URL for this value can be retrieved using this command: `oc registry info --public`
+
+For example:
+
+```shell
+export DOCKER_REGISTRY=default-route-openshift-image-registry.apps-crc.testing
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Minikube Mac/Linux">
+<Row>
+<Column>
+
+```shell
+export DOCKER_REGISTRY=minikube.local:5000
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Minikube Windows PS">
+<Row>
+<Column>
+
+<InlineNotification>
+
+**IMPORTANT:** For Minikube on Windows set `DOCKER_REGISTRY` to the value: `localhost:5000`.
+See the [Minikube Handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/#docker-on-windows) for more information.
+
+</InlineNotification>
+
+```powershell
+`$env:DOCKER_REGISTRY = "localhost:5000"`
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="IKS">
+<Row>
+<Column>
+
+```shell
+export DOCKER_REGISTRY=us.icr.io
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
+Now that all the elements are in place, build the images as follows:
 
 ## Building the images
 
 The following sections provide steps for building the Docker images.
 
-### XML server image
-
-To build the XML server image, run the following commands:
+Set the `PROJECT` environment variable:
 
 <InlineNotification>
 
@@ -59,6 +116,10 @@ To build the XML server image, run the following commands:
 For this runbook it is best to stick with the value chosen for `$PROJECT` in [Creating a CRC project](/prereq/openshift/codeready-containers#creating-a-crc-project)
 
 </InlineNotification>
+
+### XML server image
+
+To build the XML server image, run the following commands:
 
 <Tabs>
 
@@ -86,6 +147,36 @@ docker build \
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
      --tag $DOCKER_REGISTRY/$PROJECT/xmlserver:latest \
+     --file XMLServer.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Using RedHat Registry (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $SPM_HOME/dockerfiles/Liberty/
+docker build \
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver:latest \
+     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
+     --file XMLServer.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver:latest `
      --file XMLServer.Dockerfile .
 ```
 
@@ -136,6 +227,36 @@ docker build \
 </Row>
 </Tab>
 
+<Tab label="Using RedHat Registry (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build \
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/utilities:latest `
+     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" `
+     --file Utilities.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build --tag $env:DOCKER_REGISTRY/$env:PROJECT/utilities:latest `
+       --file Utilities.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
 </Tabs>
 
 ### Batch image
@@ -143,6 +264,12 @@ docker build \
 A `.dockerignore` file is used to omit the EAR files from the build context for batch.
 
 To build the batch image, run the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
@@ -153,9 +280,38 @@ docker build \
 rm -f .dockerignore
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+echo "content/release-stage/ear" | set-content .dockerignore -Encoding Ascii
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/batch:latest `
+     --file Batch.Dockerfile .
+del  .dockerignore
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 ### Server Code image
 
 To build the Server Code image, run the following commands:
+
+<Tabs>
+
+<Tab label="Mac/Linux">
+<Row>
+<Column>
 
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
@@ -165,6 +321,28 @@ docker build \
      --build-arg "MQ_RA_LICENSE=--acceptLicense" .
 ```
 
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Windows PS">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/servercode:latest `
+     --file ServerEAR.Dockerfile `
+     --build-arg "MQ_RA_LICENSE=--acceptLicense" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>
+
 ### Application images
 
 Take note of the `SERVERCODE_IMAGE` build argument which references the server code image - this gives the images a common base.
@@ -173,7 +351,7 @@ To build the application images, run the following commands for each of the appl
 
 <Tabs>
 
-<Tab label="Curam EAR">
+<Tab label="Curam EAR (Mac/Linux)">
 <Row>
 <Column>
 
@@ -190,7 +368,24 @@ docker build \
 </Row>
 </Tab>
 
-<Tab label="Other EARs">
+<Tab label="Curam EAR (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/curam:latest `
+     --file ClientEAR.Dockerfile \
+     --build-arg "SERVERCODE_IMAGE=$env:DOCKER_REGISTRY/$env:PROJECT/servercode:latest" \
+     --build-arg "EAR_NAME=Curam" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Other EARs (Mac/Linux)">
 <Row>
 <Column>
 
@@ -204,6 +399,27 @@ docker build \
      --tag $DOCKER_REGISTRY/$PROJECT/rest:latest \
      --file ClientEAR.Dockerfile \
      --build-arg "SERVERCODE_IMAGE=$DOCKER_REGISTRY/$PROJECT/servercode:latest" \
+     --build-arg "EAR_NAME=Rest" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Other EARs (Windows PS)">
+<Row>
+<Column>
+
+For additional SPM applications (e.g. Rest, CitizenPortal), make the following changes to the command:
+
+* the value of the `--tag` argument must be the application name in _lowercase_
+* the value of the `--build-arg EAR_NAME` argument must be the name of the EAR file _without_ the file extension (that is, for `Rest.ear`, use the value `Rest`)
+
+```powershell
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/rest:latest `
+     --file ClientEAR.Dockerfile `
+     --build-arg "SERVERCODE_IMAGE=$env:DOCKER_REGISTRY/$env:PROJECT/servercode:latest" `
      --build-arg "EAR_NAME=Rest" .
 ```
 
@@ -245,6 +461,39 @@ cd $SPM_HOME/dockerfiles/HTTPServer/
 docker build \
      --tag $DOCKER_REGISTRY/$PROJECT/httpd:latest \
      --file StaticContent.Dockerfile \
+     --build-arg "CONTENT_DIR=/CuramStatic" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Using RedHat Registry (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\HTTPServer\
+docker build \
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/httpd:latest `
+     --file StaticContent.Dockerfile `
+     --build-arg "BASE_REGISTRY=registry.redhat.io/" `
+     --build-arg "CONTENT_DIR=/CuramStatic" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\HTTPServer\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/httpd:latest `
+     --file StaticContent.Dockerfile `
      --build-arg "CONTENT_DIR=/CuramStatic" .
 ```
 
@@ -310,12 +559,45 @@ docker build \
 </Row>
 </Tab>
 
+<Tab label="Using RedHat Registry (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\HTTPServer\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/uawebapp:latest `
+     --file UAWebApp.Dockerfile `
+     --build-arg "BASE_REGISTRY=registry.redhat.io/" `
+     --build-arg "CONTENT_DIR=/universal" .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\HTTPServer\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/uawebapp:latest `
+     --file UAWebApp.Dockerfile `
+     --build-arg "CONTENT_DIR=/universal" .
+```
+
+</Column>
+</Row>
+</Tab>
+
 </Tabs>
 
 ## Pushing the images to the registry
 
 When you set up Minikube by following the steps in [Minikube](/prereq/kubernetes/minikube), a registry was also created to store the Docker images.
-To push the new images that you created to the registry, run the following shell script:
+To push the new images that you created to the registry, run the following commands:
 
 ```shell
 docker push $DOCKER_REGISTRY/$PROJECT/xmlserver:latest
@@ -386,10 +668,10 @@ curl -k -ukubeadmin:$(oc whoami -t) https://$(oc registry info --public)/v2/_cat
 
 </Tabs>
 
-The command returns the following result:
+The command returns the following result, depending on the images built and your tagging:
 
 ```json
-{"repositories":["batch","curam","xmlserver","httpd","utilities"]}
+{"repositories":["batch","curam","xmlserver","httpd","utilities", "servercode"]}
 ```
 
 <InlineNotification>

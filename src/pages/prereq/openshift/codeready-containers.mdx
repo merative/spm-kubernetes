@@ -29,11 +29,16 @@ There is a known CRC [issue](https://github.com/code-ready/crc/issues/557) with 
 
 Red Hat CodeReady Containers only supports platform-native virtualization technologies:
 
-* Hyper-V on Windows
 * HyperKit on macOS
 * libvirt on Linux
 
 Running CRC using nested virtualization is discouraged and not supported.
+
+</InlineNotification>
+
+<InlineNotification kind="warning">
+
+This Runbook does not support the use of CRC on Windows.
 
 </InlineNotification>
 
@@ -252,32 +257,8 @@ This runbook uses a generic hostname of `spm-ocp.apps-crc.testing` as an example
 
 You should add the CRC IP address to the `hosts` file by using the generic hostname, or else modify the usage of `spm-ocp.apps-crc.testing` in this runbook to reflect your local hostname.
 
-<Tabs>
-
-<Tab label="Mac/Linux">
-<Row>
-<Column>
-
 ```shell
 echo -e "$(crc ip)\tspm-ocp.apps-crc.testing" | sudo tee -a /etc/hosts
 ```
-
-</Column>
-</Row>
-</Tab>
-
-<Tab label="Windows">
-<Row>
-<Column>
-
-```powershell
-Add-Content -Path C:\Windows\System32\drivers\etc\hosts -Value "$(crc ip)`tspm-ocp.apps-crc.testing" -Force
-```
-
-</Column>
-</Row>
-</Tab>
-
-</Tabs>
 
 Where `crc ip` is the command that returns the CRC VM's IP address that is accessible from your workstation.
