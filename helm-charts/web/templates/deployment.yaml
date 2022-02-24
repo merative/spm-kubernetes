@@ -36,6 +36,9 @@ spec:
         version: v{{ .Release.Revision }}
       annotations:
         {{- include "sch.metadata.annotations.metering" (list $ $.sch.chart.metering) | nindent 8 }}
+        {{- with $.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}        
     spec:
       {{- include "sch.security.securityContext" (list . .sch.chart.podSecurityContext) | nindent 6 }}
       affinity:
