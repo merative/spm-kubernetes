@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.2.0
+
+### Fixed
+
+* Fixed issue where Prometheus metrics were not being gathered for UAWebApp,Web and XMLServer applications on non-OpenShift environments
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+
 ## v22.1.0
 
 ### Breaking Changes
