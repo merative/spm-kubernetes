@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.3.0
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.3.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The optional, sample XML server monitoring sidecar, `xmlserver-metrics`, has been modified to:
+  * Upgrade the [Prometheus client_java](https://github.com/prometheus/client_java) to release `0.15.0`
+  * Modify the Prometheus namespace from `xmlserver_` to `curam_xmlserver` and restructure the counters, using a single jobs_total with labels:
+    * `type` = `PDF|HTML|TEXT|RTF`
+    * `status` = `fail|success`
+  * The [Monitoring XML servers](https://ibm.github.io/spm-kubernetes/monitoring/xmlserver-monitoring/) section of the Runbook has been modified to reflect the above changes.
+
+## v22.2.0
+
+### Fixed
+
+* Fixed issue where Prometheus metrics were not being gathered for UAWebApp,Web and XMLServer applications on non-OpenShift environments
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+
 ## v22.1.0
 
 ### Breaking Changes

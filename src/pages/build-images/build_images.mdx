@@ -160,9 +160,9 @@ docker build \
 
 ```powershell
 cd $SPM_HOME/dockerfiles/Liberty/
-docker build \
-     --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver:latest \
-     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver:latest `
+     --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" `
      --file XMLServer.Dockerfile .
 ```
 
@@ -233,7 +233,7 @@ docker build \
 
 ```powershell
 cd $env:SPM_HOME\dockerfiles\Liberty\
-docker build \
+docker build `
      --tag $env:DOCKER_REGISTRY/$env:PROJECT/utilities:latest `
      --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" `
      --file Utilities.Dockerfile .
@@ -474,7 +474,7 @@ docker build \
 
 ```powershell
 cd $env:SPM_HOME\dockerfiles\HTTPServer\
-docker build \
+docker build `
      --tag $env:DOCKER_REGISTRY/$env:PROJECT/httpd:latest `
      --file StaticContent.Dockerfile `
      --build-arg "BASE_REGISTRY=registry.redhat.io/" `
@@ -511,7 +511,7 @@ docker build `
 
 ### Universal Access image
 
-To build an SPM Docker image for your *built* Universal Access application:
+To build an SPM Docker image for your _built_ Universal Access application:
 
 * Copy the `build` directory from the React application to `$SPM_HOME/dockerfiles/HTTPServer`
 * Run the following commands:
