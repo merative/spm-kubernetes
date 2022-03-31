@@ -22,13 +22,13 @@ Notable decisions and limitations used in performing the proof-of-concept:
 
 * The Prometheus [client_java](https://github.com/prometheus/client_java) is used for implementing the Prometheus collector and exporter, hence it is coded in Java.
 * A sidecar container is used to run the Prometheus collector and exporter as this allows for:
-  * Avoiding making any K8s or Prometheus-specific code changes to the XML server code base by its use of persistent storage, which is described in more detail [below](#the-role-of-persistent-storage-in-monitoring-xml-server-statistics)
-  * Avoiding additional processes in the xmlserver pod.
+  * Avoiding making any K8s or Prometheus-specific code changes to the XML server code base. This is achieved by the use of persistent storage, which is described in more detail [below](#the-role-of-persistent-storage-in-monitoring-xml-server-statistics)
+  * Avoiding additional processes in the xmlserver pod, which could impact on the main xmlserver process.
 
 At a high-level, providing XML server statistics to Prometheus involves the following steps:
 
 * Implementing a Prometheus collector and exporter to make the  `/opt/ibm/Curam/xmlserver/stats/ThreadPoolWorker-*` file contents available to Prometheus
-* Creating the Docker image for the sidecar container that contains the Prometheus collector and exporter
+* Creating a Docker image for the sidecar container that contains the Prometheus collector and exporter
 * Defining a sidecar container in the `xmlserver` deployment
 * Defining the necessary Prometheus configuration for the Kubernetes cluster. The sample deployment provided utilizes the OpenShift PodMonitor.
 
@@ -42,7 +42,7 @@ Persistent storage is required by this sample implementation so that:
 
 The following describes the files involved in the use of persistent storage and how they interact:
 
-* `dockerfiles/Liberty/xmlserver-metrics/XMLServer-metrics.Dockerfile` creates the `/opt/ibm/Curam/xmlserver/` folder and the `./tmp` and `./stats` subfolders in its local file system.
+* For the `xmlserver-metrics` container `dockerfiles/Liberty/xmlserver-metrics/XMLServer-metrics.Dockerfile` creates the `/opt/ibm/Curam/xmlserver/` folder and the `./tmp` and `./stats` subfolders in its local file system.
 * In `helm-charts/xmlserver/templates/deployment.yaml` the `xmlserver-metrics` container defines the same `volumeMounts:` as the `xmlserver` container and they both reference the deployment's `persistentVolumeClaim:`.
 * In the `xmlserver-metrics` container the `start-prometheus_collector_exporter.sh` startup shell script ensures the persistent mountpoint is available
 and creates symbolic links from the container's file system to the persistent file system.
@@ -51,8 +51,8 @@ More details on the above files can be found in the relevant sections that follo
 
 ## Prometheus collector and exporter
 
-This section describes the Prometheus collector and exporter code provided in the `dockerfiles/Liberty/xmlserver-metrics/xmlserver_prometheus.jar` file.
-You may find this information useful in understanding the sample implementation and how to develop an implementation suitable for your specific environment and use of the XML server.
+This section describes the Prometheus collector and exporter code provided in the `xmlserver_prometheus.jar` and `xmlserver_prometheus-sources.jar` files that reside in the `dockerfiles/Liberty/xmlserver-metrics/` folder.
+You may find the following information useful in understanding the sample implementation and how to develop an implementation suitable for your specific environment and use of the XML server.
 
 ### Choosing XML server statistics
 
@@ -71,9 +71,10 @@ There are several XML server statistics that are available as described in the [
 | Template version | template version number |
 | Template locale  | locale of the template |
 
-For purposes of the proof-of-concept we focused on these statistics as being illustrative:
+For purposes of the proof-of-concept we used these statistics as being illustrative:
 
 * Success - reported as success or failure
+* Job type - PDF, HTML, TEXT, and RTF
 * Elapsed connection
 * Job preview data length
 
@@ -83,20 +84,16 @@ Your own requirements, depending on your application usage, etc. may differ.
 
 These Prometheus client_java APIs illustrate coding of the above proof-of-concept statistics:
 
-**Job successes and failures:**
+**Jobs run:**
 
 ```
-  /** Prometheus counter - successful jobs. */
-  private static final Counter jobsSuccessful = Counter.build()
-      .namespace("xmlserver")
-      .name("job_successes")
-      .help("Successful xmlserver jobs").register();
-
-  /** Prometheus counter - failed jobs. */
-  static final Counter jobsFailed = Counter.build()
-      .namespace("xmlserver")
-      .name("job_failures")
-      .help("Failed xmlserver jobs").register();
+  /** Prometheus counter - of xmlserver jobs. */
+  private static final Counter jobTotals = Counter.build()
+      .namespace("curam_xmlserver")
+      .name("jobs_total")
+      .help("Job counts with labels for status=success|fail ; type=PDF|HTML|TEXT|RTF")
+      .labelNames("status", "type")
+      .register();
 ```
 
 **Job elapsed, or connect, time:**
@@ -104,7 +101,7 @@ These Prometheus client_java APIs illustrate coding of the above proof-of-concep
 ```
   /** Prometheus histogram - job connect time. */
   static final Histogram jobConnectTime = Histogram.build()
-      .namespace("xmlserver")
+      .namespace("curam_xmlserver")
       .name("job_connect_seconds")
       .help("Job connect time")
       .buckets(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
@@ -117,11 +114,11 @@ These Prometheus client_java APIs illustrate coding of the above proof-of-concep
 ```
   /** Prometheus histogram - job data length. */
   static final Histogram jobDataLength = Histogram.build()
-      .namespace("xmlserver")
+      .namespace("curam_xmlserver")
       .name("job_data_length_bytes")
       .help("Job preview data length")
-      .buckets(5000, 10000, 15000, 20000, 25000, 30000, 35000,
-               40000, 50000, 100000, 200000, 300000)
+      .buckets(5000, 7000, 9000, 10000, 12000, 14000, 15000, 
+               20000, 25000, 30000, 35000, 50000)
       .register();
 ```
 
@@ -147,7 +144,7 @@ Collector thread:
         * Create a `java.io.RandomAccessFile` in read mode
         * Bypass previously read content
         * Process each new line in the file
-          * Call the `io.prometheus.client.Counter.inc()` method for success or failure jobs
+          * Call the `io.prometheus.client.Counter.inc()` method to increment status (`success`|`fail`) and type (`PDF`|`HTML`|`TEXT`|`RTF`)
           * Call the `io.prometheus.client.Histogram.observe(double amt)` method for elapsed time
           * Call the `io.prometheus.client.Histogram.observe(double amt)` method for bytes processed
         * Record the new number of bytes read from the file
@@ -161,13 +158,13 @@ Exporter thread:
 
 In support of building the sidecar Docker image the following files are included in the `dockerfiles/Liberty/xmlserver-metrics` folder of the [GitHub repo](https://github.com/IBM/spm-kubernetes):
 
-* `XMLServer-metrics.Dockerfile`
-* `./xmlserver-metrics/xmlserver_prometheus.jar` - contains the sample proof-of-concept implementation
-* `./xmlserver-metrics/start-prometheus_collector_exporter.sh` - The start shell script is invoked by the `xmlserver-metrics` deployment's `cmd:` structure and when invoked:
+* The `.Dockerfile` that builds the image: `XMLServer-metrics.Dockerfile`
+* The sample proof-of-concept implementation executable, `xmlserver_prometheus.jar`, and source, `xmlserver_prometheus-sources.jar`
+* The start shell script, `./xmlserver-metrics/start-prometheus_collector_exporter.sh`, invoked by the `xmlserver-metrics` deployment's `cmd:` structure and when invoked:
   * Ensures the persistent storage mount point is available and the expected directories exist.
   * Starts the Prometheus collector/exporter Java program in the background.
   * Waits for the Java program to terminate and logs the end of the process.
-* `./xmlserver-metrics/stop-prometheus_collector_exporter.sh` - The stop shell script is invoked by the `xmlserver-metrics` deployment's `lifecycle:` structure and when invoked:
+* The stop shell script, `./xmlserver-metrics/stop-prometheus_collector_exporter.sh`, invoked by the `xmlserver-metrics` deployment's `lifecycle:` structure and when invoked:
   * Cleans up the `.pid` file created when the Java process was started.
 
 ### Building the Docker image
@@ -195,7 +192,7 @@ To build the sidecar image run the following commands:
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver-metrics:latest \
      --build-arg "BASE_REGISTRY=registry.connect.redhat.com/" \
      --file xmlserver-metrics/XMLServer-metrics.Dockerfile .
 ```
@@ -211,8 +208,39 @@ docker build \
 ```shell
 cd $SPM_HOME/dockerfiles/Liberty/
 docker build \
-     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver:latest \
+     --tag $DOCKER_REGISTRY/$PROJECT/xmlserver-metrics:latest \
      --file xmlserver-metrics/XMLServer-metrics.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Using RedHat Registry (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver-metrics:latest `
+     --build-arg "BASE_REGISTRY=registry.redhat.io/" `
+     --file xmlserver-metrics\XMLServer-metrics.Dockerfile .
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Unauthenticated / Local image (Windows PS)">
+<Row>
+<Column>
+
+```powershell
+cd $env:SPM_HOME\dockerfiles\Liberty\
+docker build `
+     --tag $env:DOCKER_REGISTRY/$env:PROJECT/xmlserver-metrics:latest `
+     --file xmlserver-metrics\XMLServer-metrics.Dockerfile .
 ```
 
 </Column>
@@ -223,7 +251,7 @@ docker build \
 
 ## Deploying the sidecar container and configuring for Prometheus
 
-Sample files are provided to define the sidecar and Prometheus configuration and are only installed by Helm when these settings are provided:
+Sample files are provided to define the sidecar and Prometheus configuration and `xmlserver-metrics` is only installed by Helm when these settings are provided:
 
 * `global.apps.common.persistence.enabled: true`
 * `global.useBetaFeatures: true`
@@ -256,5 +284,5 @@ For instance:
 
 * Using the `curl` command in a pod's shell you can get the current metrics (remember that with two containers your Kubernetes `exec` command must use `-c xmlserver-metrics` to enter the correct shell), for example:
   * `curl -s http://localhost:8080/metrics` - displays all the Prometheus data and help text
-  * `curl -s http://localhost:8080/metrics | grep "xmlserver_job_successes_total [0-9]"` - displays the count of successful XML server jobs
-  * `curl -s http://localhost:8080/metrics | grep -E "xmlserver_job_successes_total [0-9]|xmlserver_job_failures_total [0-9]"` - displays the count of successful and failed jobs
+  * `curl -s http://localhost:8080/metrics | grep "curam_xmlserver_jobs_total.status=.success"` - displays the count of successful XML server jobs
+  * `curl -s http://localhost:8080/metrics | grep "curam_xmlserver_jobs_total.status"` - displays the count of successful and failed jobs
