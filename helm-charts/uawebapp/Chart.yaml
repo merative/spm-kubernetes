@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2020 IBM Corporation
+# Copyright 2019,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 21.6.4
+version: 21.6.5
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
