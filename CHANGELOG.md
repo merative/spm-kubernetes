@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.4.0
+
+### Fixed
+
+* Removed the WebSphere Liberty dataSource setting `isolationLevel="TRANSACTION_REPEATABLE_READ"` [#109](https://github.com/IBM/spm-kubernetes/issues/109) as the default Liberty setting is appropriate for Db2 and Oracle
+
+### Breaking Change
+
+* The `batch/v1beta1` API version of CronJob will no longer be served in v1.25.
+  * For more information see [CronJob](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0)
+  * As part of this release SPM has migrated from `batch/v1beta1` to `batch/v1`, which has been available since `v1.21`
+  
+### Changed
+
+* The following helm-charts have been updated to chart version `22.4.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* `cronjob-chunker.yaml`, `cronjob-program.yaml` and `cronjob-stream.yaml` have been migrated to `batch/v1` API version of CronJob
+
 ## v22.3.0
 
 ### Changed
