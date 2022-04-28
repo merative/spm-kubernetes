@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file
 
+## v21.6.5
+
+### Changed
+
+* The following helm-charts have been updated to chart version `21.6.5`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`.
+
+### Fixed
+
+* Fixed the issue where `xmlserver` pod termination overwrote the `verbosegc.log` written to by the `main` Ant task.
+* Removed the WebSphere Liberty dataSource setting `isolationLevel="TRANSACTION_REPEATABLE_READ"` [#109](https://github.com/IBM/spm-kubernetes/issues/109) as the default Liberty setting is appropriate for Db2 and Oracle.
+
 ## v21.6.4
 
 ### Breaking Changes
