@@ -34,9 +34,9 @@ version: 22.4.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
-    url: https://github.com/IBM/spm-kubernetes
+    url: https://github.com/merative/spm-kubernetes
 sources:
-  - https://github.com/IBM/spm-kubernetes
+  - https://github.com/merative/spm-kubernetes
 keywords:
   - Liberty
   - Minikube

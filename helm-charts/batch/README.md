@@ -31,4 +31,4 @@ Not required as the underlying IHS server runs with the default restricted polic
 
 ## Configuration
 
-See [Configuration reference](https://ibm.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.
+See [Configuration reference](https://merative.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.

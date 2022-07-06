@@ -20,7 +20,7 @@ With IBM MQ Prometheus monitor, a wide variety of statistics
 about that queue manager are published.
 
 The following information describes how to enable Prometheus monitoring agent that connects to an IBM MQ server.
-This monitor is based on the open-source project [MQ Metrics Sample](https://github.com/ibm-messaging/mq-metric-samples)
+This monitor is based on the open-source project [MQ Metrics Sample](https://github.com/merative-messaging/mq-metric-samples)
 which provides the monitor `mq_prometheus` to be compiled and the image `mq-metric-prometheus` to be built.
 
 Together, they will expose metrics about the following queue depth events
@@ -46,7 +46,7 @@ The following commands show how to build the MQ Metrics Pod which contains the m
 
 ```
 # Clone repository locally
-git clone https://github.com/ibm-messaging/mq-metric-samples.git
+git clone https://github.com/merative-messaging/mq-metric-samples.git
 
 # Build code and image
 cd mq-metric-samples/scripts
