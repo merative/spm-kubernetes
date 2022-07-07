@@ -34,4 +34,4 @@ Not required as XML server runs with the default restricted policy
 
 ## Configuration
 
-See [Configuration reference](https://ibm.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.
+See [Configuration reference](https://merative.github.io/spm-kubernetes/deployment/config-reference) section of the runbook.

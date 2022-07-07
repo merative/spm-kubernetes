@@ -4,7 +4,7 @@ import ResourceLinks from 'gatsby-theme-carbon/src/components/LeftNav/ResourceLi
 const links = [
   {
     title: 'Github',
-    href: 'https://github.com/IBM/spm-kubernetes',
+    href: 'https://github.com/merative/spm-kubernetes',
   },
   {
     title: 'IBM Documentation',
@@ -12,7 +12,7 @@ const links = [
   },
   {
     title: 'Change Log',
-    href: 'https://github.com/IBM/spm-kubernetes/blob/main/CHANGELOG.md',
+    href: 'https://github.com/merative/spm-kubernetes/blob/main/CHANGELOG.md',
   }
 ];
 
