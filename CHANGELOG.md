@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `22.7.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
-* Updated WebSphere Liberty version to include 22.0.0.6
-* Updated support from IBM to Merative.
+* Updated WebSphere Liberty version to include `22.0.0.6`
+* Updated support from IBM to Merative
 * Migrated from Travis CI to GitHub Actions
 
 ## v22.4.0
