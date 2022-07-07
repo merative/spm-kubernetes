@@ -5,13 +5,13 @@ description: Monitoring XML servers
 
 ## ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Introduction
 
-SPM XML servers produce statistics for each job processed. For more information see [The XML server](https://www.ibm.com/docs/en/spm/8.0.1?topic=infrastructure-xml-server) in IBM Docs.
+SPM XML servers produce statistics for each job processed. For more information see [The XML server](https://www.ibm.com/docs/en/spm/8.0.2?topic=infrastructure-xml-server) in IBM Docs.
 Out-of-the-box these statistics are written to text files in the `/opt/ibm/Curam/xmlserver/stats/` folder but are not directly accessible to Prometheus or other monitoring tools.
 
 ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) This topic describes a sample implementation to make XML server statistics available to Prometheus.
 The ability to access XML server statistics in a K8s deployment requires using the XML server `-forcestatswrite` start option.
 This option is only available in SPM V8.0.1 or higher as described in the [Configuration Reference](/deployment/config-reference#xml-server) topic
-and [Starting the XML server](https://www.ibm.com/docs/en/spm/8.0.1?topic=server-starting-xml) in IBM Docs.
+and [Starting the XML server](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-starting-xml) in IBM Docs.
 
 ## Sample implementation
 
@@ -56,7 +56,7 @@ You may find the following information useful in understanding the sample implem
 
 ### Choosing XML server statistics
 
-There are several XML server statistics that are available as described in the [SPM IBM Docs](https://www.ibm.com/docs/en/spm/8.0.1?topic=server-statistics), which are summarized here:
+There are several XML server statistics that are available as described in the [SPM IBM Docs](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-statistics), which are summarized here:
 
 |Statistic|Description|
 |---------|-----------|

@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.7.0
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.7.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Updated WebSphere Liberty version to include `22.0.0.6`
+* Updated support from IBM to Merative
+* Migrated from Travis CI to GitHub Actions
+
 ## v22.4.0
 
 ### Fixed
@@ -13,17 +22,17 @@ All notable changes to this project will be documented in this file
 * The `batch/v1beta1` API version of CronJob will no longer be served in v1.25.
   * For more information see [CronJob](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0)
   * As part of this release SPM has migrated from `batch/v1beta1` to `batch/v1`, which has been available since `v1.21`
-  
+
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.4.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.4.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 * `cronjob-chunker.yaml`, `cronjob-program.yaml` and `cronjob-stream.yaml` have been migrated to `batch/v1` API version of CronJob
 
 ## v22.3.0
 
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.3.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.3.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 * The optional, sample XML server monitoring sidecar, `xmlserver-metrics`, has been modified to:
   * Upgrade the [Prometheus client_java](https://github.com/prometheus/client_java) to release `0.15.0`
   * Modify the Prometheus namespace from `xmlserver_` to `curam_xmlserver` and restructure the counters, using a single jobs_total with labels:
@@ -39,7 +48,7 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 
 ## v22.1.0
 
@@ -148,7 +157,7 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
-* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.1?topic=design-db2)
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.2?topic=design-db2)
 * Updated IBM Documentation link to SPM V8
 * Clarified prerequisite software statements ([#83](https://github.com/merative/spm-kubernetes/issues/83))
 
@@ -356,7 +365,7 @@ All notable changes to this project will be documented in this file
 * Add a route in OpenShift to allow connections to SSO, when enabled
 * Updated the `ServerEAR.Dockerfile` to reduce layers
 * Added note with fix needed for an update in IBM MQ, the details of which can be found
-[here](https://github.com/merative/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md)
+[here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md)
 * Added links to Architecture and Troubleshooting sections from within the flow of the document
 
 ### Changed
@@ -490,7 +499,7 @@ All notable changes to this project will be documented in this file
 ### Added
 
 * Integration with [IBM Security Access manager](https://www.ibm.com/ie-en/marketplace/access-management/details)
-* Dependency on IBM [Shared Configuration Helper](https://github.com/merative/charts/tree/master/samples/ibm-sch) (SCH) chart for aligning with CloudPak code standards
+* Dependency on IBM [Shared Configuration Helper](https://github.com/IBM/charts/tree/master/samples/ibm-sch) (SCH) chart for aligning with CloudPak code standards
 * Dockerfile for a utilities image (used as init containers to import certificates into keystores & wait for other components to become available)
 * Chart hooks for managing LTPA keys and MQ client user
 * Liberty runtime liveness probe (checks log for specific error messages)

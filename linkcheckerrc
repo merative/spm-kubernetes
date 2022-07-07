@@ -2,6 +2,7 @@
 ignore=^http://localhost
        ^https://www.ibm.com/support
        ^https://ibm.biz/
+       ^https://cloud.redhat.com/openshift/install/crc/installer-provisioned
 
 
 internlinks=^http://TRAVIS_HOST:8888/

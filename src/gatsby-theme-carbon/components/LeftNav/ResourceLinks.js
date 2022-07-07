@@ -8,7 +8,7 @@ const links = [
   },
   {
     title: 'IBM Documentation',
-    href: 'https://www.ibm.com/docs/en/spm/8.0.1?topic=product-overview',
+    href: 'https://www.ibm.com/docs/en/spm/8.0.2?topic=product-overview',
   },
   {
     title: 'Change Log',

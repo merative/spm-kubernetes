@@ -14,7 +14,7 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=21.0.0.9-full-java8-ibmjava-ubi
+ARG WLP_VERSION=22.0.0.6-full-java8-ibmjava-ubi
 ARG ANT_VERSION=1.10.6
 
 # Intermediate image: extract Ant

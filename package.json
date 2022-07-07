@@ -1,7 +1,7 @@
 {
   "name": "spm-kubernetes",
   "private": true,
-  "version": "22.4.0",
+  "version": "22.7.0",
   "license": "Apache 2.0",
   "scripts": {
     "_comment": "`npm run dev` and `npm run dev:clean` are currently failing. Please refrain from using.",
