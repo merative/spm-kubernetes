@@ -76,7 +76,7 @@ const Header = ({ children }) => {
 
 const DefaultHeaderText = () => (
   <>
-    IBM Cúram&nbsp;<span>SPM on Kubernetes</span>
+    Cúram&nbsp;<span>SPM on Kubernetes</span>
   </>
 );
 

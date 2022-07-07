@@ -65,7 +65,7 @@ mkdir $env:SPM_HOME\dockerfiles\Liberty\content\release-stage
 unzip -qd $SPM_HOME/dockerfiles/Liberty/content/release-stage /tmp/release.zip
 chmod +x $SPM_HOME/dockerfiles/Liberty/content/release-stage/*.sh
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -104,7 +104,7 @@ If the password is changed, the value must be re-encrypted by running the follow
 ```shell
 ./build.sh encrypt -Dpassword=<The password to be encrypted>
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -136,7 +136,7 @@ Copy the property files by using the following command:
 cd $SPM_HOME/dockerfiles/Liberty/content
 cp -vf *.properties release-stage/project/properties/
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -173,7 +173,7 @@ Copy the static content `.zip` file for Docker image creation. Run the following
 ```shell
 cp -vf /tmp/StaticContent.zip $SPM_HOME/dockerfiles/HTTPServer/
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -210,7 +210,7 @@ Copy `apache-ant-1.10.6-bin.zip` to `$SPM_HOME/dockerfiles/Liberty/content`. If 
 cd $SPM_HOME/dockerfiles/Liberty/content
 wget https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.6-bin.zip
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -264,7 +264,7 @@ If you do not have a copy of Ant locally you can extract it from `$SPM_HOME` usi
 unzip -qd /tmp/ $SPM_HOME/dockerfiles/Liberty/content/apache-ant-1.10.6-bin.zip
 export ANT_HOME=/tmp/apache-ant-1.10.6
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -299,10 +299,10 @@ docker run --rm \
     -u root \
     -e ANT_HOME=/tmp/ant \
     -e WLP_HOME=/opt/ibm/wlp \
-    ibmcom/websphere-liberty:21.0.0.9-full-java8-ibmjava-ubi \
+    ibmcom/websphere-liberty:22.0.0.6-full-java8-ibmjava-ubi \
     bash -c 'export PATH=$ANT_HOME/bin:$PATH:.; build.sh internal.update.crypto.jar'
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -320,7 +320,7 @@ docker run --rm `
     -u root `
     -e ANT_HOME=/tmp/ant `
     -e WLP_HOME=/opt/ibm/wlp `
-    ibmcom/websphere-liberty:21.0.0.9-full-java8-ibmjava-ubi `
+    ibmcom/websphere-liberty:22.0.0.6-full-java8-ibmjava-ubi `
     bash -c 'export PATH=$ANT_HOME/bin:$PATH:.; build.sh internal.update.crypto.jar'
 ```
 
@@ -347,7 +347,7 @@ If you do not have the jar files available, you can use the `getJavaMail.xml` An
 cd $SPM_HOME/dockerfiles/Liberty/content
 $ANT_HOME/bin/ant -f getJavaMail.xml
 ```
-  
+
 </Column>
 </Row>
 </Tab>
@@ -390,7 +390,7 @@ IBM MQ is required for WebSphere Liberty JMS support, therefore you must install
    * Find the resource adapter for your version of IBM MQ in the displayed list of available fixes. For example:
 
     ```
-    release level: 9.2.4.0-IBM-MQ-Java-InstallRA 
+    release level: 9.2.4.0-IBM-MQ-Java-InstallRA
     Continuous Delivery: 9.2.4 IBM MQ Resource Adapter for use with Application Servers
     ```
 

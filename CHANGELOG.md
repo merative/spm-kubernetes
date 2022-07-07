@@ -2,28 +2,37 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.7.0
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.7.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Updated WebSphere Liberty version to include 22.0.0.6
+* Updated support from IBM to Merative.
+* Migrated from Travis CI to GitHub Actions
+
 ## v22.4.0
 
 ### Fixed
 
-* Removed the WebSphere Liberty dataSource setting `isolationLevel="TRANSACTION_REPEATABLE_READ"` [#109](https://github.com/merative/spm-kubernetes/issues/109) as the default Liberty setting is appropriate for Db2 and Oracle
+* Removed the WebSphere Liberty dataSource setting `isolationLevel="TRANSACTION_REPEATABLE_READ"` [#109](https://github.com/IBM/spm-kubernetes/issues/109) as the default Liberty setting is appropriate for Db2 and Oracle
 
 ### Breaking Change
 
 * The `batch/v1beta1` API version of CronJob will no longer be served in v1.25.
   * For more information see [CronJob](https://github.com/chartmuseum/helm-push/releases/tag/v0.10.0)
   * As part of this release SPM has migrated from `batch/v1beta1` to `batch/v1`, which has been available since `v1.21`
-  
+
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.4.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.4.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 * `cronjob-chunker.yaml`, `cronjob-program.yaml` and `cronjob-stream.yaml` have been migrated to `batch/v1` API version of CronJob
 
 ## v22.3.0
 
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.3.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.3.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 * The optional, sample XML server monitoring sidecar, `xmlserver-metrics`, has been modified to:
   * Upgrade the [Prometheus client_java](https://github.com/prometheus/client_java) to release `0.15.0`
   * Modify the Prometheus namespace from `xmlserver_` to `curam_xmlserver` and restructure the counters, using a single jobs_total with labels:
@@ -39,7 +48,7 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver
+* The following helm-charts have been updated to chart version `22.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
 
 ## v22.1.0
 
@@ -90,8 +99,8 @@ All notable changes to this project will be documented in this file
 ### Fixed
 
 * Fixed the issue where `xmlserver` pod termination overwrote the `verbosegc.log` written to by the `main` Ant task.
-* Clarified statement for `wlp_psw` in `values.yaml` and yaml examples ([#92](https://github.com/merative/spm-kubernetes/issues/92))
-* Corrected `kubeVersion` ([#94](https://github.com/merative/spm-kubernetes/issues/94))
+* Clarified statement for `wlp_psw` in `values.yaml` and yaml examples ([#92](https://github.com/IBM/spm-kubernetes/issues/92))
+* Corrected `kubeVersion` ([#94](https://github.com/IBM/spm-kubernetes/issues/94))
 
 ## v21.10.0
 
@@ -148,13 +157,13 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
-* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.1?topic=design-db2)
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.2?topic=design-db2)
 * Updated IBM Documentation link to SPM V8
-* Clarified prerequisite software statements ([#83](https://github.com/merative/spm-kubernetes/issues/83))
+* Clarified prerequisite software statements ([#83](https://github.com/IBM/spm-kubernetes/issues/83))
 
 ### Fixed
 
-* Update Oracle Database driver name to `ojdbc8.jar` ([#84](https://github.com/merative/spm-kubernetes/issues/84))
+* Update Oracle Database driver name to `ojdbc8.jar` ([#84](https://github.com/IBM/spm-kubernetes/issues/84))
 * Fixed issue where MQ pods deployed by MQ Operator on Openshift were not respecting tuning params
 
 ### Removed
@@ -245,7 +254,7 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* Fixed reference to Oracle datasource fragment ([#78](https://github.com/merative/spm-kubernetes/issues/78))
+* Fixed reference to Oracle datasource fragment ([#78](https://github.com/IBM/spm-kubernetes/issues/78))
 
 ## v21.5.0
 
@@ -256,7 +265,7 @@ All notable changes to this project will be documented in this file
 * Added information in the **MustGather** introduction page about Helm Charts and Dockerfiles
 * Added capability to tune various database and JMS tuning parameters for individual producers and consumers
   * Created tuning-values.yaml as example.
-* Added capability for Docker Hub details to be used to avoid **toomanyrequests** ([#69](https://github.com/merative/spm-kubernetes/issues/69))
+* Added capability for Docker Hub details to be used to avoid **toomanyrequests** ([#69](https://github.com/IBM/spm-kubernetes/issues/69))
 * Added capability to set applications properties at deployment
 
 ### Changed
@@ -264,7 +273,7 @@ All notable changes to this project will be documented in this file
 * Allows for the simultaneous scraping of multiple metrics sources (eg JMX and Liberty) on `apps` charts
 * Moved `HTTPSessionDatabase` default configuration to timer based
 * Update `unzip` when unpacking the client EAR file
-* Ensure MQ directory structure exists, when using NFS ([#31](https://github.com/merative/spm-kubernetes/issues/31))
+* Ensure MQ directory structure exists, when using NFS ([#31](https://github.com/IBM/spm-kubernetes/issues/31))
 * Upgrade to Gatsby v3 (and associated dependencies)
 
 ## v21.4.1
@@ -282,8 +291,8 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * Changed the OpenShift reference architecture diagram to provide additional clarity regarding the statefulsets
-* Improved pod labels for compatibility with service meshes ([#61](https://github.com/merative/spm-kubernetes/issues/61))
-* Improved navigation links to avoid 404 errors ([#68](https://github.com/merative/spm-kubernetes/issues/68))
+* Improved pod labels for compatibility with service meshes ([#61](https://github.com/IBM/spm-kubernetes/issues/61))
+* Improved navigation links to avoid 404 errors ([#68](https://github.com/IBM/spm-kubernetes/issues/68))
 
 ### Removed
 
@@ -324,7 +333,7 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* Certificate Error when logging in to the Open Shift Registry. Added clarification on enabling Docker trust certificates ([#58](https://github.com/merative/spm-kubernetes/issues/58))
+* Certificate Error when logging in to the Open Shift Registry. Added clarification on enabling Docker trust certificates ([#58](https://github.com/IBM/spm-kubernetes/issues/58))
 * Supporting the rotation of the `apps` logs
 
 ## v21.1.0
@@ -339,14 +348,14 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * Limit allowed HTTP verbs as detailed in the [IBM Documentation](https://www.ibm.com/docs/en/spm/7.0.11?topic=considerations-enabling-http-verb-permissions)
-* Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/merative/spm-kubernetes/issues/51))
+* Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/IBM/spm-kubernetes/issues/51))
 * Adds values from `podAnnotations` at deployment of `apps` chart
 
 ### Fixed
 
-* Added clarification that NFS folders must be configured prior to using MQ with NFS ([#31](https://github.com/merative/spm-kubernetes/issues/31))
-* Added `mountOptions` configuration to `mqserver` PVs ([#30](https://github.com/merative/spm-kubernetes/issues/30))
-* Synchronised handling of MQ TLS certificate secrets between `apps` and `mqserver` charts ([#28](https://github.com/merative/spm-kubernetes/issues/28))
+* Added clarification that NFS folders must be configured prior to using MQ with NFS ([#31](https://github.com/IBM/spm-kubernetes/issues/31))
+* Added `mountOptions` configuration to `mqserver` PVs ([#30](https://github.com/IBM/spm-kubernetes/issues/30))
+* Synchronised handling of MQ TLS certificate secrets between `apps` and `mqserver` charts ([#28](https://github.com/IBM/spm-kubernetes/issues/28))
 
 ## v20.11.0
 
@@ -356,7 +365,7 @@ All notable changes to this project will be documented in this file
 * Add a route in OpenShift to allow connections to SSO, when enabled
 * Updated the `ServerEAR.Dockerfile` to reduce layers
 * Added note with fix needed for an update in IBM MQ, the details of which can be found
-[here](https://github.com/merative/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md)
+[here](https://github.com/IBM/charts/blob/master/stable/ibm-mqadvanced-server-dev/RELEASENOTES.md)
 * Added links to Architecture and Troubleshooting sections from within the flow of the document
 
 ### Changed
@@ -478,7 +487,7 @@ All notable changes to this project will be documented in this file
 ### Fixed
 
 * InitContainer for Batch does not meet pod security policy requirements
-* Missing Batch debug-file configmap ([#29](https://github.com/merative/spm-kubernetes/issues/29))
+* Missing Batch debug-file configmap ([#29](https://github.com/IBM/spm-kubernetes/issues/29))
 * Fixed Helm Chart syntax for enabling JMX Stats
 
 ### Removed
@@ -490,7 +499,7 @@ All notable changes to this project will be documented in this file
 ### Added
 
 * Integration with [IBM Security Access manager](https://www.ibm.com/ie-en/marketplace/access-management/details)
-* Dependency on IBM [Shared Configuration Helper](https://github.com/merative/charts/tree/master/samples/ibm-sch) (SCH) chart for aligning with CloudPak code standards
+* Dependency on IBM [Shared Configuration Helper](https://github.com/IBM/charts/tree/master/samples/ibm-sch) (SCH) chart for aligning with CloudPak code standards
 * Dockerfile for a utilities image (used as init containers to import certificates into keystores & wait for other components to become available)
 * Chart hooks for managing LTPA keys and MQ client user
 * Liberty runtime liveness probe (checks log for specific error messages)
@@ -519,9 +528,9 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* Incorrect formatting of heredoc in `createSSC.sh` ([#24](https://github.com/merative/spm-kubernetes/issues/24))
-* Db2 dependency in `spm/requirements.yaml` ([#23](https://github.com/merative/spm-kubernetes/issues/23))
-* Duplicate `ihs` elements in `spm/values.yaml` ([#15](https://github.com/merative/spm-kubernetes/issues/15))
+* Incorrect formatting of heredoc in `createSSC.sh` ([#24](https://github.com/IBM/spm-kubernetes/issues/24))
+* Db2 dependency in `spm/requirements.yaml` ([#23](https://github.com/IBM/spm-kubernetes/issues/23))
+* Duplicate `ihs` elements in `spm/values.yaml` ([#15](https://github.com/IBM/spm-kubernetes/issues/15))
 
 ### Removed
 
@@ -554,7 +563,7 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* [Broken Links in Prerequisites.](https://github.com/merative/spm-kubernetes/issues/18)
+* [Broken Links in Prerequisites.](https://github.com/IBM/spm-kubernetes/issues/18)
 
 ## v20.5.0 ![SPM 7.0.10.0](https://img.shields.io/badge/-SPM_7.0.10.0-green)
 
@@ -565,10 +574,10 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* [helm commands not working.](https://github.com/merative/spm-kubernetes/issues/6)
-* [ChartMuseum links broken.](https://github.com/merative/spm-kubernetes/issues/7)
-* [Documentation correction for license check.](https://github.com/merative/spm-kubernetes/issues/10)
-* [Helm dependency for ce-app needs conditional adding.](https://github.com/merative/spm-kubernetes/issues/13)
-* [CE Ingress controller Rules created when the Application isn't deployed.](https://github.com/merative/spm-kubernetes/issues/14)
-* [Duplicate ihs elements in spm/values.yaml.](https://github.com/merative/spm-kubernetes/issues/15)
+* [helm commands not working.](https://github.com/IBM/spm-kubernetes/issues/6)
+* [ChartMuseum links broken.](https://github.com/IBM/spm-kubernetes/issues/7)
+* [Documentation correction for license check.](https://github.com/IBM/spm-kubernetes/issues/10)
+* [Helm dependency for ce-app needs conditional adding.](https://github.com/IBM/spm-kubernetes/issues/13)
+* [CE Ingress controller Rules created when the Application isn't deployed.](https://github.com/IBM/spm-kubernetes/issues/14)
+* [Duplicate ihs elements in spm/values.yaml.](https://github.com/IBM/spm-kubernetes/issues/15)
 * Addition of heapSize parameter in batch chart to allow for custom heap size specification
