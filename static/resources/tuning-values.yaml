@@ -196,6 +196,9 @@ global:
     #   curambirtviewer:
     #     enabled: false
 
+  ## Set to use xmlserver monitoring
+  useBetaFeatures: false
+
 # Override values in 'apps' Chart
 apps: {}
 #   replicaCount: 1
@@ -297,3 +300,11 @@ xmlserver: {}
 #     limits:
 #       cpu: 2
 #       memory: 1000Mi
+#   metrics:
+#     enabled: false
+#     port: 8080
+#   jvmStats:
+#     enabled: false
+#     port: 8083
+#     configYaml: ''
+

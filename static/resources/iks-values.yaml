@@ -64,6 +64,9 @@ global:
     #   curambirtviewer:
     #     enabled: false
 
+  ## Set to use xmlserver monitoring
+  useBetaFeatures: false
+
 # Override values in 'apps' Chart
 apps: {}
 #   replicaCount: 1
@@ -109,9 +112,17 @@ web: {}
 xmlserver: {}
 #   replicaCount: 1
 #   jvm:
-#      maxMemory: '-Djava.maxmemory=768m'
-#      threadStackSize: '-Djava.thread.stack.size=-Xss4m'
+#      maxMemory: '768m'
+#      threadStackSize: '-Xss4m'
+#      jvmOptions: ''
 #   config:
 #      socketTimeout: 60000
 #      threadPoolQueueSize: 200
-#      threadPoolSize: 6
+#      threadPoolSize: 5
+#   metrics:
+#     enabled: false
+#     port: 8080
+#   jvmStats:
+#     enabled: false
+#     port: 8083
+#     configYaml: ''

@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2019,2021 IBM Corporation
+# Copyright 2019,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,7 +80,14 @@ config:
 # XML server start options
 startOptions:
 
-# Collecting of XML server metrics
+# Collecting of XML server metrics (requires global.useBetaFeatures)
 metrics:
   enabled: true
   port: 8080
+
+# JMX Exporter configuration for collecting JVM metrics from the XML server (requires global.useBetaFeatures)
+jvmStats:
+  enabled: false
+  port: 8083
+  configYaml: ''
+

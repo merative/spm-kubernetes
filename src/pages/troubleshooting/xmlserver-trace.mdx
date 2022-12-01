@@ -1,0 +1,103 @@
+---
+title: XML server tracing
+description: Configuring XML server tracing
+---
+## Introduction
+
+This topic describes how to configure XML server tracing when deployed to Kubernetes.
+XML server tracing is described in the [Debug configuration](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-debug-configuration) topic of the SPM product documentation.
+However, to use it in a Kubernetes environment you will need to perform the steps described in this section.
+
+In summary, you will need to:
+
+1. Create a new ConfigMap to override the trace setting in the default `xmlserverconfig.xml.template` file
+1. Optionally you can (for the `xmlserver` deployment only) create a ConfigMap to override its default log4j properties file.
+
+The Kubernetes commands presented in this topic are generic and assume a helm release name of `releasename`.
+To enter the commands in this topic as-is you need to enter the following commands first, substituting `<name_space>` for the OpenShift project name or IKS namespace for your dpeloyment:
+
+* For Openshift:
+  * Create an alias for the `oc` command:
+    * Bash: `alias k='oc'`
+    * Windows PowerShell: `Set-Alias -Name k -Value oc`
+  * Set the default namespace:
+    `k project <name_space>`
+* For IKS:
+  * Create an alias for the `kubectl` command:
+    * Bash: `alias k='kubectl'`
+    * Windows PowerShell: `Set-Alias -Name k -Value kubectl`
+  * Set the default namespace:
+    `k config set-context --current --namespace=<name_space>`
+
+### Specifying the XML server trace setting
+
+To enable XML server tracing you need to modify the out-of-the-box setting:
+
+* Copy the `xmlserver` pod's `xmlserverconfig.xml.template` file to your local file system using the Kubernetes copy command.  For example:
+  `k cp <xmlserver-pod-name>:xmlserverconfig.xml.template xmlserverconfig.xml.template -c xmlserver`
+* Edit the local `xmlserverconfig.xml.template` file to change the `TRACE_TRAFFIC` value as follows:
+  `<TRACE_TRAFFIC>true</TRACE_TRAFFIC>`
+* Delete the existing `releasename-xmlserverconfig-template-cm` ConfigMap. For example:
+  `k delete configmap releasename-xmlserverconfig-template-cm`
+* Create a new `releasename-xmlserverconfig-template-cm` ConfigMap using your edited copy of `xmlserverconfig.xml.template`; for example:
+  `k create releasename-xmlserverconfig-template-cm --from-file=xmlserverconfig.xml.template`
+  The existing `releasename-xmlserverconfig-template-cm` ConfigMap in the `releasename-xmlserver` deployment will be replaced with your newly edited file.
+* You must restart the xmlserver pod(s) for the new setting to be used. You can restart the pod(s) using the Kubernetes `delete pod` command.  For example:
+  `k delete pod <xmlserver-pod-name>`
+  This will terminate the running pod and start a new pod that reflects the new ConfigMap.
+
+### Modifying the log4j properties
+
+The out-of-the-box `log4j2.properties` file will write the XML server trace output to stdout, which is routed to the pod's `tmp/xmlserver.log` file.
+Optionally, you can provide your own custom log4j properties file.
+For instance, it can be useful to modify the output layout to indicate the time-of-day and the worker thread processing the XML server job.
+For example this log4j pattern:
+
+```
+appender.A1.layout.pattern=[%p] %d{ABSOLUTE_MICROS} [%t] [%c{1}] %m%n
+```
+
+will produce output in this format:
+
+```
+[xmlserver] [INFO] 14:01:46,165000 [ThreadPoolWorker-1] [XMLConnectionHandler] - Awaiting job configuration.
+```
+
+as compared to the out-of-the-box format:
+
+```
+[xmlserver] [INFO] [XMLConnectionHandler] Awaiting job configuration.
+```
+
+For more information on specifying log4j patterns see the [Layouts section](https://logging.apache.org/log4j/2.x/manual/layouts.html) of the [log4j documentation](https://logging.apache.org/log4j/2.x/manual/index.html).
+
+To modify the `log4j2.properties` file:
+
+* Copy the `xmlserver` pod's `log4j2.properties` file to your local file system using the Kubernetes copy command.  For example:
+  `k cp <xmlserver-pod-name>:/opt/ibm/Curam/xmlserver/log4j2.properties log4j2.properties -c xmlserver`
+* Edit the local file to specify the desired log4j configuration settings.
+* Create a ConfigMap using your edited copy of `log4j2.properties`; for example:
+  `k create configmap xmlserver-log4j-props-cm --from-file=log4j2.properties`
+* Edit the xmlserver deployment to specify the new ConfigMap:
+  `k edit deployment releasename-xmlserver`
+  * In the subsequent edit session add the entries for the new ConfigMap, matching the name used when creating it; for example:
+
+```
+...
+        volumeMounts:
+        ...
+        - mountPath: /opt/ibm/Curam/xmlserver/log4j2.properties
+          name: xmlserver-log4j-props-cm
+          subPath: log4j2.properties
+...
+      volumes:
+      ...
+      - configMap:
+          defaultMode: 420
+          name: xmlserver-log4j-props-cm
+        name: xmlserver-log4j-props-cm
+```		
+
+* You must restart the xmlserver pod(s) for it to reflect the new trace setting. You can restart the pod by using the Kubernetes `delete pod` command.  For example:
+  `k delete pod <xmlserver-pod-name>`
+  This will terminate the running pod and start a new pod that reflects the new ConfigMap that contains the log4j properties.
