@@ -1,5 +1,5 @@
 ###############################################################################
-# Copyright 2020 IBM Corporation
+# Copyright 2020,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 ###############################################################################
 
 ARG ANT_VERSION=1.10.6
+
+# Note: This public JMX Exporter is for getting JVM metrics
+ARG JMX_EXPORTER_URL=https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 
 # If set, must end with a forward slash, e.g. "registry.connect.redhat.com/"
 ARG BASE_REGISTRY
@@ -52,6 +55,11 @@ RUN rpm -e --nodeps tzdata \
     && rm -rf /var/cache/yum
 RUN mkdir -p /opt/ibm/Curam/xmlserver \
     && chmod -c g+w /etc/passwd $JAVA_HOME/jre/lib/security/cacerts
+
+# Prometheus JMX Exporter
+ARG JMX_EXPORTER_URL
+ADD $JMX_EXPORTER_URL /opt/ibm/Curam/xmlserver/jmx_prometheus_javaagent.jar
+RUN chmod -c +rx /opt/ibm/Curam/xmlserver/jmx_prometheus_javaagent.jar
 
 COPY --from=ExtractAndMod --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
 COPY --from=ExtractAndMod --chown=1001:0 /opt/ibm/Curam /opt/ibm/Curam

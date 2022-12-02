@@ -8,14 +8,16 @@ description: Remote debugging
 It might be necessary to use a remote debugger to step through code execution on the cluster, where log analysis does not provide sufficient information to resolve an issue.
 The following is an outline of the steps required to connect eclipse's remote debugger to the IBM® Cúram Social Program Management (SPM) code running on the cluster.
 
-* Edit the Cúram Producer deployment spec to pass debug arguments to the WebSphere® Liberty server.
-* Forward the debugging port from the port running the Cúram Producer pod.
+* Edit the Cúram producer deployment spec to pass debug arguments to the WebSphere® Liberty server.
+* Forward the debugging port from the port running the Cúram producer pod.
 * Create the remote debug configuration in eclipse.
 * Connect the remote debugger to the listener.
 
-### Edit the Cúram Producer deployment
+These steps are explained in more detail below.
 
-Edit the deployment spec for the Cúram Producer deployment.
+### Edit the Cúram producer deployment
+
+Edit the deployment spec for the Cúram producer deployment.
 
 ```kubectl edit deployment release-apps-curam-producer```
 
@@ -71,11 +73,24 @@ containers:
 
 </Tabs>
 
-The Cúram Producer deployment will terminate its pod and start a new one with the debug configuration.
+Upon saving your deployment setting changes the Cúram producer deployment will terminate its pod and start a new one with the debug configuration.
+
+<InlineNotification kind="info">
+
+**Note:** The liveness, readiness, or startup probes could interfere with debugging and may need to be disabled.
+The probes are designed and configured for a typical environment and the delays involved in debugging sessions may be incompatible, causing unexpected restarts and failures.
+
+</InlineNotification>
 
 ### Forward the debugging port
 
-Next, forward the WebSphere® Liberty server's debug port to make it available to the remote debugger. 7777 is the default debug port for WebSphere® Liberty.
+Once the restarted pod has completed initialization and started the Libery server `kubectl logs` command will indicate that the Liberty server is waiting on the debug port:
+
+```
+Listening for transport dt_socket at address: 7777
+```
+
+At this point forward the WebSphere® Liberty server's debug port to make it available to the remote debugger. 7777 is the default debug port for WebSphere® Liberty.
 
 ```kubectl port-forward release-apps-curam-producer-XXXX 7777:7777```
 

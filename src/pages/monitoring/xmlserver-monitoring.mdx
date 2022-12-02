@@ -5,15 +5,22 @@ description: Monitoring XML servers
 
 ## ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Introduction
 
+Monitoring of the XML server is available for:
+
+* The XML server via its statistics, described in [Monitoring XML server statistics](#monitoring-xml-server-statistics)
+* The JVM that the XML server runs on, described in [Monitoring the XML server JVM](#monitoring-the-xml-server-jvm)
+
+## Monitoring XML server statistics
+
 SPM XML servers produce statistics for each job processed. For more information see [The XML server](https://www.ibm.com/docs/en/spm/8.0.2?topic=infrastructure-xml-server) in IBM Docs.
 Out-of-the-box these statistics are written to text files in the `/opt/ibm/Curam/xmlserver/stats/` folder but are not directly accessible to Prometheus or other monitoring tools.
 
 ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) This topic describes a sample implementation to make XML server statistics available to Prometheus.
-The ability to access XML server statistics in a K8s deployment requires using the XML server `-forcestatswrite` start option.
+The ability to access XML server statistics in a Kubernetes deployment requires using the XML server `-forcestatswrite` start option.
 This option is only available in SPM V8.0.1 or higher as described in the [Configuration Reference](/deployment/config-reference#xml-server) topic
 and [Starting the XML server](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-starting-xml) in IBM Docs.
 
-## Sample implementation
+### Sample implementation
 
 The sample implementation is based on a proof-of-concept performed to illustrate the capability.
 Artifacts used for the proof-of-concept are provided as samples in the [GitHub repo](https://github.com/merative/spm-kubernetes).
@@ -22,7 +29,7 @@ Notable decisions and limitations used in performing the proof-of-concept:
 
 * The Prometheus [client_java](https://github.com/prometheus/client_java) is used for implementing the Prometheus collector and exporter, hence it is coded in Java.
 * A sidecar container is used to run the Prometheus collector and exporter as this allows for:
-  * Avoiding making any K8s or Prometheus-specific code changes to the XML server code base. This is achieved by the use of persistent storage, which is described in more detail [below](#the-role-of-persistent-storage-in-monitoring-xml-server-statistics)
+  * Avoiding making any Kubernetes or Prometheus-specific code changes to the XML server code base. This is achieved by the use of persistent storage, which is described in more detail [below](#the-role-of-persistent-storage-in-monitoring-xml-server-statistics)
   * Avoiding additional processes in the xmlserver pod, which could impact on the main xmlserver process.
 
 At a high-level, providing XML server statistics to Prometheus involves the following steps:
@@ -32,7 +39,7 @@ At a high-level, providing XML server statistics to Prometheus involves the foll
 * Defining a sidecar container in the `xmlserver` deployment
 * Defining the necessary Prometheus configuration for the Kubernetes cluster. The sample deployment provided utilizes the OpenShift PodMonitor.
 
-### The role of persistent storage in monitoring XML server statistics
+#### The role of persistent storage in monitoring XML server statistics
 
 Persistent storage is required by this sample implementation so that:
 
@@ -49,12 +56,12 @@ and creates symbolic links from the container's file system to the persistent fi
 
 More details on the above files can be found in the relevant sections that follow.
 
-## Prometheus collector and exporter
+### Prometheus collector and exporter
 
 This section describes the Prometheus collector and exporter code provided in the `xmlserver_prometheus.jar` and `xmlserver_prometheus-sources.jar` files that reside in the `dockerfiles/Liberty/xmlserver-metrics/` folder.
 You may find the following information useful in understanding the sample implementation and how to develop an implementation suitable for your specific environment and use of the XML server.
 
-### Choosing XML server statistics
+#### Choosing XML server statistics
 
 There are several XML server statistics that are available as described in the [SPM IBM Docs](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-statistics), which are summarized here:
 
@@ -80,7 +87,7 @@ For purposes of the proof-of-concept we used these statistics as being illustrat
 
 Your own requirements, depending on your application usage, etc. may differ.
 
-### Coding the Prometheus metric variables
+#### Coding the Prometheus metric variables
 
 These Prometheus client_java APIs illustrate coding of the above proof-of-concept statistics:
 
@@ -122,7 +129,7 @@ These Prometheus client_java APIs illustrate coding of the above proof-of-concep
       .register();
 ```
 
-### Java code for the Prometheus collector and exporter
+#### Java code for the Prometheus collector and exporter
 
 This is a high-level, pseudo-code description of the Java implementation of the Prometheus collector and exporter:
 
@@ -154,7 +161,7 @@ Exporter thread:
 
 * Using the specified port create a new `io.prometheus.client.exporter.HTTPServer.HTTPServer(int port)`
 
-## Creating the Docker image for the sidecar container
+### Creating the Docker image for the sidecar container
 
 In support of building the sidecar Docker image the following files are included in the `dockerfiles/Liberty/xmlserver-metrics` folder of the [GitHub repo](https://github.com/merative/spm-kubernetes):
 
@@ -167,7 +174,7 @@ In support of building the sidecar Docker image the following files are included
 * The stop shell script, `./xmlserver-metrics/stop-prometheus_collector_exporter.sh`, invoked by the `xmlserver-metrics` deployment's `lifecycle:` structure and when invoked:
   * Cleans up the `.pid` file created when the Java process was started.
 
-### Building the Docker image
+#### Building the Docker image
 
 Building the `xmlserver-metrics` image uses a similar process to building the other Docker images.
 To build the sidecar image run the following commands:
@@ -249,7 +256,7 @@ docker build `
 
 </Tabs>
 
-## Deploying the sidecar container and configuring for Prometheus
+### Deploying the sidecar container and configuring for Prometheus
 
 Sample files are provided to define the sidecar and Prometheus configuration and `xmlserver-metrics` is only installed by Helm when these settings are provided:
 
@@ -267,7 +274,7 @@ folder of the GitHub repo for deploying the `xmlserver-metrics` sidecar containe
 
 The Prometheus port, `xmlmetrics`, referenced in both deployment files defaults to `8080`.
 
-## Confirming the status of the xmlserver-metrics container
+### Confirming the status of the xmlserver-metrics container
 
 Once deployed, a Kubernetes `get pods` command will show how many of the containers are ready. For the `xmlserver` deployment it should show `2/2` (two of two) ready.
 
@@ -276,7 +283,7 @@ For deployment issues use the Kubernetes `describe` command against the pod to c
 You can view the `xmlserver-metrics` stdout using the Kubernetes `logs` command and you must use `-c xmlserver-metrics` on the command to specify the container; otherwise, it defaults to the `xmlserver` container.
 While the `xmlserver-metrics` container is running log4j output is written to `StatsForPrometheus.log` in the pod's persistent `tmp` folder: `/opt/ibm/Curam/xmlserver/tmp`.
 
-## Interacting with the XML server statistics
+### Interacting with the XML server statistics
 
 While ultimately you will want to view the XML server statistics in Prometheus or Grafana (not covered here), command line interactions are useful for testing and quickly getting performance indicators.
 
@@ -286,3 +293,22 @@ For instance:
   * `curl -s http://localhost:8080/metrics` - displays all the Prometheus data and help text
   * `curl -s http://localhost:8080/metrics | grep "curam_xmlserver_jobs_total.status=.success"` - displays the count of successful XML server jobs
   * `curl -s http://localhost:8080/metrics | grep "curam_xmlserver_jobs_total.status"` - displays the count of successful and failed jobs
+
+## Monitoring the XML server JVM
+
+The performance of the Java Virtual Machine (JVM) running the XML server directly impacts the performance of the XML server.
+
+The `xmlserver` image includes the Prometheus JMX Exporter and you can configure your deployment to enable monitoring of the XML server JVM. Your Helm override file needs to specify the following to enable the monitoring:
+
+* `global.useBetaFeatures: true`
+* `xmlserver.jvmStats.enabled: true`
+
+Additionally you can configure the port and JMX Exporter configuration. This is the default configuration:
+
+* `xmlserver.jvmStats.port: 8083`
+* `xmlserver.jvmStats.configYaml: ''`
+
+How you configure the JMX Exporter will depend upon how you consume the data.  For reference:
+
+* See the Prometheus JMX Exporter [configuration documentation](https://github.com/prometheus/jmx_exporter#configuration)
+* See this sample [Grafana JVM dashboard](https://grafana.com/grafana/dashboards/3066)

@@ -67,7 +67,7 @@ fi
 
 # now update the xmlserver.xml to update the java options <property name="java.jvmargs" value="-Dfake.property=1"/> to include any jvm options passed in
 # note the use of the # char in the sed expression, this is to account for slashes that may be in the paths
-JVM_OPTIONS="$JVM_OPTIONS $JVM_GC_OPTS"
+JVM_OPTIONS="$JVM_OPTIONS $JVM_JMX_OPTIONS $JVM_GC_OPTS"
 
 sed -i "s#<property name=\"java.jvmargs\" value=\"-Dfake.property=1\"\/>#<property name=\"java.jvmargs\" value=\"$JVM_OPTIONS\"\/>#g" xmlserver.xml
 

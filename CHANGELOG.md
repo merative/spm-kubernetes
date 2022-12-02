@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file
 
+## v22.11.0
+
+### Fixed
+* Runbook section [Architecture Overview](https://merative.github.io/spm-kubernetes/architecture/arch-overview/architecture-overview/) has been corrected to reflect Red Hat OpenShift in diagram 2 and its corresponding text.
+* Runbook section [SPM OpenShift cluster - Reference Architecture](https://merative.github.io/spm-kubernetes/architecture/arch-overview/spm-openshift-reference-architecture#spm-openshift-cluster-reference-architecture) has been modified to clarify MQ support for OpenShift [#132](https://github.com/merative/spm-kubernetes/issues/132).
+* Runbook section [Dev Workstation](https://merative.github.io/spm-kubernetes/architecture/arch-overview/dev-workstation) has been modified to clarify that CRC can be used instead of Minikube.
+* Runbook section [Remote debugging](https://merative.github.io/spm-kubernetes/troubleshooting/Remote-Debugging/) has been modified to include information covering the disabling of the probes.
+
+### Changed
+
+* The following helm-charts have been updated to chart version `22.11.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+
+### Added
+
+* The capability to monitor the XML server JVM using the Prometheus JMX Exporter has been added.  See [Monitoring XML servers](https://merative.github.io/spm-kubernetes/monitoring/xmlserver-monitoring/) in the Runbook for more information.
+* Runbook section [XML server tracing](https://merative.github.io/spm-kubernetes/troubleshooting/xmlserver-trace/) has been added.
+* A known issue has been added to explain and workaround errors in Liberty for application method calls that cross the client/server boundary.
+  See [Method calls that cross the client/server boundary](https://merative.github.io/spm-kubernetes/known_issues/#method-calls-that-cross-the-clientserver-boundary).
+
 ## v22.7.0
 
 ### Changed
@@ -354,7 +373,7 @@ All notable changes to this project will be documented in this file
 ### Fixed
 
 * Added clarification that NFS folders must be configured prior to using MQ with NFS ([#31](https://github.com/merative/spm-kubernetes/issues/31))
-* Added `mountOptions` configuration to `mqserver` PVs ([#30](https://github.com/merative/spm-kubernetes/issues/30))
+* Added `mountOptions` configuration to `mqserver` PVs ([#30](https://github.com/IBM/spm-kubernetes/issues/30))
 * Synchronised handling of MQ TLS certificate secrets between `apps` and `mqserver` charts ([#28](https://github.com/merative/spm-kubernetes/issues/28))
 
 ## v20.11.0

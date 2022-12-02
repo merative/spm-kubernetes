@@ -22,9 +22,10 @@ This architecture allows SPM to leverage the benefits of flexibility, elasticity
 * Batch packaged as Docker images, which are run as containers.
 * XML Server packaged as Docker images, which are run as containers.
 * SPM only supports SPM Docker containers when deployed into pods.
-* JMS messaging engine deployed separately using IBM MQ, managed through Helm charts.
+* Deployment of the database is supported on bare metal and VMs when the application tier is running in Kubernetes.
+* JMS messaging engine deployed separately using IBM MQ, managed through Helm Charts.
 * IBM MQ certified containers (MQ CI) from the IBM Cloud Container Registry which are run as stateful pods.
-* Database and IBM MQ LTS deployed on VM.
-  * Deployment of database on bare metal and VMs will still be supported when application tier is running in Kubernetes.
-  * SPM only supports IBM MQ LTS hosted on bare metal and VMs.
-  * Keep the database and queue managers tier close to the application tier to reduce latency.
+* SPM supports IBM MQ Long Term Support (LTS) and Continuous Delivery (CD) releases with the following limitations:
+  * MQ LTS is only supported on bare metal and VMs
+  * MQ CD is only supported in OpenShift containers
+* Keep the database and queue manager tiers close to the application tier to reduce latency.

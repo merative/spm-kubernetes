@@ -27,14 +27,16 @@ The architecture is defined by a Kubernetes environment (contained in a virtual 
 
 This environment is linked to an external IBM Db2 or Oracle database.
 
-For the Kubernetes cluster, this runbook uses Minikube. Minikube can easily run on a developer computer, which is convenient for describing the application flow.
+For a Kubernetes cluster in a development environment this runbook uses [Minikube](/prereq/kubernetes/minikube).
+Minikube can easily run on a developer computer, which is convenient for describing the application flow.
+[CodeReady Containers](/prereq/openshift/codeready-containers) (CRC) can also be used to run a Kubernetes environment in a development environment.
 
 Figure 2 describes the following development path.
 
 * Create a build and deployment environment for SPM.
-* Build SPM to deploy it on Kubernetes on Minikube.
+* Build SPM to deploy on Kubernetes on Minikube or CRC.
 * Create the Docker® images for SPM.
-* Deploy SPM Docker images to Kubernetes on Minikube.
+* Deploy SPM Docker images to Kubernetes on Minikube or CRC.
 * Troubleshoot SPM when deployed in Kubernetes.
 
 ![Process summary](../../../images/summary_process.png)
@@ -57,6 +59,6 @@ The scripts can be easily extended to include the other SPM applications, such a
 
 The runbook makes the following assumptions:
 
-* Steps to build the SPM containers and run Minikube are run on a development machine, preferably a Red Hat or OSX machine.
+* Steps to build the SPM containers and run Minikube or CRC are done on a Red Hat or OSX development machine.
 * Steps related to [Building the IBM Cúram Social Program Management application](/deploy-spm/build-spm) can be executed on a separate machine.
 * Base knowledge of the Linux command line for navigating folders.

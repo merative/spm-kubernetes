@@ -7,21 +7,21 @@ tabs: ['OpenShift Overview','CodeReady Containers']
 ## What is CRC?
 
 CodeReady Containers (CRC) is a minimal, preconfigured OpenShift cluster that is designed to run on your local workstation as a development environment for OpenShift.
-For more information, see [CodeReady Containers](https://github.com/code-ready/crc).
+For more information, see [CodeReady Containers](https://github.com/crc-org/crc).
 
 Similar to Minikube in concept, CRC provides a cloud like environment locally to create and deploy an OpenShift cluster for development and testing purposes.
 
-This page covers some common CRC operations, including deploying IBM® Cúram Social Program Management (SPM) to the CRC environment. You will use the helm charts produced in [Preparing Helm charts](/deployment/hc_deployment).
+This page covers some common CRC operations, including deploying IBM® Cúram Social Program Management (SPM) to the CRC environment. You will use the Helm Charts produced in [Preparing Helm Charts](/deployment/hc_deployment).
 
 For a full getting started guide for CRC, see [Getting Started Guide CodeReady Containers](https://access.redhat.com/documentation/en-us/red_hat_codeready_containers/1.23/html/getting_started_guide/index)
 
 ### Minimum System requirements
 
-CodeReady Containers system requirements can be found here: [CRC Minimum system requirements](https://code-ready.github.io/crc/#minimum-system-requirements_gsg).
+CodeReady Containers system requirements can be found here: [CRC Minimum system requirements](https://crc-org.github.io/crc/#minimum-system-requirements_gsg).
 
 <InlineNotification>
 
-There is a known CRC [issue](https://github.com/code-ready/crc/issues/557) with respect to resource usage. When deploying SPM on CRC our experience has shown that a minimum of 16GB will improve performance, however 32GB is optimal.
+There is a known CRC [issue](https://github.com/crc-org/crc/issues/557) with respect to resource usage. When deploying SPM on CRC our experience has shown that a minimum of 16GB will improve performance, however 32GB is optimal.
 
 </InlineNotification>
 
@@ -93,7 +93,7 @@ Now that the basic configuration is complete, you need to edit the configuration
 <InlineNotification kind="warning">
 
 **Note:** VPN clients can conflict with the network configuration for CodeReady Containers.
-If you use a VPN client on the same environment as CRC, see the [VPN support](https://github.com/code-ready/crc/wiki/VPN-support--with-an--userland-network-stack) document in the CRC GitHub wiki.
+If you use a VPN client on the same environment as CRC, see the [VPN support](https://github.com/crc-org/crc/wiki/VPN-support--with-an--userland-network-stack) document in the CRC GitHub wiki.
 
 </InlineNotification>
 

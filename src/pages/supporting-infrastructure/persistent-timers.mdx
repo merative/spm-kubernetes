@@ -19,7 +19,7 @@ Thus, based on one set of tables per pod type the above example deployment requi
 The pod type is derived at deployment time and exposed as an environment variable, which is read by the Liberty configuration: `${env.POD_TIMER_TYPE}`.
 
 The out-of-the-box configuration of Liberty persistent timers should be adequate for most use cases.
-However, Helm chart overrides are available for the most relevant Liberty settings that can be used to adjust behavior or performance depending upon your application, environment, etc.
+However, Helm Chart overrides are available for the most relevant Liberty settings that can be used to adjust behavior or performance depending upon your application, environment, etc.
 For more information see the [Configuration Reference](/deployment/config-reference#liberty-runtime) and the [WebSphere Liberty documentation](https://www.ibm.com/docs/en/was-liberty/base?topic=applications-configuring-enterprise-javabeans-timer-service-persistent-timers).
 
 ### Migrating from SPM V7 to V8

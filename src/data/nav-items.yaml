@@ -44,15 +44,15 @@
       path: /build-images/base_images/
     - title: Building the Docker images
       path: /build-images/build_images/
-- title: Deploying with Helm charts
+- title: Deploying with Helm Charts
   pages:
-    - title: Preparing Helm charts
+    - title: Preparing Helm Charts
       path: /deployment/hc_preparation/
     - title: Configuration Reference
       path: /deployment/config-reference/
     - title: Handling Secrets
       path: /deployment/secrets/
-    - title: Deploying Helm charts
+    - title: Deploying Helm Charts
       path: /deployment/hc_deployment/
 - title: Operations
   pages:
@@ -99,6 +99,8 @@
       path: /troubleshooting/Remote-Debugging/
     - title: Troubleshooting problems
       path: /troubleshooting/troubleshoot/
+    - title: XML Server tracing
+      path: /troubleshooting/xmlserver-trace/
     - title: MustGather
       path: /troubleshooting/must_gather/
 - title: Known issues
