@@ -75,7 +75,7 @@ chmod +x $SPM_HOME/dockerfiles/Liberty/content/release-stage/*.sh
 <Column>
 
 ```powershell
-unzip -qd $env:SPM_HOME\dockerfiles\Liberty\content\release-stage c:\IBM\Curam\Development-8.0.0.0\release.zip
+unzip -qd $env:SPM_HOME\dockerfiles\Liberty\content\release-stage $env:TMP\release.zip
 ```
 
 </Column>
@@ -84,7 +84,7 @@ unzip -qd $env:SPM_HOME\dockerfiles\Liberty\content\release-stage c:\IBM\Curam\D
 
 </Tabs>
 
-  Where `/tmp/release.zip` is the absolute path where the `release.zip` is saved.
+  Where `/tmp/release.zip` (or for Windows: `$env:TMP\release.zip`) is the absolute path where the `release.zip` is saved.
 
 ## Modifying SPM properties
 
@@ -183,7 +183,7 @@ cp -vf /tmp/StaticContent.zip $SPM_HOME/dockerfiles/HTTPServer/
 <Column>
 
 ```powershell
-copy $env:$CLIENT_DIR\build\StaticContent.zip $env:SPM_HOME\dockerfiles\HTTPServer\ -Force
+copy $env:TMP\StaticContent.zip $env:SPM_HOME\dockerfiles\HTTPServer\ -Force
 ```
 
 </Column>
@@ -274,8 +274,8 @@ export ANT_HOME=/tmp/apache-ant-1.10.6
 <Column>
 
 ```powershell
-unzip -qd C:\Temp $env:SPM_HOME\dockerfiles\Liberty\content\apache-ant-1.10.6-bin.zip
-$env:ANT_HOME = "C:\Temp\apache-ant-1.10.6"
+unzip -qd $env:TMP $env:SPM_HOME\dockerfiles\Liberty\content\apache-ant-1.10.6-bin.zip
+$env:ANT_HOME = "$env:TMP\apache-ant-1.10.6"
 ```
 
 </Column>

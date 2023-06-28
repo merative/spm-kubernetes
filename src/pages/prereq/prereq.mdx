@@ -7,7 +7,7 @@ description: Prerequisite software
 
 **Ready to jump right in?**
 
-Please note that the preceding section provides an introduction to the architecture of IBM® Cúram Social Program Management (SPM) on Kubernetes and to concepts you will encounter throughout the rest of the runbook.
+Please note that the preceding section provides an introduction to the architecture of Merative Social Program Management (SPM) on Kubernetes and to concepts you will encounter throughout the rest of the runbook.
 If you have already read through the [Architecture](/architecture/kubernetes/spm-on-kubernetes-101) section please continue.
 If not, it's the place to start.
 
@@ -17,10 +17,10 @@ SPM was enhanced in version 7.0.10.0 to enable it to be deployed on cloud nativ
 
 Further enhancements have been introduced in version 7.0.11.0 to enable deployment on OpenShift.
 
-To build and run IBM Cúram Social Program Management (SPM) for Kubernetes, install the following software components:
+To build and run Merative Social Program Management (SPM) for Kubernetes, install the following software components:
 
 * [Base third-party software](/prereq/3rdparty-sw)
-* [IBM Cúram Social Program Management (SPM) software](/deploy-spm/install-spm)
+* [Merative Social Program Management (SPM) software](/deploy-spm/install-spm)
 * [Docker®, and Helm](/prereq/docker-helm)
 * [Kubernetes](/prereq/kubernetes/kubernetes-overview)
   * [minikube](/prereq/kubernetes/minikube)
@@ -30,25 +30,55 @@ To build and run IBM Cúram Social Program Management (SPM) for Kubernetes, inst
 * [ChartMuseum](/prereq/chartmuseum)
 * [GitHub repo](/prereq/git)
 
-In order to be hosted on Kubernetes, IBM Cúram Social Program Management has been enhanced to support the following technologies:
+In order to be hosted on Kubernetes, Merative Social Program Management has been enhanced to support the following technologies:
 
 <InlineNotification>
 
-**Note:** These technologies cannot be used independently from each other for IBM Cúram Social Program Management on a Kubernetes-based architecture.
-IBM Cúram Social Program Management will update the supported versions of these technologies frequently throughout the year.
+**Note:** These technologies cannot be used independently from each other for Merative Social Program Management on a Kubernetes-based architecture.
+Merative Social Program Management will update the supported versions of these technologies frequently throughout the year.
 The technologies listed are fixed version support only, unless stated otherwise.
 
 </InlineNotification>
 
 <Accordion>
 
-<AccordionItem title="SPM 8.0.0.0" open='true'>
+<AccordionItem title="SPM 8.1.0.0"  open='true'>
+
+<InlineNotification kind="warning">Azure Kubernetes Services (AKS) is exclusively available for Development and Test purposes **only**.</InlineNotification>
+
+| Supported Software            | Version                   | Prerequisite Minimum  | Notes    |
+| ----------------------------- | ------------------------- | --------------------- | -------- |
+| Kubernetes ![AKS only](https://img.shields.io/badge/-AKS_only-blue)             | 1.25 and future releases  | 1.25                  | 1,2    |
+| OpenShift  ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)  | 4.11                      | 4.11                  | 3,4    |
+| WebSphere Liberty                                                               | 22.0.0.9                  | 22.0.0.9              | 5      |
+| IBM MQ LTS                                                                      | 9.2 and future fix packs  | 9.2.0.2               | 6      |
+| IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.2 and future fix packs  | 9.2.2.0               | 7      |
+| Docker                                                                          | 24                        | 24.0.2                | 8,9,10 |
+| Helm                                                                            | v3 and future releases    | v3.3.4                | 11,12  |
+
+|Notes|
+|-|
+|`(1)` &#124; Merative Social Program Management only supports Azure Kubernetes Services (AKS) distribution of Kubernetes, for Development and Test purposes **only**.|
+|`(2)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Supported Kubernetes versions in Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/supported-kubernetes-versions?tabs=azure-cli#aks-kubernetes-release-calendar)|
+|`(3)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
+|`(4)` Merative Social Program Management supports Red Hat OpenShift Extended Update Support (EUS). For more information please see [Red Hat OpenShift Extended Update Support (EUS) Overview](https://access.redhat.com/support/policy/updates/openshift-eus).|
+|`(5)` &#124; Merative Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on Kubernetes Services. |
+|`(6)` &#124; Merative Social Program Management only supports IBM MQ Long Term Support (LTS) when Merative Social Program Management is containerized and deployed on Azure Kubernetes Services (AKS).|
+|`(7)` &#124; Merative Social Program Management only supports IBM MQ CD when Merative Social Program Management is containerized and deployed on OpenShift only.|
+|`(8)` &#124; Merative Social Program Management only supports Docker for packaging Merative Social Program Management into containers for deployment on Azure Kubernetes Services (AKS).|
+|`(9)` &#124; Only Linux-based containers are supported by Merative Social Program Management.|
+|`(10)` &#124; Merative Social Program Management does not support Docker containers hosted outside Azure Kubernetes Services.|
+|`(11)` &#124; Merative Social Program Management only supports Helm version 3.x for deploying Merative Social Program Management on Azure Kubernetes Services (AKS). or OpenShift|
+|`(12)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with Merative Social Program Management must be version `0.10.0` or greater|
+
+</AccordionItem>
+
+<AccordionItem title="SPM 8.0.0.0">
 
 | Supported Software                                                              | Version                             | Prerequisite Minimum  | Notes       |
 | ------------------------------------------------------------------------------- | ----------------------------------- | --------------------- | ------------|
 | WebSphere Liberty                                                               | 22.0.0.6, 21.0.0.9, 20.0.0.12       | 20.0.0.12             | 1           |
-| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.20 and future releases            | 1.20                  | 2,3         |
-| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future releases             | 4.6 <br/> 4.6 EUS     | 4,5         |
+| OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future releases             | 4.6 <br/> 4.6 EUS     | 2,4,5         |
 | IBM MQ LTS                                                                      | 9.2 and future fix packs<br/> 9.1 and future fix packs | 9.2.0.2  <br/> 9.1.0.5 | 6           |
 | IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.2 and future fix packs            | 9.2.2.0               | 7           |
 | Docker                                                                          | 20.10                               | 20.10.2               | 8,9,10,11   |
@@ -56,19 +86,18 @@ The technologies listed are fixed version support only, unless stated otherwise.
 
 |Notes|
 |-|
-|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS), or OpenShift. |
-|`(2)` &#124; IBM Cúram Social Program Management supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes and Red Hat OpenShift distributions of Kubernetes.|
-|`(3)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-3` is *deprecated*, and `n-4` is *unsupported*. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions) and [Kubernetes versions release history](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions#release-history)|
-|`(4)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
-|`(5)` IBM Cúram Social Program Management supports Red Hat OpenShift Extended Update Support (EUS). For more information please see [Red Hat OpenShift Extended Update Support (EUS) Overview](https://access.redhat.com/support/policy/updates/openshift-eus).|
-|`(6)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(7)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
-|`(8)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(9)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
-|`(10)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
-|`(11)` &#124; IBM Cúram Social Program Management *only requires* Docker to build container images, IBM Cúram Social Program Management *does not require* Docker as a container runtime engine.|
-|`(12))` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
-|`(13)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
+|`(1)` &#124; Merative Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on OpenShift. |
+|`(2)` &#124; Merative Social Program Management supports Red Hat OpenShift distributions of Kubernetes.|
+|`(4)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
+|`(5)` Merative Social Program Management supports Red Hat OpenShift Extended Update Support (EUS). For more information please see [Red Hat OpenShift Extended Update Support (EUS) Overview](https://access.redhat.com/support/policy/updates/openshift-eus).|
+|`(6)` &#124; Merative Social Program Management only supports IBM MQ Long Term Support (LTS) when Merative Social Program Management is containerized and deployed on OpenShift.|
+|`(7)` &#124; Merative Social Program Management only supports IBM MQ CD when Merative Social Program Management is containerized and deployed on OpenShift only.|
+|`(8)` &#124; Merative Social Program Management only supports Docker for packaging Merative Social Program Management into containers for deployment on OpenShift.|
+|`(9)` &#124; Merative Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
+|`(10)` &#124; Only Linux-based containers are supported by Merative Social Program Management.|
+|`(11)` &#124; Merative Social Program Management *only requires* Docker to build container images, Merative Social Program Management *does not require* Docker as a container runtime engine.|
+|`(12))` &#124; Merative Social Program Management only supports Helm version 3.x for deploying Merative Social Program Management on OpenShift.|
+|`(13)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with Merative Social Program Management must be version `0.10.0` or greater|
 </AccordionItem>
 
 <AccordionItem title="SPM 7.0.11.0">
@@ -77,7 +106,6 @@ The technologies listed are fixed version support only, unless stated otherwise.
 | ------------------------------------------------------------------------------- | ----------------------------------- | --------------------- | ------------|
 | WebSphere Liberty                                                               | 22.0.0.6, 21.0.0.9, 20.0.0.9        | 20.0.0.9              | 1           |
 | OpenShift ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 4.6 and future releases             | 4.6 <br/> 4.6 EUS     | 12          |
-| Kubernetes ![IKS only](https://img.shields.io/badge/-IKS_only-blue)             | 1.20 and future releases            | 1.20                  | 2,11        |
 | IBM MQ LTS                                                                      | 9.1 and future fix packs            | 9.1.0.5               | 3           |
 | IBM MQ CD ![OpenShift only](https://img.shields.io/badge/-OpenShift_only-red)   | 9.1 and future fix packs            | 9.1.5.0               | 8           |
 | Docker                                                                          | 19.03                               | 19.03.5               | 4,5,6,9,13  |
@@ -86,48 +114,18 @@ The technologies listed are fixed version support only, unless stated otherwise.
 
 |Notes|
 |-|
-|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS), or OpenShift. |
-|`(2)` &#124; IBM Cúram Social Program Management supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes.|
-|`(3)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(4)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS) or OpenShift.|
-|`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
-|`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services, or OpenShift.|
-|`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
-|`(8)` &#124; IBM Cúram Social Program Management only supports IBM MQ CD when IBM Cúram Social Program Management is containerized and deployed on OpenShift only.|
-|`(9)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
+|`(1)` &#124; Merative Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on OpenShift. |
+|`(3)` &#124; Merative Social Program Management only supports IBM MQ Long Term Support (LTS) when Merative Social Program Management is containerized and deployed on OpenShift.|
+|`(4)` &#124; Merative Social Program Management only supports Docker for packaging Merative Social Program Management into containers for deployment on OpenShift.|
+|`(5)` &#124; Only Linux-based containers are supported by Merative Social Program Management.|
+|`(6)` &#124; Merative Social Program Management does not support Docker containers hosted outside of OpenShift.|
+|`(7)` &#124; Merative Social Program Management only supports Helm version 3.x for deploying Merative Social Program Management on IBM Cloud Kubernetes Services (IKS), or OpenShift.|
+|`(8)` &#124; Merative Social Program Management only supports IBM MQ CD when Merative Social Program Management is containerized and deployed on OpenShift only.|
+|`(9)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by Merative Social Program Management.|
 |`(10)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
-|`(11)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-3` is *deprecated*, and `n-4` is *unsupported*. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions) and [Kubernetes versions release history](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions#release-history)|
-|`(12)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift on IBM Cloud Version information and update actions](https://cloud.ibm.com/docs/openshift?topic=openshift-openshift_versions), and [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
-|`(13)` &#124; IBM Cúram Social Program Management *only requires* Docker to build container images, IBM Cúram Social Program Management *does not require* Docker as a container runtime engine.|
-|`(14)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
-
-</AccordionItem>
-
-<AccordionItem title="SPM 7.0.10.0">
-
-| Supported Software            | Version                   | Prerequisite Minimum  | Notes    |
-| ----------------------------- | ------------------------- | --------------------- | -------- |
-| WebSphere Liberty             | 20.0.0.9                  | 19.0.0.12             | 1,8      |
-| Kubernetes                    | 1.20 and future releases  | 1.20                  | 2,8,9    |
-| IBM MQ                        | 9.1 and future fix packs  | 9.1.0.4               | 3        |
-| Docker                        | 19.03                     | 19.03.5               | 4,5,6,10 |
-| Docker                        | 20.10                     | 20.10.2               | 4,5,6,11 |
-| Helm                          | v3 and future releases    | v3.3.4                | 7,12     |
-
-|Notes|
-|-|
-|`(1)` &#124; IBM Cúram Social Program Management only supports IBM WebSphere Liberty when containerized as Docker containers and deployed on IBM Cloud Kubernetes Services (IKS). |
-|`(2)` &#124; IBM Cúram Social Program Management only supports IBM Cloud Kubernetes Services (IKS) distribution of Kubernetes.|
-|`(3)` &#124; IBM Cúram Social Program Management only supports IBM MQ Long Term Support (LTS) when IBM Cúram Social Program Management is containerized and deployed on IBM Cloud Kubernetes Services (IKS).|
-|`(4)` &#124; IBM Cúram Social Program Management only supports Docker for packaging IBM Cúram Social Program Management into containers for deployment on IBM Cloud Kubernetes Services (IKS).|
-|`(5)` &#124; Only Linux-based containers are supported by IBM Cúram Social Program Management.|
-|`(6)` &#124; IBM Cúram Social Program Management does not support Docker containers hosted outside IBM Cloud Kubernetes Services.|
-|`(7)` &#124; IBM Cúram Social Program Management only supports Helm version 3.x for deploying IBM Cúram Social Program Management on IBM Cloud Kubernetes Services (IKS).|
-|`(8)` &#124; For SPM 7.0.10.0 there is still a hard requirement on an external identity provider (e.g. OpenLDAP) for elasticity. This code is no longer available in the latest version of the runbook. This can be found in the [September 2020 release](https://github.com/merative/spm-kubernetes/releases/tag/20.9.0).|
-|`(9)` &#124; Kubernetes releases a new version quarterly. When a new version is released `n-2` is deprecated, and `n-3` is unsupported. For more information please see [Kubernetes version information and update actions](https://cloud.ibm.com/docs/containers?topic=containers-cs_versions)|
-|`(10)` &#124; Docker is due to drop support for Docker 19.03 in July 2021. After this date Docker 19.03 is not supported by IBM Cúram Social Program Management.|
-|`(11)` &#124; Support for Docker 20.10 was introduced as part of the SPM@Kubernetes 21.2.0 release.|
-|`(12)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with IBM Cúram Social Program Management must be version `0.10.0` or greater|
+|`(12)` &#124; OpenShift releases a new version quarterly. When a new version is released `n-1` and `n-2` is in  *Maintenance Support*, and `n-3` is *unsupported*. For more information please see [Red Hat OpenShift Container Platform Life Cycle Policy](https://access.redhat.com/support/policy/updates/openshift)|
+|`(13)` &#124; Merative Social Program Management *only requires* Docker to build container images, Merative Social Program Management *does not require* Docker as a container runtime engine.|
+|`(14)` &#124; From Helm release `v3.7.0`, the ChartMuseum Push plugin to be used with Merative Social Program Management must be version `0.10.0` or greater|
 
 </AccordionItem>
 

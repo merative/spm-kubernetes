@@ -40,7 +40,6 @@ global:
       secretKey: db2admin.arm
   ingress:
     annotations:
-      ingress.bluemix.net/ALB-ID: ''
     enabled: true
     hostname: spm.<cluster_name>-<hash>-0000.<region>.containers.appdomain.cloud
     tlsSecretName: default-us-icr-io

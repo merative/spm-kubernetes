@@ -14,7 +14,7 @@ In summary, you will need to:
 1. Optionally you can (for the `xmlserver` deployment only) create a ConfigMap to override its default log4j properties file.
 
 The Kubernetes commands presented in this topic are generic and assume a helm release name of `releasename`.
-To enter the commands in this topic as-is you need to enter the following commands first, substituting `<name_space>` for the OpenShift project name or IKS namespace for your dpeloyment:
+To enter the commands in this topic as-is you need to enter the following commands first, substituting `<name_space>` for the OpenShift project name or AKS namespace for your deployment:
 
 * For Openshift:
   * Create an alias for the `oc` command:
@@ -22,7 +22,7 @@ To enter the commands in this topic as-is you need to enter the following comman
     * Windows PowerShell: `Set-Alias -Name k -Value oc`
   * Set the default namespace:
     `k project <name_space>`
-* For IKS:
+* For AKS:
   * Create an alias for the `kubectl` command:
     * Bash: `alias k='kubectl'`
     * Windows PowerShell: `Set-Alias -Name k -Value kubectl`

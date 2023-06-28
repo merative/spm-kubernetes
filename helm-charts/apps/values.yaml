@@ -1,4 +1,5 @@
 ###############################################################################
+# © Merative US L.P. 2022,2023
 # Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,17 +59,20 @@ global:
   apps:
     common:
       persistence:
-        ## Persistence volume to store data (such as non-log files)
-        enabled: false
-        ## If enabled, creates a PVC to connect to IBM Cloud Object Storage
-        ## Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
-        ## Values available in the WebUI where the bucket was pre-created
-        # storageClassName: ""
-        # secretKey: ""
-        # accessKey: ""
-        # instanceId: ""
-        # bucketName: ""
-        # bucketEndpoint: "https://s3.private.us-south.cloud-object-storage.appdomain.cloud"
+        # ## Persistence volume to store data (such as non-log files)
+        # enabled: false
+        # ## If enabled, creates a PV and PVC to connect to Azure Blob Storage container
+        # credentials:
+        #   azurestorageaccountname: "<AccountName-Base64>"
+        #   azurestorageaccountkey: "<AccountKey-Base64>"
+        # storageClassName: "azureblob-fuse-premium"
+        # storageCapacity: "10Gi"
+        # storageAccessModes: "ReadWriteMany"
+        # persistentVolumeReclaimPolicy: "Delete"
+        # persistentVolumeCsiDriver: "blob.csi.azure.com"
+        # persistentVolumeContainer: "blob-container"
+        # ## persistentVolumeHandle required to be unique for every identical storage blob container in the cluster
+        # persistentVolumeHandle: "blob-volume-id"
         mountPoint: ''
         jmxstats:
           ## Parameters of the JMX Stats to be persisted on the PVC

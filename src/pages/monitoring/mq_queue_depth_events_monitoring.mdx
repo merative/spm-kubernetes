@@ -62,14 +62,16 @@ docker images
 
 ## Pushing Image
 
-The following commands are illustrating how to tag and push the MQ Metric Pod to a typical IBM Cloud Container Registry.
+The following commands are illustrating how to tag and push the MQ Metric Pod to a typical Container Registry.
 
 ```
 # Tagging image
-docker tag mq-metric-prometheus:$DIST_TAG_LATEST us.icr.io/icr-ns/mq-metric-prometheus:$DIST_TAG_LATEST
+docker tag mq-metric-prometheus:$DIST_TAG_LATEST ${server-name}.jfrog.io/{repo-name}/mq-metric-prometheus:$DIST_TAG_LATEST
+
 
 # Push images to registry
-docker push --all-tags us.icr.io/icr-ns/mq-metric-prometheus:$DIST_TAG_LATEST
+docker push --all-tags ${server-name}.jfrog.io/{repo-name}/mq-metric-prometheus:$DIST_TAG_LATEST
+
 ```
 
 ## Deploy

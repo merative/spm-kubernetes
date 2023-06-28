@@ -2,6 +2,7 @@
 {{- if and .Values.global.ingress.enabled (not (.Capabilities.APIVersions.Has "route.openshift.io/v1")) }}
 ---
 ###############################################################################
+# © Merative US L.P. 2022
 # Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +30,6 @@ metadata:
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
   annotations:
-    ingress.bluemix.net/ssl-services: {{ include "spm.sslServicesChain" . }}
-    ingress.bluemix.net/sticky-cookie-services: {{ include "spm.stickyCookieServicesChain" . }}
     nginx.ingress.kubernetes.io/affinity: cookie
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     nginx.ingress.kubernetes.io/session-cookie-path: /
@@ -39,6 +38,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
+  ingressClassName: nginx
   {{- if or .Values.global.ingress.tlsSecretName .Values.global.ingress.generateCert }}
   tls:
     - hosts:

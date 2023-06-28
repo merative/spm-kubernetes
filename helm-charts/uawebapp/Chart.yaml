@@ -1,4 +1,5 @@
 ###############################################################################
+# © Merative US L.P. 2022
 # Copyright 2019,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +17,7 @@
 
 apiVersion: v2
 kubeVersion: ">=1.20"
-appVersion: "8.0.1.0"
+appVersion: "8.1.0.0"
 name: uawebapp
 description: |-
   Helm Chart for deploying the Universal Access React application.
@@ -30,7 +31,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 22.11.0
+version: 23.6.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
@@ -40,7 +41,7 @@ sources:
 keywords:
   - Liberty
   - Minikube
-  - IKS
+  - AKS
   - OpenShift
   - RHOCP
   - Curam

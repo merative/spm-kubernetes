@@ -1,4 +1,5 @@
 ###############################################################################
+# © Merative US L.P. 2022, 2023
 # Copyright 2020,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +30,14 @@ COPY content/apache-ant-${ANT_VERSION}-bin.zip /tmp/apache-ant.zip
 COPY content/release-stage/CuramSDEJ/xmlserver /opt/ibm/Curam/xmlserver
 COPY content/start-xmlserver.sh /opt/ibm/Curam/xmlserver/start-xmlserver.sh
 COPY content/stop-xmlserver.sh /opt/ibm/Curam/xmlserver/stop-xmlserver.sh
+
+# For XML Server probes
+COPY content/readiness-xmlserver.sh /opt/ibm/Curam/xmlserver/xmlserverprobes/readiness-xmlserver.sh
+COPY content/release-stage/CuramSDEJ/lib/appinf.jar /opt/ibm/Curam/xmlserver/xmlserverprobes/appinf.jar
+COPY content/release-stage/CuramSDEJ/lib/appinf_internal.jar /opt/ibm/Curam/xmlserver/xmlserverprobes/appinf_internal.jar
+COPY content/release-stage/CuramSDEJ/lib/coreinf.jar /opt/ibm/Curam/xmlserver/xmlserverprobes/coreinf.jar
+COPY content/liveness-xmlserver.xml /opt/ibm/Curam/xmlserver/xmlserverprobes/liveness-xmlserver.xml
+
 RUN unzip -qo /tmp/apache-ant.zip -d /opt/ \
     && chgrp -Rc 0 /opt/ibm/Curam \
     && chmod -Rc g=u /opt/ibm/Curam \

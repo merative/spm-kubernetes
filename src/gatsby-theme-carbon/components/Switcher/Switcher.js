@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import cx from 'classnames';
 import useMedia from 'use-media';
-import { Locked16 } from '@carbon/icons-react';
+import { Locked } from '@carbon/icons-react';
 import NavContext from 'gatsby-theme-carbon/src/util/context/NavContext';
 import { nav, open, divider, link, linkDisabled } from 'gatsby-theme-carbon/src/components/Switcher/Switcher.module.scss';
 
@@ -81,7 +81,8 @@ export const SwitcherLink = ({
         href={href}
         {...rest}>
         {children}
-        {isInternal && <Locked16 />}
+        {isInternal}
+        {isInternal && <Locked />}
       </a>
     </li>
   );

@@ -4,7 +4,7 @@ description: Frequently Asked Questions
 ---
 <PageDescription>
 
-List of the frequently asked question in relation to IBM® Cúram Social Program Management (SPM) on Cloud
+List of the frequently asked question in relation to Merative Social Program Management (SPM) on Cloud
 
 </PageDescription>
 
@@ -34,7 +34,7 @@ and promote the application and data through the phases of the Software Developm
 <AccordionItem title="How does hybrid cloud apply to SPM?">
 Hybrid cloud combines IT resources (compute, middleware, application etc.) on the customer on-premises environment and in the cloud.
 
-Therefore, for example, SPM hosted on the IBM Cloud VPC with integration with legacy systems running on-premises is a hybrid Social Program architecture.
+Therefore, for example, SPM hosted on the Azure with integration with legacy systems running on-premises is a hybrid Social Program architecture.
 
 <InlineNotification kind="warning">
 
@@ -63,19 +63,19 @@ Yes. The integration can be direct site-to-site connection through VPN tunnels o
 
 </AccordionItem>
 
-<AccordionItem title="Can we host SPM on Amazon Elastic Kubernetes Services (EKS) or Azure Kubernetes Services (AKS)?">
-No. SPM only supports hosting of containerized architectures on IBM Cloud Kubernetes Services.
+<AccordionItem title="Can we host SPM on Amazon Elastic Kubernetes Services (EKS) or IBM Cloud Kubernetes Services (IKS)?">
+No. SPM only supports hosting of containerized architectures on Azure Kubernetes Services or OpenShift.
 
-However, SPM will provide multi-cloud support through OpenShift in 2020; this means that SPM will support Docker containers hosted on any cloud provider (i.e. AWS, Azure, etc) or on-premises,
+SPM provided multi-cloud support through OpenShift in 2020; this means that SPM will support Docker containers hosted on any cloud provider (i.e. AWS, Azure, etc) or on-premises,
 as long as the underlying container management platform is OpenShift.
 
-It is also important to remember that AWS EKS and Azure AKS are not container management services based on OpenShift.
+It is also important to remember that AWS EKS is not a container management services based on OpenShift.
 </AccordionItem>
 
 <AccordionItem title="Can we host SPM containers outside Kubernetes?">
 No. SPM does not support hosting of Docker containers outside Kubernetes, for example, Apache Mesos, AWS Elastic Container Services (ECS) or even directly on virtual machines or bare metal.
 
-SPM only supports hosting on containerized architectures of SPM on IBM Cloud Kubernetes Services.
+SPM only supports hosting on containerized architectures of SPM on Azure Kubernetes Services or OpenShift.
 
 SPM does not support Docker containers hosted on virtual machines or bare metal, outside Kubernetes.
 </AccordionItem>
@@ -88,12 +88,12 @@ Although WebSphere Liberty provides support to Collectives, SPM does not support
 </AccordionItem>
 
 <AccordionItem title="Can we use WebSphere Liberty outside Kubernetes? For example, on a virtual machine?">
-No. SPM only supports WebSphere Liberty when containerized as Docker images with SPM EAR packages and deployed on IBM Cloud Kubernetes Services.
+No. SPM only supports WebSphere Liberty when containerized as Docker images with SPM EAR packages and deployed on Azure Kubernetes Services or OpenShift.
 
 <InlineNotification kind="warning">
 
 **Important**:
-SPM does not support WebSphere Liberty hosted directly on a virtual machine or bare metal, outside of Kubernetes.
+SPM does not support WebSphere Liberty hosted directly on a virtual machine or bare metal, outside of Kubernetes or OpenShift.
 
 </InlineNotification>
 <br/>
@@ -111,7 +111,7 @@ For more information, see Red Hat's [Universal Base Image](https://www.redhat.co
 </AccordionItem>
 
 <AccordionItem title="Can we use Operators?">
-No. SPM does not support deployment on IBM Cloud Kubernetes Services via Operators. You must use Helm.
+No. SPM does not support deployment on Kubernetes Services via Operators. You must use Helm.
 </AccordionItem>
 
 <AccordionItem title="What happened to the OpenLDAP chart in the runbook?">

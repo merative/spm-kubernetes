@@ -1,4 +1,5 @@
 {{/*
+© Merative US L.P. 2022,2023
 Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +24,12 @@ Create the image pull secret
 {{- end }}
 
 {{/*
-Create the persistence secret
+Create the persistence credentials
 */}}
-{{- define "spm.persistenceSecret" -}}
-secret-key: {{ required "secretKey is required" .secretKey | b64enc | quote }}
-access-key: {{ required "accessKey is required" .accessKey | b64enc | quote}}
-service-instance-id: {{ required "instanceId is required" .instanceId | b64enc | quote }}
+{{- define "spm.persistenceCredentials" -}}
+{{- range $key, $val := (required "Persistence storage credentials were not provided! (global.apps.common.persistence.credentials)" .credentials) -}}
+{{ printf "%s: %s\n" $key ($val | quote) }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -44,21 +45,6 @@ ssl-service={{ $.Release.Name }}-apps-{{ $name }};
 ssl-service={{ $.Release.Name }}-uawebapp;
 {{- end -}}
 ssl-service={{ $.Release.Name }}-web;
-{{- end }}
-
-{{/*
-Build up sticky-cookie-services value
-*/}}
-{{- define "spm.stickyCookieServicesChain" }}
-{{- range $name, $app := .Values.global.apps.config -}}
-{{- if $app.enabled -}}
-serviceName={{ $.Release.Name }}-apps-{{ $name }} name={{ $name }}Route hash=sha1 path=/;
-{{- end -}}
-{{- end -}}
-{{- if .Values.uawebapp.imageConfig.name -}}
-serviceName={{ $.Release.Name }}-uawebapp name=uaRoute hash=sha1 path=/;
-{{- end -}}
-serviceName={{ $.Release.Name }}-web name=webRoute hash=sha1 path=/;
 {{- end }}
 
 {{/*

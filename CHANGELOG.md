@@ -2,17 +2,66 @@
 
 All notable changes to this project will be documented in this file
 
-## v22.11.0
+## v23.6.0
+
+### Added
+
+* Added `SPM 8.1.0.0` Prerequisite software details
+* Addition of Development/Test Support for Azure Kubernetes Service (AKS)
+* Readiness and liveness probes are available for `xmlserver` deployments, see the Runbook section on [XML server monitoring](https://merative.github.io/spm-kubernetes/monitoring/xmlsserver-monitoring/)
+* `ingressClassName: nginx` added to `helm-charts/spm/templates/ingress.yaml`
+* `helm-charts/spm/templates/persistence-pv.yaml` to create persistence volume
+* Generic object storage as a persistence storage option
+
+### Removed
+
+* Removed `SPM 7.0.10.0` from the software prerequisite page
+* Removed Support for IBM Cloud Kubernetes Service (IKS)
+  * Removed `IKS` support for `SPM 8.0.0.0` and `SPM 7.0.11.0` from the software prerequisite page
+  * `ingress.bluemix.net/ssl-services` and `ingress.bluemix.net/sticky-cookie-services` removed from `helm-charts/spm/templates/ingress.yaml`
+  * `sticky-cookie-services` in file `_helpers.tpl`
+  * `ingress.bluemix.net/ALB-ID` removed from `static/resources/tuning-values.yaml` and `static/resources/iks-values.yaml`
+  * `ibmc-s3fs` support removed for persistent storage option
+
+### Changed
+
+* Update all copyrights to include `Merative US L.P. 2022`
+* The following helm-charts updates have been made:
+  * `version` updated to `23.6.0`
+  * `appVersion` updated to `8.1.0.0`
+  * **AKS** added to `keywords`
+  * **IKS** removed from `keywords`
+* Updated documentation replacing IKS with AKS
+* Updated Kubernetes skew information
+* Documentation addressing AKS considerations
+* Clarified FAQ section
 
 ### Fixed
-* Runbook section [Architecture Overview](https://merative.github.io/spm-kubernetes/architecture/arch-overview/architecture-overview/) has been corrected to reflect Red Hat OpenShift in diagram 2 and its corresponding text.
-* Runbook section [SPM OpenShift cluster - Reference Architecture](https://merative.github.io/spm-kubernetes/architecture/arch-overview/spm-openshift-reference-architecture#spm-openshift-cluster-reference-architecture) has been modified to clarify MQ support for OpenShift [#132](https://github.com/merative/spm-kubernetes/issues/132).
-* Runbook section [Dev Workstation](https://merative.github.io/spm-kubernetes/architecture/arch-overview/dev-workstation) has been modified to clarify that CRC can be used instead of Minikube.
-* Runbook section [Remote debugging](https://merative.github.io/spm-kubernetes/troubleshooting/Remote-Debugging/) has been modified to include information covering the disabling of the probes.
+
+* The Batch docker file and configmaps now use absolute paths instead of relative paths, following the identification of a `create shim task`
+* Updated `beta.kubernetes.io/arch` to `kubernetes.io/arch` as it is being depricated in Kubernetes 1.24
+
+### Breaking Change
+
+* The values in `global.apps.common.persistence` have been modified to become more generic
+  * This is a breaking change without migration path possible, please refer to the Configuration Reference documentation for more details how to integrate with the new values
+  * Removed `global.apps.common.persistence.accessKey`, `global.apps.common.persistence.instanceId`, `global.apps.common.persistence.secretKey`, `global.apps.common.persistence.bucketEndpoint`, `global.apps.common.persistence.bucketName`, `global.apps.common.persistence.bucketRegion`, `global.apps.common.persistence.storageClassName`
+  * Added `global.apps.common.persistence.credentials`, `global.apps.common.persistence.storageClassName`, `global.apps.common.persistence.storageCapacity`, `global.apps.common.persistence.storageAccessModes`, `global.apps.common.persistence.persistentVolumeReclaimPolicy`, `global.apps.common.persistence.persistentVolumeCsiDriver`, `global.apps.common.persistence.persistentVolumeContainer`, `global.apps.common.persistence.persistentVolumeHandle`, `global.apps.common.persistence.mountPoint`
+
+## v22.11.0
 
 ### Changed
 
 * The following helm-charts have been updated to chart version `22.11.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+
+### Fixed
+
+* Runbook section [SPM OpenShift cluster - Reference Architecture](https://merative.github.io/spm-kubernetes/architecture/arch-overview/spm-openshift-reference-architecture#spm-openshift-cluster-reference-architecture) has been modified to clarify MQ support for OpenShift [#132](https://github.com/merative/spm-kubernetes/issues/132)
+* Added workaround for missing xmlserver log and statistics data
+* Runbook section [Architecture Overview](https://merative.github.io/spm-kubernetes/architecture/arch-overview/architecture-overview/) has been corrected to reflect Red Hat OpenShift in diagram 2 and its corresponding text.
+* Runbook section [SPM OpenShift cluster - Reference Architecture](https://merative.github.io/spm-kubernetes/architecture/arch-overview/spm-openshift-reference-architecture#spm-openshift-cluster-reference-architecture) has been modified to clarify MQ support for OpenShift [#132](https://github.com/merative/spm-kubernetes/issues/132).
+* Runbook section [Dev Workstation](https://merative.github.io/spm-kubernetes/architecture/arch-overview/dev-workstation) has been modified to clarify that CRC can be used instead of Minikube.
+* Runbook section [Remote debugging](https://merative.github.io/spm-kubernetes/troubleshooting/Remote-Debugging/) has been modified to include information covering the disabling of the probes.
 
 ### Added
 
@@ -451,7 +500,7 @@ All notable changes to this project will be documented in this file
 * Implemented accessibility recommendations on the runbook content
 * Refactored and reorganised the architecture pages. Added Architecture Overview diagram
 * Add `operatorsEnabled` if clause to `mqserver` deployment, statefulset, and service objects
-* Correcting product name on first use to "IBM® Cúram Social Program Management (SPM)" and "SPM" thereafter
+* Correcting product name on first use to "Merative Social Program Management (SPM)" and "SPM" thereafter
 * Reduced default backoff limit for Batch jobs to 1
 * Updated MQ on VM reference configuration to use `SHA256WithRSA` signature algorithm
 * Clarified CRC minimum system requirements
@@ -517,7 +566,7 @@ All notable changes to this project will be documented in this file
 
 ### Added
 
-* Integration with [IBM Security Access manager](https://www.ibm.com/ie-en/marketplace/access-management/details)
+* Integration with [IBM Security Access manager](https://www.ibm.com/docs/en/sva/9.0.7)
 * Dependency on IBM [Shared Configuration Helper](https://github.com/IBM/charts/tree/master/samples/ibm-sch) (SCH) chart for aligning with CloudPak code standards
 * Dockerfile for a utilities image (used as init containers to import certificates into keystores & wait for other components to become available)
 * Chart hooks for managing LTPA keys and MQ client user

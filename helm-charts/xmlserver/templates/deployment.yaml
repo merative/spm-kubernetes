@@ -1,6 +1,7 @@
 {{- include "sch.config.init" (list . "xmlserver.sch.chart.config.values") -}}
 ---
 ###############################################################################
+# © Merative US L.P. 2022, 2023
 # Copyright 2019,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -123,6 +124,27 @@ spec:
             - name: jvmmetrics
               containerPort: {{ $.Values.jvmStats.port }}
             {{- end }}
+          {{- if $.Values.readinessProbe.enabled }}
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - /opt/ibm/Curam/xmlserver/xmlserverprobes/readiness-xmlserver.sh
+            initialDelaySeconds: {{ $.Values.readinessProbe.initialDelaySeconds | default 15 }}
+            periodSeconds: {{ $.Values.readinessProbe.periodSeconds | default 60 }}
+          {{- end }}
+          {{- if $.Values.livenessProbe.enabled }}
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -c
+              - ant -f xmlserverprobes/liveness-xmlserver.xml
+            initialDelaySeconds: {{ $.Values.livenessProbe.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ $.Values.livenessProbe.periodSeconds | default 30 }}
+            timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds | default 10 }}
+          {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -147,6 +169,10 @@ spec:
             - name: MOUNT_POINT
               value: {{ include "persistence.mountPoint" $ }}
             {{- end }}
+            - name: XMLSERVER_PORT
+              value: {{ .Values.serverPort | default 1800 | quote }}
+            - name: XMLSERVER_SOCKET_TIMEOUT
+              value: {{ .Values.config.socketTimeout | default 60000 | quote }}
           volumeMounts:
             - name: xmlserverconfig-template-file
               mountPath: /opt/ibm/Curam/xmlserver/xmlserverconfig.xml.template
@@ -188,7 +214,14 @@ spec:
           command:
           - /bin/sh
           - -c
-          - /opt/ibm/Curam/xmlserver/start-prometheus_collector_exporter.sh
+          - sed -i 's/Start the Java process for XML server statistics
+              data/Start the Java process for XML server statistics data\n touch
+              stats\/ThreadPoolWorker-1 stats\/ThreadPoolWorker-2
+              stats\/ThreadPoolWorker-3 stats\/ThreadPoolWorker-4
+              stats\/ThreadPoolWorker-5 tmp\/xmlserver.log/g'
+              start-prometheus_collector_exporter.sh;
+
+              /opt/ibm/Curam/xmlserver/start-prometheus_collector_exporter.sh
           env:
             - name: TZ
               value: {{ .Values.global.timezone }}

@@ -8,15 +8,15 @@
 global:
   license: '' # Set to 'accept' after reviewing all license agreements
   images:
-    registry: us.icr.io
+    registry: '' # URL for Container Registry
     imageLibrary: foo-library
     imagePrefix: test_
     imageTag: latest
     pullPolicy: Always
   imagePullSecret:
-    registry: us.icr.io
-    username: '' # IAM username for IBM Container Registry
-    password: '' # IAM API Key for IBM Container Registry
+    registry: '' # URL for Container Registry
+    username: '' # Username for Container Registry
+    password: '' # API Key for Container Registry
   database:
     ## Database connection properties
     type: DB2
@@ -40,10 +40,9 @@ global:
       secretKey: db2admin.arm
   ingress:
     annotations:
-      ingress.bluemix.net/ALB-ID: ''
     enabled: true
-    hostname: spm.<cluster_name>-<hash>-0000.<region>.containers.appdomain.cloud
-    tlsSecretName: default-us-icr-io
+    hostname: spm.<cluster_name>-<hash>-0000.<region>.containers.example.com
+    tlsSecretName: default-tls-secret
   apps: {}
     # config:
     #   curam:

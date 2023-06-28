@@ -1,0 +1,49 @@
+{{- include "sch.config.init" (list . "spm.sch.chart.config.values") -}}
+{{- if .Values.global.apps.common.persistence.enabled }}
+---
+###############################################################################
+# © Merative US L.P. 2023
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+###############################################################################
+apiVersion: v1
+# TODO Confirm we have to create the PV statistically, maybe it could be created dynamically using a stateful set: https://learn.microsoft.com/en-us/azure/aks/azure-blob-csi?tabs=Blobfuse#using-a-statefulset
+kind: PersistentVolume
+metadata:
+  name: {{ .Release.Namespace }}-{{ .Release.Name }}-persistence-pv
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+spec:
+  capacity:
+    storage: {{ required "storageCapacity is required" .Values.global.apps.common.persistence.storageCapacity | quote }}
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: {{ required "persistentVolumeReclaimPolicy is required" .Values.global.apps.common.persistence.persistentVolumeReclaimPolicy | quote }}
+  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
+  mountOptions:
+    - -o allow_other
+    - --file-cache-timeout-in-seconds=120
+  csi:
+    driver: {{ required "persistentVolumeCsiDriver is required" .Values.global.apps.common.persistence.persistentVolumeCsiDriver | quote }}
+    readOnly: false
+    volumeHandle: {{ required "persistentVolumeHandle is required" .Values.global.apps.common.persistence.persistentVolumeHandle | quote }}
+    volumeAttributes:
+      containerName: {{ required "persistentVolumeContainer is required" .Values.global.apps.common.persistence.persistentVolumeContainer | quote }}
+      # TODO Document isHnsEnabled: "true" is required since Kubernetes 1.25
+      # https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.management.storage.models.storageaccountcreateparameters.ishnsenabled?view=azure-dotnet
+      isHnsEnabled: "true"
+      protocol: fuse2
+    nodeStageSecretRef:
+      name: "{{ .Release.Name }}-persistence-secret"
+      namespace: {{ .Release.Namespace }}
+{{- end }}

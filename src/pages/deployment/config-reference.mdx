@@ -3,7 +3,7 @@ title: Configuration Reference
 description: Helm Chart configuration reference for SPM
 ---
 
-This page contains all available configuration options built into the reference Helm Charts for IBM® Cúram Social Program Management (SPM).
+This page contains all available configuration options built into the reference Helm Charts for Merative Social Program Management (SPM).
 The published charts are intended to be a starting point for you to tailor the charts to your own environment and requirements.
 
 The following tables list the configurable parameters of the `spm` chart and their default values.
@@ -38,13 +38,14 @@ The following tables list the configurable parameters of the `spm` chart and the
 | `global.database.ssl.secretKey` | The key in the secret containing the TLS certificate for the secure connection to the database | `db2admin.arm` |
 | `global.database.ssl.secretName` | Name of a pre-created secret containing the TLS certificate for the secure connection to the database | `''` |
 | `global.apps.common.persistence.enabled` | Use persistent storage for logs | `false` |
-| `global.apps.common.persistence.accessKey` | HMAC Access Key of the Cloud Object Storage credentials with a `Writer` role | `''` |
-| `global.apps.common.persistence.instanceId` | Cloud Object Storage instance ID | `''` |
-| `global.apps.common.persistence.secretKey` | HMAC Secret Key of the Cloud Object Storage credentials with a `Writer` role | `''` |
-| `global.apps.common.persistence.bucketEndpoint` | HTTP(s) endpoint of the Cloud Object Storage service | `''` |
-| `global.apps.common.persistence.bucketName` | Name of the Cloud Object Storage bucket to use | `''` |
-| `global.apps.common.persistence.bucketRegion` | Region (`ibm.io/region`) of the Cloud Object Storage bucket, if required by your storage provisioner | `''` |
+| `global.apps.common.persistence.credentials` | Credentials in the form of a list of key/value to authenticate with the object storage (contains any keys, but values are to be encoded in Base64) | `''` |
 | `global.apps.common.persistence.storageClassName` | Name of the Storage Class to use | `''` |
+| `global.apps.common.persistence.storageCapacity` | Capacity of the storage to request | `''` |
+| `global.apps.common.persistence.storageAccessModes` | Modes of the storage access (commonly `ReadWriteMany` or `ReadWriteOnce`) | `''` |
+| `global.apps.common.persistence.persistentVolumeReclaimPolicy` | `Retain` or `Delete` the container after the persistence volume clain is deleted  | `''` |
+| `global.apps.common.persistence.persistentVolumeCsiDriver` | CSI Driver to use for the persistent Volume | `''` |
+| `global.apps.common.persistence.persistentVolumeContainer` | Name of the container to use | `''` |
+| `global.apps.common.persistence.persistentVolumeHandle` | Unique handle ID across every identical storage blob container in the cluster | `''` |
 | `global.apps.common.persistence.mountPoint` | Path, where the `Persistent Volume` should be mounted in pods | `''` |
 | `global.apps.config.<applicationID>.enabled` | Enable/disable SPM applications in the Helm release, where `applicationID` is the lower-cased name of the EAR file deployed | `true` for `curam`, `false` for all others |
 | `global.ingress.enabled` | Toggle creation of Ingress/Route resources | `false` |
@@ -67,7 +68,7 @@ In the following properties, `<applicationID>` is a placeholder for the name of 
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `global.apps.config.<applicationID>.jvm` | Array of JVM options to be passed to Liberty | Varies by application (see `values.yaml`) |
-| ![IKS only](https://img.shields.io/badge/-IKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
+| ![AKS only](https://img.shields.io/badge/-AKS_only-blue) `global.apps.config.<applicationID>.mqConnectionNameList` | Connection list when IBM MQ is running in HA mode outside Kubernets (e.g. `mqHost1(1414),mqHost2(1414)`) | `''` |
 | `global.apps.config.<applicationID>.consumerTuning` | Dictionary of tuning values specific to the consumer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
 | `global.apps.config.<applicationID>.producerTuning` | Dictionary of tuning values specific to the producer pods (valid keys: `jvm`, `replicaCount`, `resources`, any keys from `apps.tuningDefaults`) | `{}` |
 | `global.apps.config.<applicationID>.producerTuning.maxEndPoints_DPEnactmentAS` | Sets maximum concurrent endpoints for the DPEnactment JMS queue in the producer | `Default derived from maxThreads` |
@@ -211,7 +212,7 @@ The resource values can be changed. However, for troubleshooting, we will reques
 <InlineNotification>
 
 **Note:** There are two deployment strategies for IBM MQ, with MQ installed on a virtual machine or within a container.
-We support MQ on a VM for both Openshift and IBM Kubernetes Service.
+Merative SPM supports MQ on a VM for both Openshift and Kubernetes Service.
 We only support containerised MQ on Openshift.
 
 </InlineNotification>
@@ -265,6 +266,7 @@ We only support containerised MQ on Openshift.
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `xmlserver.replicaCount` | Number of replicas to be deployed | `1` |
+| `xmlserver.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
 | `xmlserver.serverPort` | The port that the XML server (its service) listens on (see note below) | `1800` |
 | `xmlserver.jvm.maxMemory` | The maximum Java heap for the XML server | `768m` |
 | `xmlserver.jvm.threadStackSize` | The Java thread stack size for the XML server | `-Xss4m` |
@@ -272,13 +274,19 @@ We only support containerised MQ on Openshift.
 | `xmlserver.config.threadPoolSize` | The XML server thread pool size | `5` |
 | `xmlserver.config.threadPoolQueueSize` | The XML server thread pool queue size | `200` |
 | `xmlserver.config.socketTimeout` | The XML server socket timeout (milliseconds) | `60000` |
-| `xmlserver.metrics.enabled`| Enable sending XML server statistics (`stats/ThreadPoolWorker-*` file contents) to Prometheus | `false` |
-| `xmlserver.metrics.port`| The port to monitor the XML server statistics | `8080` |
+| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.metrics.enabled`| Enable sending XML server statistics (`stats/ThreadPoolWorker-*` file contents) to Prometheus | `false` |
+| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.metrics.port`| The port to monitor the XML server statistics | `8080` |
+| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.startOptions` | XML server start option; specifically for specifying `-forcestatswrite`, described in [Statistics](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-statistics) | `''` |
 | `xmlserver.jvmStats.enabled`| Enable the Prometheus JMX Exporter for the XML server JVM metrics | `false` |
 | `xmlserver.jvmStats.port`| The port to monitor the XML server JVM metrics | `8083` |
-| `xmlserver.jvmStats.configYaml`| The Prometheus JMX Esporter configuration YAML string | `` |
-| `xmlserver.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |
-| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.startOptions` | XML server start option; specifically for specifying `-forcestatswrite`, described in [Statistics](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-statistics) | `''` |
+| `xmlserver.jvmStats.configYaml`| The Prometheus JMX Exporter configuration YAML string | `''` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.enabled` | Enable XML server readinessProbe described in [XML server health checks](/monitoring/xmlserver-monitoring#xml-server-health-checks) | `false` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.initialDelaySeconds` | Configure the number of seconds after container startup to initiate the probe | `15` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.periodSeconds` | Configure the number of seconds between probe invocations | `60` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.livenessProbe.enabled` | Enable XML server livenessProbe described in [XML server health checks](/monitoring/xmlserver-monitoring#xml-server-health-checks) | `false` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.initialDelaySeconds` | Configure the number of seconds after container startup to initiate the probe | `30` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.periodSeconds` | Configure the number of seconds between probe invocations | `30` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.timeoutSeconds` | Configure the number of seconds before the probe times out | `10` |
 
 <InlineNotification>
 
