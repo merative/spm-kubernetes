@@ -30,6 +30,7 @@ jobs:
 
       - name: Prepare environment
         run: |
+          node --version
           npm install -g markdownlint-cli
           npm install --legacy-peer-deps
           npm ci
