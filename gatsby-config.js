@@ -30,9 +30,9 @@ module.exports = {
         withWebp: true,
         imageQuality: 75,
         iconPath: "./src/images/spm-favicon-32.svg",
-        // repository: {
-        //   baseUrl: "https://github.com/merative/spm-kubernetes",
-        // },
+        repository: {
+          baseUrl: "https://github.com/merative/spm-kubernetes",
+        },
       },
     },
   ],
