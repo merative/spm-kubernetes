@@ -2,9 +2,11 @@
   "MD003": { "style": "atx" },
   "MD007": { "indent": 2 },
   "MD010": false,
-  "MD013": { "line_length": 240, "tables": false },
+  "MD013": { "line_length": 400, "tables": false },
   "MD026": false,
+  "MD029": false,
   "MD033": false,
+  "MD036": false,
   "MD040": false,
   "no-trailing-spaces": true,
   "MD024": { "siblings_only": true}

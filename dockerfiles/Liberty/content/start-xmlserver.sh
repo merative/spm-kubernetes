@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 ###############################################################################
+# © Merative US L.P. 2022, 2023
 # Copyright 2020,2021 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +16,11 @@ set -e
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ###############################################################################
+# Create execution log
+exec 19>/tmp/start-xmlserver.log
+BASH_XTRACEFD=19
+set -x
+
 XMLSERVER_PATH=/opt/ibm/Curam/xmlserver
 
 if [ `id -u` -ge 10000 ]; then
@@ -39,25 +45,28 @@ if [ -n "$MOUNT_POINT" ]; then
   JVM_GC_OPTS="-verbose:gc -Xverbosegclog:$MOUNT_POINT/$HOSTNAME/gc/verbosegc.log -Xdump:directory=$MOUNT_POINT/$HOSTNAME/gc/dump"
 else
   JVM_GC_OPTS="-verbose:gc -Xverbosegclog:tmp/verbosegc.log"
+  mkdir -p $XMLSERVER_PATH/tmp
 fi
 
 # Starts XML Server
 cd $XMLSERVER_PATH
+
+# Remove the chmod from xmlserver.xml
+sed -i "s/<chmod / <\!-- chmod /g" xmlserver.xml
+sed -i "s/ug+rx\"\/>/ug+rx\" -->/g" xmlserver.xml
+
 # The values for JVM_MAX_MEM JVM_THREAD_STACK_SIZE will come from the Helm charts
-
 # use sed to edit the xmlserver.xml file to incorporate the new max memory as well as any jvm arguments
-# first change the maxmemory size, if the JVM_MAX_MEM param is set
 
+# first change the maxmemory size, if the JVM_MAX_MEM param is set
 if [ ! -z ${JVM_MAX_MEM} ]; then
   sed -i "s/<property name=\"java.maxmemory\"   value=\"768m\"\/>/<property name=\"java.maxmemory\"   value=\"$JVM_MAX_MEM\"\/>/g" xmlserver.xml
 fi
 
 # now remove the reference to maxmemory from the java task
-
 sed -i "/maxmemory=\"\${java.maxmemory}\"/d" xmlserver.xml
 
 # now add in an additional line into the java task to use the java.maxmemory as a jvmarg
-
 sed -zEi 's/>([^\n]*\n[^\n]*<jvmarg line=\"\$\{java.jvmargs\}\" \/>)/>\n      <jvmarg value=\"-Xmx\$\{java.maxmemory\}\" \/>\1/'  xmlserver.xml
 
 # if the JAVA_THREAD_STACK_SIZE param is set,include the java thread stack size by replacing the default
@@ -79,4 +88,6 @@ else
   XMLSERVER_OPTIONS='-Dadditional.args="'$XMLSERVER_OPTIONS'"'
 fi
 
-ant -f xmlserver.xml $XMLSERVER_OPTIONS 2>&1 | tee -a tmp/xmlserver.log
+XMLSERVER_LOG=$XMLSERVER_PATH/tmp/xmlserver.log
+ant -f xmlserver.xml $XMLSERVER_OPTIONS 2>&1 | tee -a $XMLSERVER_LOG
+set +x

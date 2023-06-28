@@ -5,6 +5,7 @@
 {{- $javaOptions := dict "DefaultOptions" $.Values.javaOptions "ProgramOptions" $program.stream.javaOptions "PersistenceConfig" $.Values.global.apps.common.persistence }}
 ---
 ###############################################################################
+# © Merative US L.P. 2022
 # Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +61,7 @@ spec:
               secret:
                 secretName: {{ $.Values.global.database.ssl.secretName }}
           initContainers:
+
           - name: import-db2-cert
             image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
             env:
@@ -90,7 +92,7 @@ spec:
               - name: TZ
                 value: {{ $.Values.global.timezone }}
             command:
-              - build.sh
+              - /opt/ibm/Curam/release/build.sh
               - runbatch
             args:
               - -Dbatch.program={{ required (printf "'className' key cannot be omitted for Batch stream definition '%s'" $name) $program.stream.className }}

@@ -6,8 +6,8 @@ console.log(`Using SITE_PREFIX: '${sitePrefix}'`)
 module.exports = {
   siteMetadata: {
     title: siteTitle,
-    description: 'Curam Social Program Management on Kubernetes Runbook',
-    keywords: 'ibm,curam,containers',
+    description: 'Merative Social Program Management on Kubernetes Runbook',
+    keywords: 'merative,curam,containers',
   },
   pathPrefix: sitePrefix,
   plugins: [
@@ -29,6 +29,10 @@ module.exports = {
         isSearchEnabled: true,
         withWebp: true,
         imageQuality: 75,
+        iconPath: "./src/images/spm-favicon-32.svg",
+        // repository: {
+        //   baseUrl: "https://github.com/merative/spm-kubernetes",
+        // },
       },
     },
   ],

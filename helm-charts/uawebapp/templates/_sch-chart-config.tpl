@@ -1,4 +1,5 @@
 {{/*
+© Merative US L.P. 2022
 Copyright 2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +38,7 @@ sch:
           topologyKey: kubernetes.io/hostname
     nodeAffinity:
       nodeAffinityRequiredDuringScheduling:
-        key: beta.kubernetes.io/arch
+        key: kubernetes.io/arch
         operator: In
         values:
           - amd64

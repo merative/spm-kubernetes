@@ -84,7 +84,7 @@ See the [Minikube Handbook](https://minikube.sigs.k8s.io/docs/handbook/registry/
 </Row>
 </Tab>
 
-<Tab label="IKS">
+<Tab label="AKS">
 <Row>
 <Column>
 
@@ -111,7 +111,7 @@ Set the `PROJECT` environment variable:
 **Note:** In the following commands, the value of `$PROJECT` will change depending on deployment type:
 
 * For a Minikube deployment the value of `$PROJECT` is arbitrary.
-* For an IKS deployment the value of `$PROJECT` must equate to a valid namespace in the customer’s account.
+* For an AKS deployment the value of `$PROJECT` must equate to a valid namespace in the customer’s account.
 * For an OpenShift deployment the value of `$PROJECT` must equate to a valid project.
 For this runbook it is best to stick with the value chosen for `$PROJECT` in [Creating a CRC project](/prereq/openshift/codeready-containers#creating-a-crc-project)
 
@@ -619,21 +619,21 @@ docker push $DOCKER_REGISTRY/$PROJECT/uawebapp:latest
 
 </InlineNotification>
 
-## Pushing the images to the IBM Cloud Container Registry
+## Pushing the images to the a Container Registry
 
-IBM Cloud Container Registry is the service to distribute the containers across Kubernetes clusters. In order to configure it, some preparation steps are
-required to obtain the credentials and a namespace, globally unique between all the tenants of IBM Cloud.
-Refer to [Getting started with IBM Cloud Container Registry](https://cloud.ibm.com/docs/Registry?topic=Registry-getting-started) for more information on configuring the registry and obtaining the required credentials.
+A Container Registry is the service to distribute the containers across a Kubernetes service In order to configure it, some preparation steps are
+required to obtain the credentials and a namespace, globally unique between all the tenants of your cloud of choice.
+Refer to [Getting Started with Artifactory as a Docker Registry](https://jfrog.com/help/r/jfrog-artifactory-documentation/getting-started-with-artifactory-as-a-docker-registry) for more information on configuring the registry and obtaining the required credentials.
 
 ```shell
-ibmcloud login -c <ICR_ENDPOINT> --apikey <ICR_API_KEY> -r <ICR_DC_REGION>
-ibmcloud cr login
+docker login ${server-name}.jfrog.io
 
-docker push us.icr.io/<ICR_NAMESPACE>/xmlserver:latest
-docker push us.icr.io/<ICR_NAMESPACE>/utilities:latest
-docker push us.icr.io/<ICR_NAMESPACE>/batch:latest
-docker push us.icr.io/<ICR_NAMESPACE>/curam:latest
-docker push us.icr.io/<ICR_NAMESPACE>/httpd:latest
+
+docker push ${server-name}.jfrog.io/{repo-name}/xmlserver:latest
+docker push ${server-name}.jfrog.io/{repo-name}/utilities:latest
+docker push ${server-name}.jfrog.io/{repo-name}/batch:latest
+docker push ${server-name}.jfrog.io/{repo-name}/curam:latest
+docker push ${server-name}.jfrog.io/{repo-name}/httpd:latest
 ```
 
 ## View the artifacts in the repository

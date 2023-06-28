@@ -1,7 +1,7 @@
 ---
 title: Kubernetes Overview
 description: Kubernetes Overview
-tabs: ['Kubernetes Overview','Minikube','IBM Cloud Kubernetes Service']
+tabs: ['Kubernetes Overview','Minikube','Azure Kubernetes Service']
 ---
 
 ## Kubernetes
@@ -9,7 +9,7 @@ tabs: ['Kubernetes Overview','Minikube','IBM Cloud Kubernetes Service']
 Kubernetes (which is also referred to as "K8s" and is described at a high-level on the [Kubernetes home page](https://kubernetes.io/)) is an open source system for automating deployment, scaling, and management of containerized applications.
 You will use the command-line tool, `kubectl`, extensively when you follow the steps that are described in this runbook. The `kubectl` download and installation steps are described on [kubernetes.io](https://kubernetes.io/docs/tasks/tools/#kubectl).
 
-Minikube is a variant of Kubernetes that runs a single-node cluster inside a virtual machine (VM) on your laptop. See [Minikube](/prereq/kubernetes/minikube) for the configuration details for IBM® Cúram Social Program Management (SPM).
+Minikube is a variant of Kubernetes that runs a single-node cluster inside a virtual machine (VM) on your laptop. See [Minikube](/prereq/kubernetes/minikube) for the configuration details for Merative Social Program Management (SPM).
 
 ## Kubernetes supported version skew
 
@@ -23,8 +23,8 @@ In highly-available (HA) clusters, the newest and oldest `kube-apiserver` instan
 
 Example:
 
-* newest `kube-apiserver` is at __1.19__
-* other `kube-apiserver` instances are supported at __1.19__ and __1.18__
+* newest `kube-apiserver` is at __1.27__
+* other `kube-apiserver` instances are supported at __1.27__ and __1.26__
 
 ### kubelet
 
@@ -32,8 +32,8 @@ Example:
 
 Example:
 
-* `kube-apiserver` is at __1.19__
-* `kubelet` is supported at __1.19__, __1.18__, and __1.17__
+* `kube-apiserver` is at __1.27__
+* `kubelet` is supported at __1.27__, __1.26__, and __1.25__
 
 <InlineNotification>
 
@@ -42,5 +42,5 @@ __Note:__ If version skew exists between `kube-apiserver` instances in an HA clu
 
 Example:
 
-* `kube-apiserver` instances are at __1.19__ and __1.18__
-* `kubelet` is supported at __1.18__, and __1.17__ (__1.19__ is not supported because that would be newer than the `kube-apiserver` instance at version 1.18)
+* `kube-apiserver` instances are at __1.27__ and __1.26__
+* `kubelet` is supported at __1.26__, and __1.25__ (__1.27__ is not supported because that would be newer than the `kube-apiserver` instance at version 1.26)

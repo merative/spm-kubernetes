@@ -3,41 +3,17 @@ title: Cloud Object Storage
 description: Cloud Object Storage
 ---
 
-### What is IBM Cloud Object Storage?
+### What is Object Storage?
 
-IBM® Cloud&trade; Object Storage (COS) makes it possible to store practically limitless amounts of data, simply and cost effectively.
+Object Storage makes it possible to store practically limitless amounts of data, simply and cost effectively.
 It is commonly used for data archiving and backup; for web and mobile applications; and as scalable, persistent storage for analytics.
 Flexible storage class tiers with a policy-based archive let you effectively manage costs while meeting data access needs.
-The integrated IBM Aspera® high-speed data transfer option makes it easy to transfer data to and from IBM Cloud Object Storage, and query-in-place functionality allows you to run analytics directly on your data.
 
-For more information about Cloud Object Storage, see [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage).
+For more information about Object Storage, see [Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Concepts/objectstorageoverview.htm).
 
 ### Usage
 
-To archive data persistently through COS, prepare the following prerequisites in the Kubernetes cluster:
+To archive data persistently through Object Storage, prepare the following prerequisites in the Kubernetes cluster:
 
-* Create a bucket in the COS service by following the [Getting Started guide](https://cloud.ibm.com/docs/services/cloud-object-storage?topic=cloud-object-storage-getting-started)
-* Take note of the `bucket-name`, `access-key`, `secret-key` and `service-private-endpoint` for the bucket
-* Install the COS Plugin into your cluster by following [Storing data on IBM Cloud Object Storage](https://cloud.ibm.com/docs/containers?topic=containers-object_storage)
-* Enable persistence by toggling the following properties in the override values file injected through Helm during deployment:
-
-```yaml path=override-values.yaml
----
-global:
-  apps:
-    common:
-      persistence:
-        # Persistence volume to store data (such as non-log files)
-        enabled: true
-        # If enabled, creates a PVC to connect to IBM Cloud Object Storage
-        # Properties storageClassName, secretKey, accessKey, instanceId, and bucketName are required
-        # Values available in the WebUI where the bucket was pre-created
-        storageClassName: "storage-class-name"
-        instanceId: "<instance-id>"
-        bucketName: "<bucket-name>"
-        accessKey: "<access-key>"
-        secretKey: "<secret-key>"
-        bucketEndpoint: "<service-private-endpoint>"
-        mountPoint: "/tmp/persistence"
-        subDir: "/folder/name"
-```
+* Create a bucket in the Object Storage. Each cloud provider has a different methods. The steps below follow Azure Kubernetes Service.
+* Create and use a volume with Azure Blob storage in Azure Kubernetes Service (AKS) [Storing data on AKS Blob Object Storage](https://learn.microsoft.com/en-us/azure/aks/azure-csi-blob-storage-provision?tabs=mount-nfs%2Csecret)

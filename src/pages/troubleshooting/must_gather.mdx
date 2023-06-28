@@ -22,22 +22,22 @@ raising an issue on [GitHub](https://github.com/merative/spm-kubernetes/issues).
 
 <InlineNotification>
 
-IBM may request the **Helm Charts** and **Dockerfiles** developed by the engineering team as part of the support process.
+Merative SPM may request the **Helm Charts** and **Dockerfiles** developed by the engineering team as part of the support process.
 
 </InlineNotification>
 
 ### Question
 
-What information should I collect for issues with IBM® Cúram Social Program Management (SPM) in a Kubernetes environment to assist IBM Support with their investigations?
+What information should I collect for issues with Merative Social Program Management (SPM) in a Kubernetes environment to assist Meravite Cúram Support with their investigations?
 
 ### Answer
 
 First, a comprehensive description of the problem along with answers to the following questions:
 
-* Can you recreate the issue and provide the steps for IBM Support to do same?
+* Can you recreate the issue and provide the steps for Merative Support to do same?
 * What is the impact of the issue; for instance, frequency of occurrence and pervasiveness?
 * Have you identified any workarounds or mitigations?
-* What investigation have you already performed; for example, via the IBM Support site, Google, etc.?
+* What investigation have you already performed?
 
 ## Collecting MustGather data guidelines
 
@@ -58,7 +58,7 @@ Beyond the answers to these questions, you need to collect general third party s
 This general information is described in the sections that follow.
 For issues with the following third party software you should consult their external MustGather links as appropriate:
 
-* [SPM](https://www.ibm.com/support/pages/collecting-data-c%C3%BAram-social-program-management-issues)
+* [SPM](https://www.merative.com/support/spm/question-answer/collecting-data-for-issues)
 * [Liberty](https://www.ibm.com/support/pages/mustgather-read-first-websphere-application-server)
 * [Db2](https://www.ibm.com/support/pages/collecting-data-read-first-db2-linux-unix-and-windows-products)
 * [MQ](https://www.ibm.com/support/pages/read-first-collect-ibm-mq-mustgather-data-linux-unix-windows-and-ibm-i)
@@ -89,7 +89,7 @@ Please provide the `config_report.zip` file.
 
 ### Operating systems and platforms
 
-Include this information for all relevant platforms used for deployment, where you run the IBM Cloud CLI or Minikube.
+Include this information for all relevant platforms used for deployment, where you run the Azure CLI or Minikube.
 
 On most systems the following command provides basic platform and operating system information:
 
@@ -99,7 +99,7 @@ uname -a
 
 ### Kubernetes and related software versions
 
-The following commands display the relevant versions for Docker, Helm, the IBM Cloud CLI (IKS), and Kubernetes:
+The following commands display the relevant versions for Docker, Helm and Kubernetes:
 
 ```
   docker version # Provides version information for the Docker client and server
@@ -109,9 +109,8 @@ The following commands display the relevant versions for Docker, Helm, the IBM C
 
   # Depending on your environment, obtain the appropriate Kubernetes version information:
   minikube version   # If applicable
-  ibmcloud version   # If applicable (IKS)
   oc version         # If applicable (OpenShift)
-  kubectl version    # Applies to Minikube, IKS, and OpenShift environments
+  kubectl version    # Applies to Minikube, Kubernetes and OpenShift environments
 ```
 
 ## Helm information
@@ -268,7 +267,7 @@ See the `kubectl help logs` command for option details.
 ### Third party software logs and artifacts
 
 Beyond basic stdout logging from a pod there may be additional logging or artifacts needed for investigating an issue.
-These logs and artifacts will be available within the pod's Docker file system or; additionally, in the case of IKS cloud object storage, in the persistent storage location you specified in
+These logs and artifacts will be available within the pod's file system or, in the case of object storage, in the persistent storage location specified
 [Cloud Object Storage](/supporting-infrastructure/COS).
 
 Further, the specific logs, artifacts, and their locations vary depending on the software running within the pod.
@@ -303,7 +302,7 @@ which would produce output like:
 -rw-r----- 1 default root   973 Apr 14 06:00 trace.log
 ```
 
-When using IKS cloud object storage the WebSphere Liberty logs, JVM dumps and garbage collection logs, and Cúram JMX statistics are symbolically linked to the pod's file system in `/tmp/logs` and available in your COS bucket.
+When using object storage the WebSphere Liberty logs, JVM dumps and garbage collection logs, and Cúram JMX statistics are symbolically linked to the pod's file system in `/tmp/logs` and available in your COS bucket.
 
 #### WebSphere Liberty configuration information
 

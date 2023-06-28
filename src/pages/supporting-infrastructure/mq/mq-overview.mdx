@@ -1,7 +1,7 @@
 ---
 title: MQ Overview and Configuration
 description: MQ Overview
-tabs: ['MQ Overview','MQ on IKS', 'MQ on OpenShift','MQ Containers']
+tabs: ['MQ Overview','MQ on AKS', 'MQ on OpenShift','MQ Containers']
 ---
 
 IBM MQ is a queue managing service from the IBM stack. To support Kubernetes, changes to SPM were required. For more information on these changes, see
@@ -13,7 +13,7 @@ When SPM is containerized on Kubernetes, it uses IBM MQ to manage JMS messages f
 If MQ fails, certain functionality will be unusable. This includes and is not limited to, creation of a case and creation of an application. In order to reduce the likelihood
 of this, MQ can be configured to be a multi-instance deployment. This results in a stateful set being created, with one active/primary queue manager, and one standby/secondary queue manager.
 
-Currently, MQ can be configured on [IKS](/supporting-infrastructure/mq/mq-on-iks) or [OpenShift](/supporting-infrastructure/mq/mq-on-openshift).
+Currently, MQ can be configured on [AKS](/supporting-infrastructure/mq/mq-on-aks) or [OpenShift](/supporting-infrastructure/mq/mq-on-openshift).
 
 <InlineNotification>
 

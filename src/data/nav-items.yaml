@@ -7,8 +7,8 @@
       path: /architecture/kubernetes/spm-on-kubernetes-101/
     - title: Architecture Overview
       path: /architecture/arch-overview/architecture-overview/
-    - title: IKS Consideration
-      path: /architecture/iks-consideration/security/
+    - title: AKS Consideration
+      path: /architecture/aks-consideration/security/
     - title: OpenShift Consideration
       path: /architecture/openshift-consideration/security/
   hasDivider: true
@@ -28,7 +28,7 @@
       path: /prereq/chartmuseum/
     - title: GitHub repo
       path: /prereq/git/
-- title: IBM Cúram Social Program Management application
+- title: Merative Social Program Management application
   pages:
     - title: Installing SPM software
       path: /deploy-spm/install-spm/
@@ -65,6 +65,8 @@
   pages:
     - title: Batch Processing
       path: /supporting-infrastructure/batch/batch-processing/
+    - title: Blob Storage
+      path: /supporting-infrastructure/Blob/
     - title: Cloud Object Storage
       path: /supporting-infrastructure/COS/
     - title: Enabling ISAM
@@ -114,6 +116,6 @@
   pages:
     - title: Contact Us
       path: /contact/contact_us/
-- title: Disclaimer
+- title: Notices
   pages:
-    - path: /disclaimer/
+    - path: /notices/

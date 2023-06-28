@@ -3,12 +3,13 @@ title: Monitoring XML servers
 description: Monitoring XML servers
 ---
 
-## ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) Introduction
+## Introduction
 
-Monitoring of the XML server is available for:
+Monitoring of the XML server is available through:
 
-* The XML server via its statistics, described in [Monitoring XML server statistics](#monitoring-xml-server-statistics)
+* ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) The XML server statistics, described in [Monitoring XML server statistics](#monitoring-xml-server-statistics)
 * The JVM that the XML server runs on, described in [Monitoring the XML server JVM](#monitoring-the-xml-server-jvm)
+* ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) Health checks, described in [XML server health checks](#xml-server-health-checks)
 
 ## Monitoring XML server statistics
 
@@ -17,7 +18,7 @@ Out-of-the-box these statistics are written to text files in the `/opt/ibm/Curam
 
 ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) This topic describes a sample implementation to make XML server statistics available to Prometheus.
 The ability to access XML server statistics in a Kubernetes deployment requires using the XML server `-forcestatswrite` start option.
-This option is only available in SPM V8.0.1 or higher as described in the [Configuration Reference](/deployment/config-reference#xml-server) topic
+This option is only available in SPM V8.0.1 or higher as described in the [XML Server Configuration Reference](/deployment/config-reference#xml-server) topic
 and [Starting the XML server](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-starting-xml) in IBM Docs.
 
 ### Sample implementation
@@ -184,7 +185,7 @@ To build the sidecar image run the following commands:
 **Note:** In the following commands, the value of `$PROJECT` will change depending on deployment type:
 
 * For a Minikube deployment the value of `$PROJECT` is arbitrary.
-* For an IKS deployment the value of `$PROJECT` must equate to a valid namespace in the customer’s account.
+* For a Kubernetes deployment the value of `$PROJECT` must equate to a valid namespace in the customer’s account.
 * For an OpenShift deployment the value of `$PROJECT` must equate to a valid project.
   For this runbook it is best to stick with the value chosen for `$PROJECT` in [Creating a CRC project](/prereq/openshift/codeready-containers#creating-a-crc-project).
 
@@ -264,7 +265,7 @@ Sample files are provided to define the sidecar and Prometheus configuration and
 * `global.useBetaFeatures: true`
 * `xmlserver.metrics.enabled: true`
 
-For more information see the [Configuration Reference](/deployment/config-reference#xml-server).
+For more information see the [XML Server Configuration Reference](/deployment/config-reference#xml-server).
 
 The following files are included in the [helm-charts/xmlserver/](https://github.com/merative/spm-kubernetes/tree/main/helm-charts/xmlserver)
 folder of the GitHub repo for deploying the `xmlserver-metrics` sidecar container and configuring it for the XML server:
@@ -312,3 +313,29 @@ How you configure the JMX Exporter will depend upon how you consume the data.  F
 
 * See the Prometheus JMX Exporter [configuration documentation](https://github.com/prometheus/jmx_exporter#configuration)
 * See this sample [Grafana JVM dashboard](https://grafana.com/grafana/dashboards/3066)
+
+## XML server health checks
+
+![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) A readiness and liveness probe are available for xmlserver deployments.
+These probes complement each other to ensure the xmlserver service is not accessed until it is ready and remains available.
+
+In support of the probes a folder, `xmlserverprobes` has been added to the `/opt/ibm/Curam/xmlserver` folder in `xmlserver` containers.
+
+To enable these probes you need to enable them in your Helm override file.
+Depending on your local environment you may need to adjust the timing values to achieve successful operation.
+See the [XML Server Configuration Reference](/deployment/config-reference#xml-server) topic and the K8s
+[Configure Liveness, Readiness and Startup Probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) page for more information.
+
+### readinessProbe
+
+The readinessProbe depends on this info level log4j message: "`XML Server awaiting connections on port`". Thus, if you have modified the default `xmlserver` log4j configuration to suppress this message you cannot use the readinessProbe.
+
+### livenessProbe
+
+The livenessProbe adds messages such as these to the `/opt/ibm/Curam/xmlserver/tmp/xmlserver.log` file for each probe invocation (default 30 seconds):
+
+```
+[xmlserver] [INFO] [XMLConnectionHandler] Mon Apr 03 12:28:02 BST 2023 Connection received.
+[xmlserver] [INFO] [XMLConnectionHandler] Awaiting job configuration.
+[xmlserver] [INFO] [XMLConnectionHandler] Probe check received.
+```

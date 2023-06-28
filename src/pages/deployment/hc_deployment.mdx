@@ -33,23 +33,23 @@ helm install releasename local-development/spm -f override-values.yaml
 
 ### Sample `override-values.yaml` files
 
-The following three override files for Minikube, IKS, and CRC are intended to be used with the config options listed in the
+The following three override files for Minikube, AKS, and CRC are intended to be used with the config options listed in the
 [Configuration Reference](/deployment/config-reference) topic. The minimum details that need to be filled out for a successful deployment
 are the registry, database, and ingress details.
 
 * [Minikube](/resources/minikube-values.yaml)
 * [CodeReady Containers](/resources/crc-values.yaml)
-* [IBM Cloud Kubernetes Service](/resources/iks-values.yaml)
+* [Azure Kubernetes Service](/resources/aks-values.yaml)
 * [Initial Tuning Settings](/resources/tuning-values.yaml)
-  * Can be used for IKS or OpenShift
+  * Can be used for AKS or OpenShift
 
 <InlineNotification>
 
-**Note on IKS overrides:**
+**Note on AKS overrides:**
 
 * The full image name is based on the `registry`, `imageLibrary`, `imagePrefix`, and `imageTag` keys nested under `global.images` as follows:
   * `{registry}/{imageLibrary}/{imagePrefix}curam:{imageTag}`
-  * With the given values, the resulting image name will look like this: `us.icr.io/foo-library/test_curam:latest`
+  * With the given values, the resulting image name will look like this: `example.azurecr.io/foo-library/test_curam:latest`
 * IAM credentials for the [IBM Container Registry](https://cloud.ibm.com/docs/containers?topic=containers-registry) (`global.imagePullSecret`) must be provided.
 * The [Application Load Balancer IDs](https://cloud.ibm.com/docs/containers?topic=containers-ingress_annotation#alb-id) (`ingress.annotations."ingress.bluemix.net/ALB-ID"`) must be provided for the Ingress resource to be created correctly.
 
@@ -86,7 +86,7 @@ docker run --rm -e LICENSE=view ibmcom/mq:9.1.3.0
 
 ## Status of the system
 
-The `helm install` command shows all the Kubernetes objects and also runs the IBM® Cúram Social Program Management (SPM) containers.
+The `helm install` command shows all the Kubernetes objects and also runs the Merative Social Program Management (SPM) containers.
 You can track the status of the SPM containers on real time by running the following command:
 
 ```shell
@@ -156,7 +156,7 @@ https://spm-ocp.apps-crc.testing/Curam
 </Row>
 </Tab>
 
-<Tab label="IKS">
+<Tab label="AKS">
 <Row>
 <Column>
 

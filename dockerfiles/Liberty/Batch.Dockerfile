@@ -1,4 +1,5 @@
 ###############################################################################
+# © Merative US L.P. 2022
 # Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +33,7 @@ RUN chmod -R g=u /opt/ibm/Curam
 FROM ibmcom/websphere-liberty:${WLP_VERSION}
 
 WORKDIR /opt/ibm/Curam/release
-ENTRYPOINT ["build.sh"]
+ENTRYPOINT ["/opt/ibm/Curam/release/build.sh"]
 CMD ["runbatch"]
 
 ARG ANT_VERSION

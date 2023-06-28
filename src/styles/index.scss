@@ -110,7 +110,11 @@
 }
 
 [class*='Code-module--row'] {
-  width: 70%;
+  width: 100%;
+}
+
+[class*='EditLink-module--link'] {
+  display: none;
 }
 
 [class*='Markdown-module--list'] {
