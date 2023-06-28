@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: write
     env:
-      SITE_PREFIX: /
+      SITE_PREFIX: /spm-kubernetes/
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
