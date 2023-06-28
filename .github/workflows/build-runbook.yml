@@ -33,7 +33,7 @@ jobs:
           node --version
           npm install -g markdownlint-cli
           npm install --legacy-peer-deps
-          npm ci
+          #npm ci
           pip install --user linkchecker
 
       - name: Build docs
