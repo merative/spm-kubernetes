@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file
 
 ### Fixed
 
-* Updated all SPM IBM link to referece Merative SPM PDF's
+* Updated all SPM IBM's links to reference Merative SPM PDF's
 
 ### Changed
 
