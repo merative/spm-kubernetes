@@ -160,9 +160,15 @@ The default batch configuration runs any queued jobs every 30 minutes (equivalen
 
 Additional batch jobs may be added with additional keys under `batch.programs`.
 
-The following `batch.programs` example adds the
-[bulk reassessment of all open integrated cases](https://www.ibm.com/docs/en/spm/8.0.2?topic=reform-running-bulk-reassessment-all-open-integrated-cases)
-batch job to be run at 2AM every Sunday night:
+For more information about batch examples, see **bulk reassessment of all open integrated cases** in the *Social Program Management Health Care Reform Developer Guide*.
+
+<InlineNotification>
+
+The Social Program Management PDF documentation is available to download from [Merative Support Docs](https://curam-spm-devops.github.io/wh-support-docs/spm/pdf-documentation/).
+
+</InlineNotification>
+
+The following `batch.programs` example adds the **bulk reassessment of all open integrated cases** batch job to be run at 2AM every Sunday night.
 
 ```yaml
 batch:
@@ -201,7 +207,7 @@ batch:
 **Note:** Kubernetes by default has limits set on resources such as memory and CPU usage. SPM containers require more resources than the default values that we have set.
 We have set the default resource values to the limits that we have found to work best during development.
 
-_The resource values are subject to change during further iterations._
+*The resource values are subject to change during further iterations.*
 
 The resource values can be changed. However, for troubleshooting, we will request that our default values are used at a minimum.
 
@@ -276,7 +282,7 @@ We only support containerised MQ on Openshift.
 | `xmlserver.config.socketTimeout` | The XML server socket timeout (milliseconds) | `60000` |
 | ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.metrics.enabled`| Enable sending XML server statistics (`stats/ThreadPoolWorker-*` file contents) to Prometheus | `false` |
 | ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.metrics.port`| The port to monitor the XML server statistics | `8080` |
-| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.startOptions` | XML server start option; specifically for specifying `-forcestatswrite`, described in [Statistics](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-statistics) | `''` |
+| ![SPM 8.0.1.0](https://img.shields.io/badge/-SPM_8.0.1.0-green) `xmlserver.startOptions` | XML server start option; specifically for specifying `-forcestatswrite` | `''` |
 | `xmlserver.jvmStats.enabled`| Enable the Prometheus JMX Exporter for the XML server JVM metrics | `false` |
 | `xmlserver.jvmStats.port`| The port to monitor the XML server JVM metrics | `8083` |
 | `xmlserver.jvmStats.configYaml`| The Prometheus JMX Exporter configuration YAML string | `''` |
@@ -301,7 +307,7 @@ In a Kubernetes environment the XML server replicas are abstracted to the single
 | `uawebapp.imageConfig.library` | Namespace in the image registry containing your Univeral Access image | `''` |
 | `uawebapp.imageConfig.name` | Name of your Univeral Access image to be used | `''` |
 | `uawebapp.imageConfig.tag` | Image tag of your Univeral Access image to be used | `latest` |
-| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://www.ibm.com/docs/en/spm/8.0.2?topic=server-building-universal-access-responsive-web-application-deployment) variable when the application was built) | `/universal` |
+| `uawebapp.ingressPath` | Static content Ingress/Route path without a trailing forward slash (must match the [PUBLIC_URL](https://curam-spm-devops.github.io/wh-support-docs/pdf/CE/UniversalAccess_6_1_3.pdf) variable when the application was built) | `/universal` |
 | `uawebapp.readinessProbe.path` | Path for the pod readiness probe (should be same as `ingressPath` except **with** the trailing forward slash) | `/universal/` |
 | `uawebapp.replicaCount` | Number of replicas to be deployed | `1` |
 | `uawebapp.resources` | Pod [resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-requests-and-limits-of-pod-and-container) definition | Varies by application (see `values.yaml`) |

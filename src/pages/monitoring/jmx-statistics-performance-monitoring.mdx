@@ -5,19 +5,26 @@ description: Monitoring performance using JMX statistics
 ## What is Cúram JMX?
 
 Cúram JMX statistics provides operational data from a running Merative Social Program Management (SPM) application.
-JMX statistics for use with a traditional application server are documented
-in this [IBM Documentation](https://www.ibm.com/docs/en/spm/8.0.2?topic=management-configuring-jmx-statistics) page.
+JMX statistics for use with a traditional application server.
+
+For more information about JMX statistics, see the *Social Program Management Cúram JMX Configuration Guide*.
+
+<InlineNotification>
+
+The Social Program Management PDF documentation is available to download from [Merative Support Docs](https://curam-spm-devops.github.io/wh-support-docs/spm/pdf-documentation/).
+
+</InlineNotification>
 
 ### Cúram JMX Kubernetes Limitations
 
 Cúram JMX statistics behave similarly in Kubernetes, but have the following limitations:
+Using the Administration Application
 
-* Access by using the [SPM Administration Application](https://www.ibm.com/docs/en/spm/8.0.2?topic=statistics-using-administration-application)
-is not supported because:
+* Access by using the SPM Administration Application is not supported because:
   * Not all pods have the requisite SPM client installed, which means JMS performance is unavailable using this access mechanism.
   * The reverse proxy nature of Kubernetes means that even for the pods with clients installed, identifying the correct target server would be difficult.
 
-Therefore, for Kubernetes you are restricted to using the timer-based access method, for more information, see [Using the JMX Timer](https://www.ibm.com/docs/en/spm/8.0.2?topic=statistics-using-jmx-timer).
+Therefore, for Kubernetes you are restricted to using the timer-based access method. For more information about JMX statistics, see **Using the JMX timer** in the *Social Program Management Cúram JMX Configuration Guide*.
 
 ## Cúram JMX timer-based statistics on Kubernetes
 
@@ -47,7 +54,7 @@ number of milliseconds between each timer. For example, 60000 = 1 minute.
 
 Inside the specified timer folder are the statistics XML files, named with a datetimestamp and pod name.
 
-__For example:__`202009171025363411@bugsbunny-apps-curam-producer-6c9bf7dc46-snw4w-1661122509.xml`
+**For example:**`202009171025363411@bugsbunny-apps-curam-producer-6c9bf7dc46-snw4w-1661122509.xml`
 
 ## Considerations
 
