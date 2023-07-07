@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file
 
+## v23.7.0
+
+### Fixed
+
+* Updated all SPM IBM link to referece Merative SPM PDF's
+
+### Changed
+
+* The following helm-charts updates have been made:
+  * `version` updated to `23.7.0`
+
+## v23.6.1
+
+### Fixed
+
+* Update Gatsby settings lowering `carbon-component` to an earlier version
+* Fix default site prefix
+
 ## v23.6.0
 
 ### Added
@@ -225,7 +243,7 @@ All notable changes to this project will be documented in this file
 ### Changed
 
 * The following helm-charts have been updated to chart version `21.8.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
-* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See [Transaction control/Underlying design/DB2/Repeatable Read](https://www.ibm.com/docs/en/spm/8.0.2?topic=design-db2)
+* Changed DB2 datasources isolation level for the `apps` producer and consumers pods. See **Transaction control**, **Underlying design** and **DB2 Repeatable Read** in the **Social Program Management Server Developer's Guide**.
 * Updated IBM Documentation link to SPM V8
 * Clarified prerequisite software statements ([#83](https://github.com/merative/spm-kubernetes/issues/83))
 
@@ -415,7 +433,7 @@ All notable changes to this project will be documented in this file
 
 ### Changed
 
-* Limit allowed HTTP verbs as detailed in the [IBM Documentation](https://www.ibm.com/docs/en/spm/7.0.11?topic=considerations-enabling-http-verb-permissions)
+* Limit allowed HTTP verbs. For more information about HTTP verbs, see **Enabling HTTP verb permissions** in the *Social Program Management Curam Security Handbook*.
 * Set `-Xshareclasses` to `none` for Liberty-based images as workaround for OpenJ9 issue ([#51](https://github.com/merative/spm-kubernetes/issues/51))
 * Adds values from `podAnnotations` at deployment of `apps` chart
 

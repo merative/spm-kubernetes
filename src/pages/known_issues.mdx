@@ -116,12 +116,20 @@ RUN if [ "$EAR_NAME" = "Curam" ] ; then \
 
 #### Why the error occurs
 
-As part of the SPM journey to Kubernetes, SPM made a number of changes in the areas of transaction isolation, messaging architecture, and elasticity so that SPM could leverage the benefits of Kubernetes
-(see the SPM [Kubernetes architecture](https://www.ibm.com/docs/en/spm/8.0.0?topic=kubernetes-architecture) documentation for more information).
+As part of the SPM journey to Kubernetes, SPM made a number of changes in the areas of transaction isolation, messaging architecture, and elasticity so that SPM could leverage the benefits of Kubernetes.
+
+For more information about SPM Kubernetes architecture changes, see **Kubernetes architecture** in the *Social Program Management SPM on Kubernetes Guide*.
+
+<InlineNotification>
+
+The Social Program Management PDF documentation is available to download from [Merative Support Docs](https://curam-spm-devops.github.io/wh-support-docs/spm/pdf-documentation/).
+
+</InlineNotification>
+
 Part of these changes included splitting the Curam applications into separate server and client .ear files, which provided necessary flexibility and isolation when deploying and running in Kubernetes.
 However, classes that cross the client/server boundary cause errors due to this isolation.
 For SPM product classes that have this requirement the Liberty shared folder is used.
-These product classes are the EJB local interfaces as described in the SPM [Transaction isolation]( https://www.ibm.com/docs/en/spm/8.0.0?topic=architecture-transaction-isolation) documentation.
+These product classes are the EJB local interfaces as described in the SPM Transaction isolation. For more information about EJB local interface, see **Transaction isolation** in the *Social Program Management SPM on Kubernetes Guide*.
 
 In relation to the Liberty classloader for SPM, SPM specifies the `parentFirst` classloader policy. This was done to increase cohesion and lower coupling between the client and server.
 The use of this policy means that the classes are loaded from the application server libraries to the application.
