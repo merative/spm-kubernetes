@@ -17,33 +17,16 @@
 # limitations under the License.
 ###############################################################################
 apiVersion: v1
-# TODO Confirm we have to create the PV statistically, maybe it could be created dynamically using a stateful set: https://learn.microsoft.com/en-us/azure/aks/azure-blob-csi?tabs=Blobfuse#using-a-statefulset
 kind: PersistentVolume
 metadata:
   name: {{ .Release.Namespace }}-{{ .Release.Name }}-persistence-pv
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
 spec:
-  capacity:
-    storage: {{ required "storageCapacity is required" .Values.global.apps.common.persistence.storageCapacity | quote }}
+  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
   accessModes:
     - ReadWriteMany
-  persistentVolumeReclaimPolicy: {{ required "persistentVolumeReclaimPolicy is required" .Values.global.apps.common.persistence.persistentVolumeReclaimPolicy | quote }}
-  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
-  mountOptions:
-    - -o allow_other
-    - --file-cache-timeout-in-seconds=120
-  csi:
-    driver: {{ required "persistentVolumeCsiDriver is required" .Values.global.apps.common.persistence.persistentVolumeCsiDriver | quote }}
-    readOnly: false
-    volumeHandle: {{ required "persistentVolumeHandle is required" .Values.global.apps.common.persistence.persistentVolumeHandle | quote }}
-    volumeAttributes:
-      containerName: {{ required "persistentVolumeContainer is required" .Values.global.apps.common.persistence.persistentVolumeContainer | quote }}
-      # TODO Document isHnsEnabled: "true" is required since Kubernetes 1.25
-      # https://learn.microsoft.com/en-us/dotnet/api/microsoft.azure.management.storage.models.storageaccountcreateparameters.ishnsenabled?view=azure-dotnet
-      isHnsEnabled: "true"
-      protocol: fuse2
-    nodeStageSecretRef:
-      name: "{{ .Release.Name }}-persistence-secret"
-      namespace: {{ .Release.Namespace }}
+  capacity:
+    storage: {{ required "storageCapacity is required" .Values.global.apps.common.persistence.storageCapacity | quote }}
+  {{- include "spm.persistenceProperties" $ | nindent 2 }}
 {{- end }}

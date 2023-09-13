@@ -25,11 +25,11 @@ metadata:
   labels:
     {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
 spec:
+  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
   accessModes:
     - ReadWriteMany
   resources:
     requests:
       storage: {{ required "storageCapacity is required" .Values.global.apps.common.persistence.storageCapacity | quote }}
   volumeName: {{ .Release.Namespace }}-{{ .Release.Name }}-persistence-pv
-  storageClassName: {{ required "storageClassName is required" .Values.global.apps.common.persistence.storageClassName | quote }}
 {{- end }}

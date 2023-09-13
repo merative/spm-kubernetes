@@ -1,0 +1,160 @@
+---
+title: Persistence Storage
+description: Persistence Storage of the Applications Logs
+---
+
+### What is Persistence Storage?
+
+In Kubernetes, any data stored within the application pods is typically lost when the container terminates.
+
+Persistent storage addresses this challenge by providing the ability to store and access data in a durable and consistent manner across container deployments, even when the containers are rescheduled, restarted, or replaced.
+
+Using persistent storage, the applications running in Kubernetes clusters can retain data beyond the lifespan of individual containers.
+This ensures that information such as files, logs, and generated content, remains intact and accessible even if containers are destroyed or recreated.
+
+For more information about persistent storage, see [Persistent storage for Kubernetes](https://aws.amazon.com/blogs/storage/persistent-storage-for-kubernetes/).
+
+### Using Persistent Storage in SPM
+
+There is a wide range of choices provided by various Cloud providers for utilising persistent storage in order to store and access information using Merative SPM on Kubernetes.
+
+The common types of storage are Block Storage which controls data on devices, [File Storage](https://docs.oracle.com/en-us/iaas/Content/File/Concepts/filestorageoverview.htm) which is using the NFS and SMB protocols, or [Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Concepts/objectstorageoverview.htm) for unstructured data such as COS, AWS S3, and Azure Blob.
+
+Choosing the appropriate method for enabling persistent storage in the SPM application on Kubernetes depends on number of factors:
+
+* the availability of services offered by the Cloud provider
+* the version of the Kubernetes or OpenShift cluster
+* the compatibility and support provided by the selected platform.
+
+Typically, the primary options for achieving persistence are File Storage and Object Storage.
+
+#### File Storage
+
+File Storage is a storage method that stores data in a hierarchical structure, within folders as a single unit of information.
+It is widely accessible and offers relatively fast performance. File storage is typically leveraging protocols such as Network File System (NFS) and Server Message Block (SMB).
+Some notable implementations of File Storage include IBM Cloud File Storage (CFS), Amazon Elastic File System (EFS), and Azure File Service (AFS).
+
+#### Object Storage
+
+Object Storage enables the storage of vast amounts of data in a straightforward and cost-effective manner.
+In Azure, you can utilize Azure Blob Storage to access object storage, which is configured within a Premium Storage Account.
+While Azure Blob Storage shares similarities with IBM Cloud Object Storage (COS) and Amazon S3 (S3), it does not offer support for the S3FS protocol interface.
+
+### Usage
+
+The following sample configurations are examples showing how to create Persistence Volume dynamically during the deployment of SPM on Kubernetes.
+
+<Tabs>
+
+<Tab label="Azure File Service">
+<Row>
+<Column>
+
+To archive data persistently through [Azure File Service Storage](https://learn.microsoft.com/en-us/azure/aks/azure-files-csi), prepare the following prerequisites in the Kubernetes cluster and in your Azure subscription:
+
+* On Azure, create a storage account of type Premium
+* Within the storage account, create a Azure File Service instance, and take note of the name as "AccountName"
+* In the Azure File Service instance, in the Access Keys section, create a new key, and take note of the name as "AccountKey" (alternatively create a SAS token)
+* Navigate to the Azure File Service instance, create a File Share, select the protocol as 'SMB', and take note of the name as "file-share-smb"
+* Encode the values of "AccountName" and "AccountKey" (or SAS token) in Base64 and add the following section to your override-values.yaml file with the correct values inputted
+* Enter the properties as illustrated in the example below
+
+```yaml path=override-values.yaml
+---
+global:
+  apps:
+    common:
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, connects to a persistence storage service
+        credentials:
+          azurestorageaccountname: "AccountName (encoded in Base64)"
+          azurestorageaccountkey: "AccountKey (encoded in Base64)"
+        storageClassName: "azureblob-fuse-premium"
+        storageCapacity: "10Gi"
+        properties:
+          azureFile:
+            secretName: "spm-persistence-secret"
+            shareName: "file-share-smb"
+            readOnly: false
+        mountPoint: '/tmp/persistence'
+        jmxstats:
+          ## Parameters of the JMX Stats to be persisted on the PVC
+          # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
+          enabled: false
+          timerPeriod: 60000
+```
+
+</Column>
+</Row>
+</Tab>
+
+<Tab label="Azure Blob Storage">
+<Row>
+<Column>
+
+To archive data persistently through [Azure Blob Storage](https://learn.microsoft.com/en-us/azure/aks/azure-blob-csi?tabs=Blobfuse), prepare the following prerequisites in the Kubernetes cluster and in your Azure subscription:
+
+* On Azure, create a storage account of type Premium
+* Within the storage account, create a Azure Blob Storage instance, and take note of the name as "AccountName"
+* In the Azure Blob Storage instance, in the Access Keys section, create a new key, and take note of the name as "AccountKey" (alternatively create a SAS token)
+* Navigate to the Azure Blob Storage instance, create a container, and take note of the name as "blob-container"
+* Encode the values of "AccountName" and "AccountKey" (or SAS token) in Base64 and add the following section to your override-values.yaml file with the correct values inputted
+* Enter the properties as illustrated in the example below
+
+<InlineNotification kind='warning'>
+
+**NOTE** Azure Blob Storage is not supported on the Openshift platform
+
+</InlineNotification>
+
+</Column>
+</Row>
+<Row>
+<Column>
+
+```yaml path=override-values.yaml
+---
+global:
+  apps:
+    common:
+      persistence:
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, creates a PV and PVC to connect to Azure Blob Storage container
+        credentials:
+          azurestorageaccountname: "AccountName (encoded in Base64)"
+          azurestorageaccountkey: "AccountKey (encoded in Base64)"
+        storageClassName: "azureblob-fuse-premium"
+        storageCapacity: "10Gi"
+        storageAccessModes: "ReadWriteMany"
+        properties:
+          persistentVolumeReclaimPolicy: 'Delete'
+          storageClassName: 'azureblob-fuse-premium'
+          mountOptions:
+            - -o allow_other
+            - --file-cache-timeout-in-seconds=120
+          csi:
+            driver: 'blob.csi.azure.com'
+            readOnly: false
+            volumeHandle: "pv-handle-unique-id"
+            volumeAttributes:
+              containerName: "blob-container"
+              isHnsEnabled: "true"
+              protocol: fuse2
+            nodeStageSecretRef:
+              name: "spm-persistence-secret"
+              namespace: "my-namespace"
+        jmxstats:
+          ## Parameters of the JMX Stats to be persisted on the PVC
+          # The property timerPeriod sets the value curam.jmx.output_statistics_timer_period in milliseconds
+          enabled: false
+          timerPeriod: 60000
+```
+
+</Column>
+</Row>
+</Tab>
+
+</Tabs>

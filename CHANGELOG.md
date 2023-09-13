@@ -2,11 +2,43 @@
 
 All notable changes to this project will be documented in this file
 
+## v23.9.0
+
+### Fixed
+
+* Replaced the CI badge icon in the contributing documentation to point the correct Github Actions
+* Corrected the XML Server probe parameter names and values in the Runbook [XML Server](https://merative.github.io/spm-kubernetes/deployment/config-reference/#xml-server) Configuration Reference section.
+
+### Changed
+
+* The following helm-charts have been updated to chart version `23.9.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* The `mqserver` chart was amended to enable MQ metric monitoring
+* Changed product name and version in shared configurable helpers and in README
+* Amended sample tuning values
+* Increased the required version of node_js to `v18` in the contributing documentation
+* AppServer password updated to plain text
+* Updated WebSphere Liberty version to include `23.0.0.6`
+
+### Added
+
+* Added the Persistent Storage documentation page
+
+### Removed
+
+* Removed the Object Storage and Cloud Object Storage documentation pages
+
+### Breaking Change
+
+* The values in `global.apps.common.persistence` have been modified to be more flexible with various persistent storage options available
+  * This is a breaking change without migration path possible, please refer to the Configuration Reference documentation for more details on how to integrate with the new values
+  * Added `global.apps.common.persistence.properties` which includes multi-lines as specified during the deployment to create the Persistent Volume
+  * Removed `global.apps.common.persistence.storageAccessModes`, `global.apps.common.persistence.persistentVolumeReclaimPolicy`, `global.apps.common.persistence.persistentVolumeCsiDriver`, `global.apps.common.persistence.persistentVolumeContainer`, `global.apps.common.persistence.persistentVolumeHandle`, `global.apps.common.persistence.mountPoint`
+
 ## v23.7.0
 
 ### Fixed
 
-* Updated all SPM IBM's links to reference Merative SPM PDF's
+* Updated all SPM IBM link to referece Merative SPM PDF's
 
 ### Changed
 

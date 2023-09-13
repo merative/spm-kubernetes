@@ -33,6 +33,15 @@ Create the persistence credentials
 {{- end -}}
 
 {{/*
+Create the persistence properties
+*/}}
+{{- define "spm.persistenceProperties" -}}
+{{- if $.Values.global.apps.common.persistence.properties -}}
+{{- toYaml $.Values.global.apps.common.persistence.properties }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Build up ssl-services value
 */}}
 {{- define "spm.sslServicesChain" }}

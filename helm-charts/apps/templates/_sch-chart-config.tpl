@@ -18,8 +18,8 @@ sch:
           weight: 100
     labelType: "prefixed"
     metering:
-      productName: "IBM Curam Social Program Management Platform"
-      productVersion: "8.0"
+      productName: "Merative Curam Social Program Management"
+      productVersion: "8.1"
       productID: "1bba719a1b4744a9901f85563744c0d1"
     podSecurityContext:
       hostIPC: false
