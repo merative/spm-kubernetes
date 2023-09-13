@@ -41,11 +41,7 @@ The following tables list the configurable parameters of the `spm` chart and the
 | `global.apps.common.persistence.credentials` | Credentials in the form of a list of key/value to authenticate with the object storage (contains any keys, but values are to be encoded in Base64) | `''` |
 | `global.apps.common.persistence.storageClassName` | Name of the Storage Class to use | `''` |
 | `global.apps.common.persistence.storageCapacity` | Capacity of the storage to request | `''` |
-| `global.apps.common.persistence.storageAccessModes` | Modes of the storage access (commonly `ReadWriteMany` or `ReadWriteOnce`) | `''` |
-| `global.apps.common.persistence.persistentVolumeReclaimPolicy` | `Retain` or `Delete` the container after the persistence volume clain is deleted  | `''` |
-| `global.apps.common.persistence.persistentVolumeCsiDriver` | CSI Driver to use for the persistent Volume | `''` |
-| `global.apps.common.persistence.persistentVolumeContainer` | Name of the container to use | `''` |
-| `global.apps.common.persistence.persistentVolumeHandle` | Unique handle ID across every identical storage blob container in the cluster | `''` |
+| `global.apps.common.persistence.properties` | Porperties to include in the creation of the `Persistent Volume` | `''` |
 | `global.apps.common.persistence.mountPoint` | Path, where the `Persistent Volume` should be mounted in pods | `''` |
 | `global.apps.config.<applicationID>.enabled` | Enable/disable SPM applications in the Helm release, where `applicationID` is the lower-cased name of the EAR file deployed | `true` for `curam`, `false` for all others |
 | `global.ingress.enabled` | Toggle creation of Ingress/Route resources | `false` |
@@ -290,9 +286,9 @@ We only support containerised MQ on Openshift.
 | ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.initialDelaySeconds` | Configure the number of seconds after container startup to initiate the probe | `15` |
 | ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.periodSeconds` | Configure the number of seconds between probe invocations | `60` |
 | ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.livenessProbe.enabled` | Enable XML server livenessProbe described in [XML server health checks](/monitoring/xmlserver-monitoring#xml-server-health-checks) | `false` |
-| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.initialDelaySeconds` | Configure the number of seconds after container startup to initiate the probe | `30` |
-| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.periodSeconds` | Configure the number of seconds between probe invocations | `30` |
-| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.readinessProbe.timeoutSeconds` | Configure the number of seconds before the probe times out | `10` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.livenessProbe.initialDelaySeconds` | Configure the number of seconds after container startup to initiate the probe | `60` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.livenessProbe.periodSeconds` | Configure the number of seconds between probe invocations | `120` |
+| ![SPM 8.1.0.0](https://img.shields.io/badge/-SPM_8.1.0.0-green) `xmlserver.livenessProbe.timeoutSeconds` | Configure the number of seconds before the probe times out | `30` |
 
 <InlineNotification>
 

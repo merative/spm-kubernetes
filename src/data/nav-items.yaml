@@ -65,10 +65,8 @@
   pages:
     - title: Batch Processing
       path: /supporting-infrastructure/batch/batch-processing/
-    - title: Blob Storage
-      path: /supporting-infrastructure/Blob/
-    - title: Cloud Object Storage
-      path: /supporting-infrastructure/COS/
+    - title: Persistence Storage
+      path: /supporting-infrastructure/Persistence/
     - title: Enabling ISAM
       path: /supporting-infrastructure/ISAM/
     - title: LogDNA

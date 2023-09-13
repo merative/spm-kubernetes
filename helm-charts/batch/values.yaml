@@ -56,20 +56,19 @@ global:
   apps:
     common:
       persistence:
-        # ## Persistence volume to store data (such as non-log files)
-        # enabled: false
-        # ## If enabled, creates a PV and PVC to connect to Azure Blob Storage container
+        ## Persistence volume to store data (such as non-log files)
+        enabled: false
+        ## If enabled, connects to a persistence storage service
         # credentials:
-        #   azurestorageaccountname: "<AccountName-Base64>"
-        #   azurestorageaccountkey: "<AccountKey-Base64>"
+        #   azurestorageaccountname: "AccountName (encoded in Base64)"
+        #   azurestorageaccountkey: "AccountKey (encoded in Base64)"
         # storageClassName: "azureblob-fuse-premium"
         # storageCapacity: "10Gi"
-        # storageAccessModes: "ReadWriteMany"
-        # persistentVolumeReclaimPolicy: "Delete"
-        # persistentVolumeCsiDriver: "blob.csi.azure.com"
-        # persistentVolumeContainer: "blob-container"
-        # ## persistentVolumeHandle required to be unique for every identical storage blob container in the cluster
-        # persistentVolumeHandle: "blob-volume-id"
+        # properties:
+        #   azureFile:
+        #     secretName: "spm-persistence-secret"
+        #     shareName: "file-share-smb"
+        #     readOnly: false
         mountPoint: ''
         jmxstats:
           enabled: false
