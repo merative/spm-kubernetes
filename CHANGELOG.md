@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file
 
+## v23.12.0
+
+### Breaking Change
+
+* The settings for `ibmjava8-sdk-ubi8-minimal` have been updated to use version `8.0.11.0` instead of the `latest` ([#150](https://github.com/merative/spm-kubernetes/issues/150))
+  * For more information please see RedHat Knowledge Base: [Changes to using latest tag with product multi-stream container image repositories](https://access.redhat.com/articles/4301321)
+
+### Changed
+
+* The following helm-charts have been updated to chart version `23.12.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* DB2 password updated to plain text
+* The following helm-charts updates have been made:
+  * Enable Http Compression on spm/templates/ingress.yaml, enabling GZIP to increase performance of file transfers on ingress
+* Updated WebSphere Liberty version to include `23.0.0.9`
+* Clarification around build IBM® SDK, Java™ Technology Edition on Apple M1 architecture
+
 ## v23.9.0
 
 ### Fixed

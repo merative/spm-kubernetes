@@ -27,6 +27,13 @@ export DOCKER_BUILDKIT=0
 
 ## IBM® SDK, Java™ Technology Edition
 
+<InlineNotification kind="warning">
+
+IBM® SDK, Java™ Technology Edition does not build on the Apple M1 architecture.
+If you need to build on Apple M1 architecture for local development you are required have an active Red Hat Subscriptionto use the Red Hat Container Registry.
+
+</InlineNotification>
+
 * Clone repository and change into the working directory:
 
   ```shell
@@ -37,7 +44,7 @@ export DOCKER_BUILDKIT=0
 * Build image:
 
   ```shell
-  ./build.sh ibm/ibmjava8-sdk-ubi8-minimal:latest ../8/sdk/ubi-min
+  ./build.sh ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.11 ../8/sdk/ubi-min
   ```
 
 ## S2I Core (required for Apache HTTP Server)
