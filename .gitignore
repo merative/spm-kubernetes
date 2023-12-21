@@ -1,6 +1,6 @@
 _book
 *.html
-
+.vscode/
 /ci.*
 *.lock
 *.tgz

@@ -31,7 +31,7 @@ description: |-
   You may obtain a copy of the License at
 
   http://www.apache.org/licenses/LICENSE-2.0
-version: 23.9.0
+version: 23.12.0
 maintainers:
   - name: IBM
   - name: Cúram SPM Dev Team
@@ -57,22 +57,22 @@ icon: https://avatars2.githubusercontent.com/u/1459110
 
 dependencies:
   - name: apps
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: batch
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: uawebapp
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: web
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: mqserver
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: xmlserver
-    version: "~23.9.0"
+    version: "~23.12.0"
     repository: "@local-development"
   - name: ibm-sch
     repository: "@sch"

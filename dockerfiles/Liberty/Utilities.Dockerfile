@@ -18,7 +18,7 @@
 # If set, must end with a forward slash, e.g. "registry.connect.redhat.com/"
 ARG BASE_REGISTRY
 
-FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:latest
+FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.11
 
 USER root
 RUN rpm -e --nodeps tzdata \
