@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file
 
+## v24.2.0
+
+### Changed
+
+* The following helm-charts have been updated to chart version `24.2.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Updated WebSphere Liberty version to include `23.0.0.12`
+
+### Added
+
+* Support for future releases of OpenShift
+
 ## v23.12.0
 
 ### Breaking Change
