@@ -1,0 +1,2 @@
+"use strict";(self.webpackChunkspm_kubernetes=self.webpackChunkspm_kubernetes||[]).push([[5125],{3331:function(e,t,n){n.r(t);var s=n(6540),o=n(786);const r=[{href:"/components/markdown",text:"Markdown"},{href:"/components/Aside",text:"Aside"},{href:"/components/demo",text:"Demo"}];t.default=()=>s.createElement(o.U8,{links:r})}}]);
+//# sourceMappingURL=component---src-pages-404-js-5654448a8862a1c3e704.js.map
