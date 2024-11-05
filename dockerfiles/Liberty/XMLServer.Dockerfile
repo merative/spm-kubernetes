@@ -44,7 +44,7 @@ RUN unzip -qo /tmp/apache-ant.zip -d /opt/ \
     && chmod -c +x /opt/ibm/Curam/xmlserver/*.sh
 
 # Final image
-FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.11
+FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.30
 
 EXPOSE 1800
 WORKDIR /opt/ibm/Curam/xmlserver

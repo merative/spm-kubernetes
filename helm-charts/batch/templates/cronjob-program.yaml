@@ -1,10 +1,10 @@
 {{- include "sch.config.init" (list . "batch.sch.chart.config.values") -}}
 {{- range $name, $program := .Values.programs }}
 {{- $filtered_name := ( $name | replace "_" "-" ) }}
-{{- $javaOptions := dict "DefaultOptions" $.Values.javaOptions "ProgramOptions" $program.javaOptions "PersistenceConfig" $.Values.global.apps.common.persistence }}
+{{- $javaOptions := dict "DefaultOptions" $.Values.javaOptions "MaxMemory" $.Values.maxMemory "ProgramOptions" $program.javaOptions "PersistenceConfig" $.Values.global.apps.common.persistence }}
 ---
 ###############################################################################
-# © Merative US L.P. 2022
+# © Merative US L.P. 2022,2024
 # Copyright 2019,2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,12 +53,22 @@ spec:
             - name: bootstrap-file
               configMap:
                 name: {{ $.Release.Name }}-bootstrap-cm
-          {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
+            {{- if $.Values.jmxExporter.enabled }}
+            - name: jmx-batch-config
+              configMap:
+                name: {{ $.Release.Name }}-jmx-batch-config
+            {{- end }}
+            {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
             - name: keystore-volume
               emptyDir: {}
             - name: db2-cert
               secret:
                 secretName: {{ $.Values.global.database.ssl.secretName }}
+            {{- if $.Values.global.apps.common.persistence.enabled }}
+            - name: {{ $.Release.Name }}-persistence-volume
+              persistentVolumeClaim:
+                claimName: {{ $.Release.Name }}-persistence-pvc
+            {{- end }}
           initContainers:
           - name: import-db2-cert
             image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "utilities") }}
@@ -70,7 +80,7 @@ spec:
             command:
               - /bin/sh
               - -c
-              - keytool -import -trustcacerts -noprompt -file $certfile -keystore $keystore_jks -storepass changeit -storetype jks
+              - keytool -import -trustcacerts -noprompt -file $certfile -keystore $keystore_jks -storepass changeit -storetype jks  
             volumeMounts:
             - name: keystore-volume
               mountPath: /mnt/keystores
@@ -81,6 +91,11 @@ spec:
           - name: runbatch-{{ $filtered_name | lower }}
             image: {{ include "batch.imageFullName" (dict "ImageConfig" $.Values.global.images "ImageName" "batch") }}
             imagePullPolicy: {{ $.Values.global.images.pullPolicy }}
+            {{- if $.Values.jmxExporter.enabled }}
+            ports:
+              - name: jmxmetrics
+                containerPort: {{ $.Values.jmxExporter.port }}
+            {{- end }}
             envFrom:
               - secretRef:
                   name: {{ default (printf "%s-db-credentials" $.Release.Name) $.Values.global.database.credsSecretName }}
@@ -89,11 +104,15 @@ spec:
                 value: {{ include "batch.antOpts" $javaOptions | quote }}
               - name: TZ
                 value: {{ $.Values.global.timezone }}
-            command:
-              - /opt/ibm/Curam/release/build.sh
-              - runbatch
-            {{- if or $program.className $program.parameters $program.username }}
+              {{- if $.Values.global.apps.common.persistence.enabled }}
+              - name: MOUNT_POINT
+                value: {{ include "persistence.mountPoint" $ }}
+              {{- end }}
+            command: ["/bin/sh", "-c"]
             args:
+            - /opt/ibm/helpers/runtime/docker-server.sh && 
+              /opt/ibm/Curam/release/build.sh runbatch{{ if $.Values.global.apps.common.persistence.enabled }} -Ddir.bld.log=$MOUNT_POINT/$HOSTNAME/logs{{ end }}
+            {{- if or $program.className $program.parameters $program.username }}
             {{- if $program.className }}
               - -Dbatch.program={{ $program.className }}
             {{- end }}
@@ -116,6 +135,15 @@ spec:
               {{- if and (eq ($.Values.global.database.type | upper) "DB2") $.Values.global.database.ssl.enabled $.Values.global.database.ssl.secretName }}
               - name: keystore-volume
                 mountPath: /mnt/keystores
+              {{- end }}
+              {{- if $.Values.jmxExporter.enabled }}
+              - name: jmx-batch-config
+                mountPath: /config/configDropins/overrides/config.yaml
+                subPath: config.yaml
+              {{- end }}
+              {{- if $.Values.global.apps.common.persistence.enabled }}
+              - name: {{ $.Release.Name }}-persistence-volume
+                mountPath: {{ include "persistence.mountPoint" $ }}
               {{- end }}
           restartPolicy: Never
 {{- end }}

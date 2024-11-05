@@ -1,6 +1,8 @@
+{{- include "sch.config.init" (list . "batch.sch.chart.config.values") -}}
+{{- if .Values.jmxExporter.enabled }}
+---
 ###############################################################################
-# © Merative US L.P. 2022
-# Copyright 2020 IBM Corporation
+# © Merative US L.P. 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,15 +17,14 @@
 # limitations under the License.
 ###############################################################################
 
-# If set, must end with a forward slash, e.g. "registry.connect.redhat.com/"
-ARG BASE_REGISTRY
-
-FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.30
-
-USER root
-RUN rpm -e --nodeps tzdata \
-    && microdnf install -y nc tzdata \
-    && microdnf clean all \
-    && rm -rf /var/cache/yum
-
-USER 1001
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-jmx-batch-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sch.metadata.labels.standard" (list . "") | nindent 4 }}
+data:
+  config.yaml: |-
+    {{- .Values.jmxExporter.configYaml | default "" | nindent 4 -}}
+{{- end }}

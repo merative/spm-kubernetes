@@ -1,5 +1,5 @@
 ###############################################################################
-# © Merative US L.P. 2022
+# © Merative US L.P. 2024
 # Copyright 2020,2022 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=23.0.0.12-full-java8-ibmjava-ubi
+ARG WLP_VERSION=24.0.0.6-full-java8-ibmjava-ubi
 ARG MQ_ADAPTER_VERSION=9.2.4.0
 ARG MQ_RA_LICENSE
 ARG JMX_EXPORTER_URL=https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
@@ -74,5 +74,6 @@ COPY --chown=1001:0 content/release-stage/build/CryptoConfig.jar /opt/ibm/java/j
 COPY --from=ExplodedEAR --chown=1001:0 /work /config/apps
 COPY --from=ExplodedEAR --chown=1001:0 /tmp/properties.jar /shared_resources/
 
+# Install defaultServer and wmqJmsClient-2.0 if available
 RUN installUtility install defaultServer \
     && (installUtility install wmqJmsClient-2.0 || true)
