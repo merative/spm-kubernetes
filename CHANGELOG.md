@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file
 ### Breaking Change
 
 * To enable persistence and the capturing of metrics on the batch pods Batch.Dockerfile has been updated with the following
-  * The Batch.Dockerfile was updated to pull `jmx_prometheus_javaagent-0.14.0.jar` from `repo1.maven.org`
   * The Batch.Dockerfile was updated to copy `docker-server.sh` to allow scripts for persistence
   * Updated `helm-charts/batch/templates/cronjob-program.yaml` command and args to run `docker-server.sh` not updating charts for this Batch.Dockerfile will cause charts to fail
   * Helm charts updated kubeVersion from `">=1.20"` to `">=1.20 || >=1.30.0-eks-a737599"`
