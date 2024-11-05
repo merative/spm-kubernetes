@@ -374,6 +374,40 @@ where the number of pods may vary depending on the number of replicas specified.
 
 Use the `kubctl logs` command to view the batch pod's stdout.
 
+For these pods the relevant log files can be found within the `/opt/ibm/Curam/release/buildlogs` folder of the pod’s file system
+
+Using the `kubectl exec` command as illustrated will place you into the pod:
+
+```
+kubectl exec --namespace <name_space> -it <batch_pod_name> -- /bin/bash
+```
+
+The log file is in `/opt/ibm/Curam/release/buildlogs/BatchLaucher123456789.log`.
+
+If the persistence volume is enabled to store data, it will be saved to the Azure blob storage account,
+
+in the "logs" directory within the pod's directory.
+
+If persistence is not enabled, the logs will be generated in the folder indicated above by default.
+
+Enabling persistence activates the parameter
+
+```
+-Ddir.bld.log=$MOUNT_POINT/$HOSTNAME/logs
+```
+
+In Batch, the -Ddir.bld.log option is used to specify a system property that defines the path to the directory where
+
+the build logs will be stored. This option is typically used in the context of build commands or automation scripts to
+
+dynamically configure properties without modifying configuration files.
+
+Configuring logs correctly is crucial for debugging and maintaining the build process.
+
+The -Ddir.bld.log option is a flexible and powerful way to dynamically configure the log directory for Batch build processes.
+
+$MOUNT_POINT/$HOSTNAME/logs is a folder created adhoc to store the logs in the Azure blob storage account.
+
 #### HTTP Server logs and artifacts
 
 The Apache HTTP Server is only used for hosting SPM static content this information would only be of interest for issues relating specifically to static content.

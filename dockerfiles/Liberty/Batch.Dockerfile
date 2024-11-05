@@ -1,5 +1,5 @@
 ###############################################################################
-# © Merative US L.P. 2022
+# © Merative US L.P. 2024
 # Copyright 2020 IBM Corporation
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,9 @@
 # limitations under the License.
 ###############################################################################
 
-ARG WLP_VERSION=23.0.0.12-full-java8-ibmjava-ubi
+ARG WLP_VERSION=24.0.0.6-full-java8-ibmjava-ubi
 ARG ANT_VERSION=1.10.6
+ARG JMX_EXPORTER_URL=https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 
 # Intermediate image: extract Ant
 FROM alpine AS PrepStage
@@ -49,8 +50,12 @@ RUN rpm -e --nodeps tzdata \
     && yum install -y tzdata \
     && yum clean all \
     && rm -rf /var/cache/yum
+ARG JMX_EXPORTER_URL
+ADD $JMX_EXPORTER_URL /opt/ibm/Curam/jmx_prometheus_javaagent.jar
+RUN chmod -c +rx /opt/ibm/Curam/jmx_prometheus_javaagent.jar
 USER 1001
 
+COPY --chown=1001:0 content/*.sh /opt/ibm/helpers/runtime/
 COPY --from=PrepStage --chown=1001:0 /opt/apache-ant-${ANT_VERSION} /opt/apache-ant-${ANT_VERSION}
 COPY --from=PrepStage --chown=1001:0 /opt/javamail /opt/javamail
 COPY --from=PrepStage --chown=1001:0 /opt/ibm/Curam /opt/ibm/Curam

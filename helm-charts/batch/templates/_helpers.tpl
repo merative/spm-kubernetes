@@ -1,5 +1,5 @@
 {{/*
-© Merative US L.P. 2022
+© Merative US L.P. 2022,2024
 Copyright 2019,2020 IBM Corporation
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,11 +35,14 @@ Build up full image path
 Build up Ant Options for general and JMX Stats configuration
 */}}
 {{- define "batch.antOpts" }}
-{{- printf "-Djava.extra.jvmargs=\"-Dcuram.db.username=$SPM_DB_USR -Dcuram.db.password=$SPM_DB_PSW\" " -}}
-{{- default .DefaultOptions .ProgramOptions -}}
+{{- printf "-Djava.extra.jvmargs=\"-Dcuram.db.username=$SPM_DB_USR -Dcuram.db.password=$SPM_DB_PSW -Xverbosegclog:/tmp/gc/verbosegc.log\" " -}}
 {{- if and .PersistenceConfig.enabled .PersistenceConfig.jmxstats.enabled -}}
 {{- printf " -Dcuram.jmx.output_statistics_timer_enabled=true -Dcuram.jmx.output_statistics_timer_folder=/tmp/jmx/ -Dcuram.jmx.output_statistics_timer_period=%d" (default 60000 .PersistenceConfig.jmxstats.timerPeriod | int) -}}
 {{- end }}
+{{- if .MaxMemory -}}
+{{- printf " -Djava.maxmemory=%s" .MaxMemory -}}
+{{- end }}
+{{- default .DefaultOptions .ProgramOptions -}}
 {{- end }}
 
 {{/*
@@ -48,3 +51,14 @@ Create the image pull secret
 {{- define "batch.imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .registry (printf "%s:%s" .username (required "Credentials password is required" .password) | b64enc) | b64enc }}
 {{- end }}
+
+{{/*
+Mountpoint for the persistence storage on the application pods (e.g. /tmp/persistence )
+*/}}
+{{- define "persistence.mountPoint" -}}
+{{- if .Values.global.apps.common.persistence.mountPoint -}}
+{{- .Values.global.apps.common.persistence.mountPoint -}}
+{{- else -}}
+{{- "/tmp/persistence" -}}
+{{- end -}}
+{{- end -}}

@@ -127,6 +127,8 @@ In the following properties, `<progID>` is a placeholder for the name of the bat
 | `batch.backoffLimit` | Number of retries for failed Batch executions | `1` |
 | `batch.javaOptions` | Default Java Heap options for all programs | `-Xms1g -Xmx1g` |
 | `batch.successfulJobsHistoryLimit` | Number of successful batch executions to keep | `3` |
+| `batch.jmxExporter.enabled`| Enable the Prometheus JMX Exporter for the Batch server metrics | `false` |
+| `batch.jmxExporter.port`| The port to monitor the XML server JVM metrics | `8080` |
 | --------- | ----------- | ------- |
 | `batch.programs.<progID>.activeDeadlineSeconds` | Number of seconds within which the job is expected to complete. If this time is exceeded, the job is terminated. Blank value denoted no limit. | `''` |
 | `batch.programs.<progID>.className` | Java class for the batch process (`-Dbatch.program=`) | `''` |

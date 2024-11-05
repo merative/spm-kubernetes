@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file
 
+## v24.11.0
+
+### Breaking Change
+
+* To enable persistence and the capturing of metrics on the batch pods Batch.Dockerfile has been updated with the following
+  * The Batch.Dockerfile was updated to pull `jmx_prometheus_javaagent-0.14.0.jar` from `repo1.maven.org`
+  * The Batch.Dockerfile was updated to copy `docker-server.sh` to allow scripts for persistence
+  * Updated `helm-charts/batch/templates/cronjob-program.yaml` command and args to run `docker-server.sh` not updating charts for this Batch.Dockerfile will cause charts to fail
+  * Helm charts updated kubeVersion from `">=1.20"` to `">=1.20 || >=1.30.0-eks-a737599"`
+
+### Added
+
+* Create `helm-charts/batch/templates/configmaps/configmap-jmx-batch-config.yaml` for JMX Exporter
+* Update `config-reference` to allow `batch.jmxExporter.enabled` and `batch.jmxExporter.port` to be configured
+* Support for future releases of OpenShift
+
+### Changed
+
+* Updated `helm-charts/batch/templates/cronjob-program.yaml` to allow batch launcher logs be persistent
+* Updated `helm-charts/batch/templates/_helpers.tpl` for persistence
+* Updated `helm-charts/batch/templates/cronjob-program.yaml` to allow JMX Exporting and persistence
+* Updated `helm-charts/batch/values.yaml` for JMX Exporter
+* Updated `batch` yaml for copyright changes
+* The following helm-charts have been updated to chart version `24.11.0`: `apps`, `batch`, `mqserver`, `spm`, `uawebapp`, `web`, `xmlserver`
+* Updated WebSphere Liberty version to include `24.0.0.6`
+* Updated batch helm chart to read Java max memory from values file
+* `ibmjava8-sdk-ubi8-minimal` updated to `8.0.30.0`
+
 ## v24.2.0
 
 ### Changed

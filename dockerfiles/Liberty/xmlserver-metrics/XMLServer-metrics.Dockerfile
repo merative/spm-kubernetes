@@ -21,7 +21,7 @@ ARG XMLSERVER_PROMETHEUS_JAR=xmlserver-metrics/xmlserver_prometheus.jar
 ARG BASE_REGISTRY
 
 # Final image
-FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.11
+FROM ${BASE_REGISTRY}ibm/ibmjava8-sdk-ubi8-minimal:8.0.8.30
 
 EXPOSE 8080
 WORKDIR /opt/ibm/Curam/xmlserver
